@@ -10,10 +10,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MenuAluno (
-    navigateToAnswerForm: () -> Unit,
-    navigateBack: () -> Unit,
-    navigateToScreenFour: () -> Unit,
-    navigateToScreenFive: () -> Unit
+    navigateToMenuFormAluno: () -> Unit,
+    navigateBack: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -22,11 +20,7 @@ fun MenuAluno (
     ) {
         Text(text = "Menu")
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = navigateToAnswerForm) { Text("Formulários Avaliativos") }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = navigateToScreenFour) { Text("Visualizar Resultados de Formulários") }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = navigateToScreenFive) { Text("Dados Pessoais") }
+        Button(onClick = navigateToMenuFormAluno) { Text("Formulários Avaliativos") }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = navigateBack) { Text("Voltar") }
     }
