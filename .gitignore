@@ -7,3 +7,6 @@ gradle/libs.versions.toml
 .gradle/8.9/fileHashes/fileHashes.bin
 .gradle/8.9/executionHistory/executionHistory.lock
 .gradle/8.9/executionHistory/executionHistory.bin
+gradle/libs.versions.toml
+gradle/libs.versions.toml
+local.properties
