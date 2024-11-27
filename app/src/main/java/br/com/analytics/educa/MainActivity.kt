@@ -45,21 +45,29 @@ class MainActivity : ComponentActivity() {
                 // Menu do aluno
                 composable(route = Route.menuAluno) {
                     MenuAluno(
-                        navigateToAnswerForm = { navController.navigate(Route.answerFormAlunoAutonomia) },
-                        navigateToScreenFour = { navController.navigate(Route.screenFour) },
-                        navigateToScreenFive = { navController.navigate(Route.screenFive) },
+                        navigateToMenuFormAluno = { navController.navigate(Route.menuFormAluno) },
                         navigateBack = { navController.popBackStack() }
                     )
                 }
 
                 // Tela de responder formulários
-                composable(route = Route.answerFormAlunoAutonomia) {
-                    AnswerFormAlunoAutonomia(
+                composable(route = Route.formAlunoAutonomia) {
+                    FormAlunoAutonomia(
                         navigateBack = { navController.popBackStack() }
                     )
                 }
 
-                // Outras telas podem ser adicionadas aqui conforme necessário
+                composable(route = Route.menuFormAluno) {
+                    MenuFormAluno(
+                        navigateToFormAutonomia = { navController.navigate(Route.formAlunoAutonomia) },
+                        navigateToFormClimaEscolar = { navController.navigate(Route.formAlunoClimaEscolar) },
+                        navigateToFormQualidadeEnsino = { navController.navigate(Route.formAlunoQualidadeEnsino) },
+                        navigateToFormInfraestrutura = { navController.navigate(Route.formAlunoInfraestrutura) },
+                        navigateToFormGestao = { navController.navigate(Route.formAlunoGestao) },
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
             }
         }
     }
