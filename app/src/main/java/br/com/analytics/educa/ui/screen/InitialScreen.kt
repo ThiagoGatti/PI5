@@ -24,6 +24,7 @@ import br.com.analytics.educa.R
 fun InitialScreen(
     navigateToLogin: () -> Unit
 ) {
+    // Animação da logo
     val infiniteTransition = rememberInfiniteTransition()
     val offsetY by infiniteTransition.animateFloat(
         initialValue = -20f,
@@ -39,7 +40,7 @@ fun InitialScreen(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7)) // Roxo degradê
+                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7)) //degrade roxo de fundo
                 )
             )
             .padding(16.dp),
@@ -51,16 +52,16 @@ fun InitialScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.educa_analytics_logo), // Substitua pelo ID do recurso
+                painter = painterResource(id = R.drawable.educa_analytics_logo), // LOGO
                 contentDescription = "Logo",
                 modifier = Modifier
                     .size(500.dp)
-                    .offset(y = offsetY.dp) // Aplica a animação de deslocamento vertical
+                    .offset(y = offsetY.dp) // SOBE E DESCE SOBE E DESCE FUNCIONOU
                     .padding(bottom = 24.dp),
                 contentScale = ContentScale.Fit
             )
 
-            // Título estilizado
+            // Título
             Text(
                 text = "Bem-vindo",
                 style = MaterialTheme.typography.headlineMedium,
@@ -70,7 +71,7 @@ fun InitialScreen(
                 fontSize = 30.sp
             )
 
-            // Descrição amigável
+            // Texto
             Text(
                 text = "Sua jornada de aprendizado começa aqui.",
                 style = MaterialTheme.typography.bodyMedium,
@@ -79,21 +80,21 @@ fun InitialScreen(
                 fontSize = 18.sp
             )
 
-            // Botão estilizado com borda preta
+            // Botao de Login
             Button(
                 onClick = navigateToLogin,
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
                     .height(50.dp)
                     .border(
-                        width = 2.dp, // Espessura da borda
-                        color = Color.Black, // Cor da borda
-                        shape = RoundedCornerShape(12.dp) // Arredondamento igual ao botão
+                        width = 2.dp,
+                        color = Color.Black,
+                        shape = RoundedCornerShape(12.dp)
                     ),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF5D145B), // Fundo verde-azulado
-                    contentColor = Color.White // Cor do texto
+                    containerColor = Color(0xFF5D145B), // Cor de Fundo
+                    contentColor = Color.White // Cor do Texto
                 )
             ) {
                 Text(
