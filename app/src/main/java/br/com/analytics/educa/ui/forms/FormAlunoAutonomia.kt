@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen
+package br.com.analytics.educa.ui.forms
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

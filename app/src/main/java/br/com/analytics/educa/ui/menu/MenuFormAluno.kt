@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen
+package br.com.analytics.educa.ui.menu
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
