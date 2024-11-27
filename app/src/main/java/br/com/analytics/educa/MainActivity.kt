@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                 // Menu do aluno
                 composable(route = Route.menuAluno) {
                     MenuAluno(
-                        navigateToMenuFormAluno = { navController.navigate(Route.menuFormAluno) },
+                        navigateToMenuFormAluno = { navController.navigate(Route.menuAlunoForm) },
                         navigateBack = { navController.popBackStack() }
                     )
                 }
@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                composable(route = Route.menuFormAluno) {
+                composable(route = Route.menuAlunoForm) {
                     MenuFormAluno(
                         navigateToFormAutonomia = { navController.navigate(Route.formAlunoAutonomia) },
                         navigateToFormClimaEscolar = { navController.navigate(Route.formAlunoClimaEscolar) },
