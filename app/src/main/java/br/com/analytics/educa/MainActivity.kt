@@ -27,21 +27,23 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                // Tela de login
                 composable(route = Route.login) {
                     LoginScreen(
-                        onLoginSuccess = {
-                            navController.navigate(Route.userVerification)
+                        onLoginSubmit = { username, password ->
+                            navController.navigate("${Route.userVerification}/$username/$password")
                         }
                     )
                 }
 
                 // Tela de verificação de usuário
-                composable(route = Route.userVerification) {
+                composable(route = "${Route.userVerification}/{username}/{password}") { backStackEntry ->
+                    val username = backStackEntry.arguments?.getString("username") ?: ""
+                    val password = backStackEntry.arguments?.getString("password") ?: ""
                     UserVerification(
-                        navigateToMenu = { menuRoute ->
-                            navController.navigate(menuRoute)
-                        }
+                        username = username,
+                        password = password,
+                        navigateToMenu = { menuRoute -> navController.navigate(menuRoute) },
+                        navigateToLogin = { navController.popBackStack() }
                     )
                 }
 

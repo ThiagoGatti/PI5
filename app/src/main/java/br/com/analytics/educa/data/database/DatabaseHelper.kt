@@ -2,7 +2,6 @@ package br.com.analytics.educa.data.database
 
 import java.sql.Connection
 import java.sql.DriverManager
-import java.sql.ResultSet
 
 class DatabaseHelper {
     private val url = "jdbc:mysql://10.0.2.2:3306/educa"

@@ -3,7 +3,7 @@ use educa;
 
 CREATE TABLE usuario (
     login VARCHAR(50) NOT NULL PRIMARY KEY,
-    senha VARCHAR(255) NOT NULL
+    senha VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE pessoa (

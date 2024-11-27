@@ -1,13 +1,8 @@
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -18,7 +13,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit,
+    onLoginSubmit: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var username by remember { mutableStateOf("") }
@@ -44,7 +39,6 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Text(
                     text = "Educa Analytics",
                     style = MaterialTheme.typography.headlineMedium,
@@ -52,7 +46,7 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
-                // Username
+                // Campo de Usuário
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
@@ -61,8 +55,6 @@ fun LoginScreen(
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedLabelColor = Color.White,
                         unfocusedLabelColor = Color.White,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
                         cursorColor = Color.White,
                         focusedBorderColor = Color.White,
                         unfocusedBorderColor = Color.LightGray
@@ -70,49 +62,37 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                // Password
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Campo de Senha
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Password", color = Color.White) },
+                    visualTransformation = PasswordVisualTransformation(),
                     shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedLabelColor = Color.White,
                         unfocusedLabelColor = Color.White,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
                         cursorColor = Color.White,
                         focusedBorderColor = Color.White,
                         unfocusedBorderColor = Color.LightGray
                     ),
-                    visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-
-
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Login
+                // Botão de Login
                 Button(
-                    onClick = onLoginSuccess,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF5D145B)
-                    ),
+                    onClick = { onLoginSubmit(username, password) },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                     shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 3.dp,
-                            color = Color.Black,
-                            shape = RoundedCornerShape(16.dp)
-                        )
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Login", color = Color.White)
                 }
-
             }
         }
     }
 }
-

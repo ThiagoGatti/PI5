@@ -1,33 +1,47 @@
-package br.com.analytics.educa.ui.screen
-
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.analytics.educa.data.database.DatabaseHelper
+import br.com.analytics.educa.data.database.UsuarioRepository
 import br.com.analytics.educa.ui.route.Route
 import kotlinx.coroutines.delay
 
 @Composable
 fun UserVerification(
-    navigateToMenu: (String) -> Unit
+    username: String,
+    password: String,
+    navigateToMenu: (String) -> Unit,
+    navigateToLogin: () -> Unit
 ) {
-    // Simula o delay e navega para o menu do aluno
+    val context = LocalContext.current
+    var isLoading by remember { mutableStateOf(true) }
+    var loginFailed by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        delay(1000) // Simula um delay de 1 segundo para o loading
-        navigateToMenu(Route.menuAluno)
+        isLoading = true
+        val nome = verifyLoginWithDatabase(username, password)
+        isLoading = false
+        if (nome != null) {
+            Toast.makeText(context, "Bem-vindo, $nome!", Toast.LENGTH_SHORT).show()
+            navigateToMenu(Route.menuAluno)
+        } else {
+            loginFailed = true
+            navigateToLogin()
+        }
     }
 
-    // Tela de verificação com fundo gradiente e loading
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -38,24 +52,26 @@ fun UserVerification(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 4.dp,
-                modifier = Modifier.size(50.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+        if (isLoading) {
+            CircularProgressIndicator(color = Color.White)
+        } else if (loginFailed) {
             Text(
-                text = "Verificando tipo de usuário...",
+                text = "Falha no login. Tente novamente.",
                 color = Color.White,
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
         }
+    }
+}
+
+fun verifyLoginWithDatabase(username: String, password: String): String? {
+    val dbHelper = DatabaseHelper()
+    val usuarioRepo = UsuarioRepository(dbHelper)
+    return if (usuarioRepo.autenticarUsuario(username, password)) {
+        usuarioRepo.obterNomeUsuario(username)
+    } else {
+        null
     }
 }
