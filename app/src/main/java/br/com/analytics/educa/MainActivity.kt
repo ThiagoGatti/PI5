@@ -49,7 +49,12 @@ class MainActivity : ComponentActivity() {
                 composable(route = Route.menuAluno) {
                     MenuAluno(
                         navigateToMenuFormAluno = { navController.navigate(Route.menuAlunoForm) },
-                        navigateBack = { navController.popBackStack() }
+                        navigateToInitialScreen = {
+                            navController.navigate(Route.initialScreen) {
+                                // Remove todas as telas anteriores da pilha para evitar retorno
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
                     )
                 }
 
