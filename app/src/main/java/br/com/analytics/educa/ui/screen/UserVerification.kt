@@ -15,15 +15,15 @@ import kotlinx.coroutines.delay
 fun UserVerification(
     navigateToMenu: (String) -> Unit
 ) {
-    // Simulação de carregamento e navegação
-    LaunchedEffect(Unit) {
-        delay(500) // Simula um delay de 2 segundos para o loading
 
-        // Navega para a próxima tela diretamente, independente da verificação
+    LaunchedEffect(Unit) {
+        delay(1000) // Simula um delay de 1 segundos para o loading
+
+        // Entra na tela de aluno direto, pq nao tem verificacao de tipo ainda
         navigateToMenu(Route.menuAluno)
     }
 
-    // Tela de loading enquanto navega
+    // Loading
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
