@@ -47,13 +47,14 @@ fun Formulario(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
-                // Título
+
                 Text(
                     text = "Formulário - $form",
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.White,
                     modifier = Modifier
-                        .padding(bottom = 16.dp)
+                        .statusBarsPadding()
+                        .padding(bottom = 10.dp)
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
@@ -169,12 +170,6 @@ fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
                 "Você se sente ouvido e valorizado na escola?"
             )
 
-            "Considerações Finais" -> listOf(
-                "Quais aspectos da sua participação nas aulas você considera mais positivos?",
-                "Quais aspectos da sua participação nas aulas você considera que podem ser melhorados?",
-                "Que sugestões você tem para o aprimoramento das aulas e do seu processo de aprendizagem?"
-            )
-
             else -> listOf("Formulário não encontrado.")
         }
 
@@ -218,12 +213,6 @@ fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
                 "Você tem oportunidades de crescimento profissional?"
             )
 
-            "Desafios" -> listOf(
-                "Quais são os principais desafios que você enfrenta em sua prática docente?",
-                "Quais são as suas sugestões para melhorar a qualidade da educação na escola?",
-                "Quais são as suas expectativas para o futuro da escola?"
-            )
-
             else -> listOf("Formulário não encontrado.")
         }
 
@@ -247,12 +236,6 @@ fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
                 "Você acha que os banheiros e as áreas de trabalho são limpos e higiênicos?",
                 "Você tem acesso aos recursos e materiais necessários para realizar seu trabalho?",
                 "Você se sente seguro no ambiente de trabalho?"
-            )
-
-            "Desafios" -> listOf(
-                "Quais são os principais desafios que você enfrenta em seu trabalho?",
-                "Quais são as suas sugestões para melhorar a qualidade da educação na escola?",
-                "Quais são as suas expectativas para o futuro da escola?"
             )
 
             else -> listOf("Formulário não encontrado.")
