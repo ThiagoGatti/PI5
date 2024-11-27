@@ -36,7 +36,7 @@ fun Formulario(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF7D0CAF), Color(0xFFDAABEF))
+                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))
                 )
             )
     ) {
