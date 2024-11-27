@@ -1,5 +1,6 @@
 package br.com.analytics.educa
 
+import LoginScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,25 +16,50 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
 
-            NavHost(navController = navController, startDestination = Route.screenOne) {
-                composable(route = Route.screenOne) {
-                    ScreenOne(
-                        navigateToScreenTwo = { navController.navigate(Route.screenTwo) }
+            NavHost(navController = navController, startDestination = Route.initialScreen) {
+                // Tela inicial
+                composable(route = Route.initialScreen) {
+                    InitialScreen(
+                        navigateToLogin = { navController.navigate(Route.login) }
                     )
                 }
-                composable(route = Route.screenTwo) {
-                    ScreenTwo(
-                        navigateToScreenThree = { navController.navigate(Route.screenThree) },
+
+                // Tela de login
+                composable(route = Route.login) {
+                    LoginScreen(
+                        onLoginSuccess = {
+                            navController.navigate(Route.userVerification)
+                        }
+                    )
+                }
+
+                // Tela de verificação de usuário
+                composable(route = Route.userVerification) {
+                    UserVerification(
+                        navigateToMenu = { menuRoute ->
+                            navController.navigate(menuRoute)
+                        }
+                    )
+                }
+
+                // Menu do aluno
+                composable(route = Route.menuAluno) {
+                    MenuAluno(
+                        navigateToAnswerForm = { navController.navigate(Route.answerFormAlunoAutonomia) },
                         navigateToScreenFour = { navController.navigate(Route.screenFour) },
                         navigateToScreenFive = { navController.navigate(Route.screenFive) },
                         navigateBack = { navController.popBackStack() }
                     )
                 }
-                composable(route = Route.screenThree) {
-                    ScreenThree(
+
+                // Tela de responder formulários
+                composable(route = Route.answerFormAlunoAutonomia) {
+                    AnswerFormAlunoAutonomia(
                         navigateBack = { navController.popBackStack() }
                     )
                 }
+
+                // Outras telas podem ser adicionadas aqui conforme necessário
             }
         }
     }
