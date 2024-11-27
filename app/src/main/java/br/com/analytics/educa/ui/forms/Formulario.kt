@@ -15,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.analytics.educa.ui.component.StarRating
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
@@ -46,19 +49,38 @@ fun Formulario(
                 .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            // Adicionando a seta de voltar e ajustando o alinhamento
             item {
-
-                Text(
-                    text = "Formulário - $form",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White,
+                Box(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .statusBarsPadding()
-                        .padding(bottom = 10.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+                        .padding(horizontal = 8.dp)
+                ) {
+                    // Seta de voltar posicionada à esquerda
+                    IconButton(
+                        onClick = navigateBack,
+                        modifier = Modifier.align(Alignment.CenterStart) // Alinha à esquerda, no centro vertical
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Voltar",
+                            tint = Color.White
+                        )
+                    }
+
+                    // Título centralizado
+                    Text(
+                        text = "Formulário - $form",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White,
+                        modifier = Modifier.align(Alignment.Center), // Centraliza o título
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
+
+
 
             // Exibir perguntas com as estrelinhas
             itemsIndexed(questions) { index, question ->
@@ -119,6 +141,7 @@ fun Formulario(
         }
     }
 }
+
 
 fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
     return when (tipoUsuario) {
