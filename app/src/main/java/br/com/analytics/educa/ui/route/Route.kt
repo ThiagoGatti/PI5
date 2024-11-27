@@ -16,7 +16,6 @@ object Route {
             const val formAlunoQualidadeEnsino = "formAlunoQualidade"
             const val formAlunoInfraestrutura = "formAlunoInfraestrutura"
             const val formAlunoGestao = "formAlunoGestao"
-            const val formAlunoConsideracoesFinais = "formAlunoConsideracoes"
 
     // TELAS PROFESSORES
 
