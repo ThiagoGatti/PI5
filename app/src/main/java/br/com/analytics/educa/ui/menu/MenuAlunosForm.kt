@@ -25,14 +25,12 @@ fun MenuFormAluno(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Título do menu
         Text(
             text = "Formulários Disponíveis",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Botões para cada formulário
         Button(
             onClick = navigateToFormAutonomia,
             modifier = Modifier
@@ -78,7 +76,6 @@ fun MenuFormAluno(
             Text(text = "Formulário - Gestão")
         }
 
-        // Botão para voltar
         Button(
             onClick = navigateBack,
             modifier = Modifier
