@@ -1,4 +1,4 @@
-package br.com.analytics.educa
+package br.com.analytics.educa.data
 
 import android.content.Context
 import java.sql.Connection
