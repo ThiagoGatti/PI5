@@ -46,7 +46,7 @@ fun UserVerification(
             CircularProgressIndicator(
                 color = Color.White,
                 strokeWidth = 4.dp,
-                modifier = Modifier.size(50.dp) // Tamanho do indicador
+                modifier = Modifier.size(50.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
