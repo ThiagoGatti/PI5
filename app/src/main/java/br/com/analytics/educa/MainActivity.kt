@@ -53,14 +53,55 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                // Tela de responder formulários
+                // Tela de responder formulários (por isso falei que acho melhor fazer um menu kkkk)
                 composable(route = Route.formAlunoAutonomia) {
                     Formulario(
-                        tipoUsuario = "Educando",
+                        tipoUsuario = "Aluno",
                         form = "Autonomia e Protagonismo",
                         navigateBack = { navController.popBackStack() }
                     )
                 }
+
+                composable(route = Route.formAlunoClimaEscolar) {
+                    Formulario(
+                        tipoUsuario = "Aluno",
+                        form = "Clima Escolar",
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable(route = Route.formAlunoQualidadeEnsino) {
+                    Formulario(
+                        tipoUsuario = "Aluno",
+                        form = "Qualidade do Ensino",
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable(route = Route.formAlunoInfraestrutura) {
+                    Formulario(
+                        tipoUsuario = "Aluno",
+                        form = "Infraestrutura",
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable(route = Route.formAlunoGestao) {
+                    Formulario(
+                        tipoUsuario = "Aluno",
+                        form = "Gestão",
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable(route = Route.formAlunoConsideracoesFinais) {
+                    Formulario(
+                        tipoUsuario = "Aluno",
+                        form = "Considerações Finais",
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
 
                 composable(route = Route.menuAlunoForm) {
                     MenuFormAluno(
@@ -69,6 +110,7 @@ class MainActivity : ComponentActivity() {
                         navigateToFormQualidadeEnsino = { navController.navigate(Route.formAlunoQualidadeEnsino) },
                         navigateToFormInfraestrutura = { navController.navigate(Route.formAlunoInfraestrutura) },
                         navigateToFormGestao = { navController.navigate(Route.formAlunoGestao) },
+                        navigateToFormConsideracoesFinais = { navController.navigate(Route.formAlunoConsideracoesFinais) },
                         navigateBack = { navController.popBackStack() }
                     )
                 }

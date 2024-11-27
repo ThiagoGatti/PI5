@@ -16,6 +16,7 @@ fun MenuFormAluno(
     navigateToFormQualidadeEnsino: () -> Unit,
     navigateToFormInfraestrutura: () -> Unit,
     navigateToFormGestao: () -> Unit,
+    navigateToFormConsideracoesFinais: () -> Unit,
     navigateBack: () -> Unit
 ) {
     Column(
@@ -74,6 +75,15 @@ fun MenuFormAluno(
                 .padding(vertical = 8.dp)
         ) {
             Text(text = "Formulário - Gestão")
+        }
+
+        Button(
+            onClick = navigateToFormConsideracoesFinais,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                    ) {
+            Text(text = "Formulário - Considerações Finais")
         }
 
         Button(

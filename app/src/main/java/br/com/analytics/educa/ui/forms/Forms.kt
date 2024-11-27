@@ -14,6 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.analytics.educa.ui.component.StarRating
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun Formulario(
@@ -21,6 +23,8 @@ fun Formulario(
     form: String,
     navigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
+
     // Lista de perguntas
     val questions = retorna_perguntas(tipoUsuario, form)
 
@@ -90,6 +94,7 @@ fun Formulario(
                 Spacer(modifier = Modifier.height(16.dp)) // Espaçamento antes do botão
                 Button(
                     onClick = {
+                        Toast.makeText(context, "Respostas enviadas.", Toast.LENGTH_LONG).show()
                         println("Respostas enviadas: $answers")
                         navigateBack()
                     },
@@ -116,7 +121,7 @@ fun Formulario(
 
 fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
     return when (tipoUsuario) {
-        "Educando" -> when (form) {
+        "Aluno" -> when (form) {
             "Autonomia e Protagonismo" -> listOf(
                 "Você se sente desafiado e motivado nas aulas?",
                 "Você se sente à vontade para fazer perguntas e expressar suas dúvidas?",
@@ -173,7 +178,7 @@ fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
             else -> listOf("Formulário não encontrado.")
         }
 
-        "Educador" -> when (form) {
+        "Professor" -> when (form) {
             "Condições de Trabalho" -> listOf(
                 "Você se sente satisfeito com as condições de trabalho na escola?",
                 "Você tem acesso aos recursos e materiais necessários para dar aulas?",
