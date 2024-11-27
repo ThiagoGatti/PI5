@@ -31,7 +31,7 @@ fun FormAlunoAutonomia(
 
     )
 
-    // Estado das respostas (1 a 10 estrelas para cada pergunta)
+    // Lembrar Respostas
     val answers = remember { mutableStateListOf(*Array(questions.size) { 0 }) }
 
     Box(
@@ -50,7 +50,7 @@ fun FormAlunoAutonomia(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
-                // Título estilizado
+                // Título
                 Text(
                     text = "Formulário - Autonomia e Protagonismo",
                     style = MaterialTheme.typography.headlineMedium,
@@ -62,7 +62,7 @@ fun FormAlunoAutonomia(
                 )
             }
 
-            // Exibe cada pergunta com estrelas
+            // Exibir pergunta com as estrelinhas bonitinhas
             itemsIndexed(questions) { index, question ->
                 Column(
                     modifier = Modifier
@@ -92,13 +92,13 @@ fun FormAlunoAutonomia(
                 }
             }
 
-            // Espaçamento final antes do botão
+
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
 
-        // Botão para enviar respostas fixado na parte inferior
+        // Botão para enviar respostas fixado na parte inferior, PORQUE SE NÃO SOME AAAAAAAA
         Button(
             onClick = {
                 println("Respostas enviadas: $answers")
