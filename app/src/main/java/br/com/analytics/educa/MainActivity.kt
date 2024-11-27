@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.analytics.educa.ui.forms.alunos.FormAlunoAutonomia
+import br.com.analytics.educa.ui.forms.Formulario
 import br.com.analytics.educa.ui.menu.MenuAluno
 import br.com.analytics.educa.ui.menu.MenuFormAluno
 import br.com.analytics.educa.ui.route.Route
@@ -55,7 +55,9 @@ class MainActivity : ComponentActivity() {
 
                 // Tela de responder formulários
                 composable(route = Route.formAlunoAutonomia) {
-                    FormAlunoAutonomia(
+                    Formulario(
+                        tipoUsuario = "Educando",
+                        form = "Autonomia e Protagonismo",
                         navigateBack = { navController.popBackStack() }
                     )
                 }
