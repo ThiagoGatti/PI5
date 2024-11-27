@@ -99,13 +99,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                composable(route = Route.formAlunoConsideracoesFinais) {
-                    Formulario(
-                        tipoUsuario = "Aluno",
-                        form = "Considerações Finais",
-                        navigateBack = { navController.popBackStack() }
-                    )
-                }
+
 
 
                 composable(route = Route.menuAlunoForm) {
@@ -115,7 +109,6 @@ class MainActivity : ComponentActivity() {
                         navigateToFormQualidadeEnsino = { navController.navigate(Route.formAlunoQualidadeEnsino) },
                         navigateToFormInfraestrutura = { navController.navigate(Route.formAlunoInfraestrutura) },
                         navigateToFormGestao = { navController.navigate(Route.formAlunoGestao) },
-                        navigateToFormConsideracoesFinais = { navController.navigate(Route.formAlunoConsideracoesFinais) },
                         navigateBack = { navController.popBackStack() }
                     )
                 }
