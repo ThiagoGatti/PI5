@@ -19,10 +19,10 @@ fun StarRating(
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp), // Espaçamento entre as estrelas
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
         modifier = modifier
     ) {
-        for (i in 1..10) { // Garantindo 10 estrelas
+        for (i in 1..10) {
             IconButton(
                 onClick = { onStarsSelected(i) },
                 modifier = Modifier.size(32.dp)
@@ -30,7 +30,7 @@ fun StarRating(
                 Icon(
                     imageVector = if (i <= selectedStars) Icons.Filled.Star else Icons.Outlined.Star,
                     contentDescription = "Star $i",
-                    tint = if (i <= selectedStars) Color(0xFFFFD700) else Color(0xFFB0BEC5), // Dourado para selecionado, cinza para não selecionado
+                    tint = if (i <= selectedStars) Color(0xFFFFD700) else Color(0xFFB0BEC5),
                 )
             }
         }
