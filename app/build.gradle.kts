@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "br.com.analytics.educa"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -51,12 +51,12 @@ android {
 }
 
 dependencies {
-    implementation("com.google.dagger:hilt-android:2.44")
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0-alpha01")
-    implementation("com.microsoft.sqlserver:mssql-jdbc:12.4.0.jre11")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    implementation("androidx.navigation:navigation-common:2.8.3")
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.mssql.jdbc)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.navigation:navigation-common:2.8.4")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
