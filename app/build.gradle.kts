@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation("mysql:mysql-connector-java:8.0.33")
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.lifecycle.viewmodel)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
