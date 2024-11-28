@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import br.com.analytics.educa.data.retrofit.ApiService
 import br.com.analytics.educa.data.retrofit.LoginRequest
+import br.com.analytics.educa.data.retrofit.LoginResponse
 import br.com.analytics.educa.data.retrofit.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -36,19 +37,20 @@ fun UserVerification(
         autenticarUsuario(
             username = username,
             password = password,
-            onSuccess = { mensagem ->
+            onSuccess = { nome, tipo ->
                 isLoading = false
-                loginMessage = mensagem
+                val mensagem = "Bem-vindo, $nome! Você está logado como $tipo."
                 Toast.makeText(context, mensagem, Toast.LENGTH_LONG).show()
                 navigateToMenu(Route.menuAluno)
             },
             onFailure = { erro ->
                 isLoading = false
-                loginMessage = erro
                 Toast.makeText(context, erro, Toast.LENGTH_LONG).show()
+                println("Erro na autenticação: $erro")
                 navigateToLogin()
             }
         )
+
     }
 
     Box(
@@ -80,25 +82,27 @@ fun UserVerification(
 fun autenticarUsuario(
     username: String,
     password: String,
-    onSuccess: (String) -> Unit,
+    onSuccess: (String, String) -> Unit,
     onFailure: (String) -> Unit
 ) {
     val apiService = RetrofitClient.createService(ApiService::class.java)
     val loginRequest = LoginRequest(username, password)
 
-    apiService.autenticarUsuario(loginRequest).enqueue(object : Callback<LoginRequest> {
-        override fun onResponse(call: Call<LoginRequest>, response: Response<LoginRequest>) {
+    apiService.autenticarUsuario(loginRequest).enqueue(object : Callback<LoginResponse> {
+        override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
             if (response.isSuccessful) {
-                val banco = response.body()
-                banco?.let {
-                    onSuccess("Bem-vindo, ${it.username}!")
-                } ?: onFailure("Resposta inválida do servidor.")
+                val loginResponse = response.body()
+                if (loginResponse != null && loginResponse.success) {
+                    onSuccess(loginResponse.nome ?: "Usuário", loginResponse.tipo ?: "Desconhecido")
+                } else {
+                    onFailure(loginResponse?.message ?: "Erro desconhecido")
+                }
             } else {
-                onFailure("Erro no login: ${response.message()}")
+                onFailure("Erro no servidor: ${response.message()}")
             }
         }
 
-        override fun onFailure(call: Call<LoginRequest>, t: Throwable) {
+        override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
             onFailure("Falha na conexão: ${t.message}")
         }
     })
