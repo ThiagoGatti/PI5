@@ -19,9 +19,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import br.com.analytics.educa.data.retrofit.ApiResponse
+import br.com.analytics.educa.data.retrofit.ApiService
+import br.com.analytics.educa.data.retrofit.ResponseRequest
+import br.com.analytics.educa.data.retrofit.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun Formulario(
+    username: String,
     userType: String,
     formName: String,
     navigateBack: () -> Unit
@@ -117,8 +125,13 @@ fun Formulario(
                 Spacer(modifier = Modifier.height(16.dp)) // Espaçamento antes do botão
                 Button(
                     onClick = {
+                        val responseData = mutableMapOf<String, Int>()
+                        answers.forEachIndexed { index, answer ->
+                            responseData["q${index + 1}"] = answer
+                        }
+
+                        enviarRespostasParaBanco(username, userType, formName, responseData)
                         Toast.makeText(context, "Respostas enviadas.", Toast.LENGTH_LONG).show()
-                        println("Respostas enviadas: $answers")
                         navigateBack()
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -140,6 +153,34 @@ fun Formulario(
             }
         }
     }
+}
+
+fun enviarRespostasParaBanco(username: String, userType: String, formName: String, answers: Map<String, Int>) {
+    val apiService = RetrofitClient.createService(ApiService::class.java)
+
+    val responseRequest = ResponseRequest(
+        action = "saveAnswers",
+        userType = userType,
+        formName = formName,
+        username = username,
+        answers = answers
+    )
+
+    apiService.enviarRespostas(responseRequest).enqueue(object : Callback<ApiResponse> {
+        override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            if (response.isSuccessful) {
+                println("Respostas salvas com sucesso.")
+                println(response.body())
+            } else {
+                println("Erro ao salvar respostas: ${response.message()}")
+                println(responseRequest)
+            }
+        }
+
+        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+            println("Falha na conexão: ${t.message}")
+        }
+    })
 }
 
 

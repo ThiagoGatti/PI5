@@ -42,18 +42,19 @@ class MainActivity : ComponentActivity() {
                         username = username,
                         password = password,
                         navigateToMenu = { userType ->
-                            navController.navigate("${Route.menu}/$userType")
+                            navController.navigate("${Route.menu}/$userType/$username")
                         },
                         navigateToLogin = { navController.popBackStack() }
                     )
                 }
 
-                composable(route = "${Route.menu}/{userType}") { backStackEntry ->
+                composable(route = "${Route.menu}/{userType}/{username}") { backStackEntry ->
+                    val username = backStackEntry.arguments?.getString("username").toString()
                     val userType = backStackEntry.arguments?.getString("userType").toString()
                     Menu(
                         userType = userType,
                         navigateToMenuForm = {
-                            navController.navigate("${Route.menuForm}/$userType")
+                            navController.navigate("${Route.menuForm}/$userType/$username")
                         },
                         navigateToInitialScreen = {
                             navController.navigate(Route.initialScreen) {
@@ -63,22 +64,26 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                composable(route = "${Route.menuForm}/{userType}") { backStackEntry ->
+                composable(route = "${Route.menuForm}/{userType}/{username}") { backStackEntry ->
                     val userType = backStackEntry.arguments?.getString("userType").toString()
+                    val username = backStackEntry.arguments?.getString("username").toString()
                     MenuForm(
                         userType = userType,
+                        username = username,
                         navigateToForm = { formName ->
-                            navController.navigate("${Route.formulario}/$userType/$formName")
+                            navController.navigate("${Route.formulario}/$userType/$formName/$username")
                         },
                         navigateBack = { navController.popBackStack() }
                     )
                 }
 
-                composable(route = "${Route.formulario}/{userType}/{formName}") { backStackEntry ->
+                composable(route = "${Route.formulario}/{userType}/{formName}/{username}") { backStackEntry ->
+                    val username = backStackEntry.arguments?.getString("username").toString()
                     val userType = backStackEntry.arguments?.getString("userType").toString()
                     val formName =
                         backStackEntry.arguments?.getString("formName") ?: "Formulário Desconhecido"
                     Formulario(
+                        username = username,
                         userType = userType,
                         formName = formName,
                         navigateBack = { navController.popBackStack() }

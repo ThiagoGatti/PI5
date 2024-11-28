@@ -20,7 +20,6 @@ import br.com.analytics.educa.data.retrofit.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import br.com.analytics.educa.ui.route.Route
 
 @Composable
 fun UserVerification(
@@ -87,7 +86,7 @@ fun autenticarUsuario(
     onFailure: (String) -> Unit
 ) {
     val apiService = RetrofitClient.createService(ApiService::class.java)
-    val loginRequest = LoginRequest(username, password)
+    val loginRequest = LoginRequest("login" ,username, password)
 
     apiService.autenticarUsuario(loginRequest).enqueue(object : Callback<LoginResponse> {
         override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {

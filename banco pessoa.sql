@@ -50,6 +50,29 @@ CREATE TABLE boletim (
     FOREIGN KEY (login_aluno) REFERENCES aluno(login) ON DELETE CASCADE
 );
 
+CREATE TABLE respostas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    login_usuario VARCHAR(50) NOT NULL,
+    tipo_usuario ENUM('ALUNO', 'PROFESSOR', 'FUNCIONARIO') NOT NULL,
+    nome_formulario VARCHAR(100) NOT NULL,
+    q1 INT DEFAULT 0,
+    q2 INT DEFAULT 0,
+    q3 INT DEFAULT 0,
+    q4 INT DEFAULT 0,
+    q5 INT DEFAULT 0,
+    q6 INT DEFAULT 0,
+    q7 INT DEFAULT 0,
+    q8 INT DEFAULT 0,
+    q9 INT DEFAULT 0,
+    q10 INT DEFAULT 0,
+    q11 INT DEFAULT 0,
+    q12 INT DEFAULT 0,
+    q13 INT DEFAULT 0,
+    q14 INT DEFAULT 0,
+    q15 INT DEFAULT 0,
+    FOREIGN KEY (login_usuario) REFERENCES usuario(login) ON DELETE CASCADE
+);
+
 INSERT INTO usuario (login, senha) VALUES ('aluno123', SHA2('123', 256));
 
 INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo) 
@@ -61,3 +84,4 @@ VALUES ('aluno123', '2023MATRICULA123', '3º Ano B', 2);
 SELECT * FROM usuario;
 SELECT * FROM pessoa;
 SELECT * FROM aluno;
+SELECT * FROM respostas;
