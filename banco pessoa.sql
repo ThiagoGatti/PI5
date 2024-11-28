@@ -55,21 +55,21 @@ CREATE TABLE respostas (
     login_usuario VARCHAR(50) NOT NULL,
     tipo_usuario ENUM('ALUNO', 'PROFESSOR', 'FUNCIONARIO') NOT NULL,
     nome_formulario VARCHAR(100) NOT NULL,
-    q1 INT DEFAULT 0,
-    q2 INT DEFAULT 0,
-    q3 INT DEFAULT 0,
-    q4 INT DEFAULT 0,
-    q5 INT DEFAULT 0,
-    q6 INT DEFAULT 0,
-    q7 INT DEFAULT 0,
-    q8 INT DEFAULT 0,
-    q9 INT DEFAULT 0,
-    q10 INT DEFAULT 0,
-    q11 INT DEFAULT 0,
-    q12 INT DEFAULT 0,
-    q13 INT DEFAULT 0,
-    q14 INT DEFAULT 0,
-    q15 INT DEFAULT 0,
+    q1 INT DEFAULT -1,
+    q2 INT DEFAULT -1,
+    q3 INT DEFAULT -1,
+    q4 INT DEFAULT -1,
+    q5 INT DEFAULT -1,
+    q6 INT DEFAULT -1,
+    q7 INT DEFAULT -1,
+    q8 INT DEFAULT -1,
+    q9 INT DEFAULT -1,
+    q10 INT DEFAULT -1,
+    q11 INT DEFAULT -1,
+    q12 INT DEFAULT -1,
+    q13 INT DEFAULT -1,
+    q14 INT DEFAULT -1,
+    q15 INT DEFAULT -1,
     FOREIGN KEY (login_usuario) REFERENCES usuario(login) ON DELETE CASCADE
 );
 
@@ -85,3 +85,5 @@ SELECT * FROM usuario;
 SELECT * FROM pessoa;
 SELECT * FROM aluno;
 SELECT * FROM respostas;
+
+DESCRIBE respostas;
