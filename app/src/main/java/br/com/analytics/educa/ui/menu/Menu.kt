@@ -17,7 +17,7 @@ fun Menu(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(64.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -27,7 +27,7 @@ fun Menu(
         if (userType != "DIRETOR") {
             Button(
                 onClick = navigateToMenuForm,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Formulários Avaliativos")
             }
@@ -40,7 +40,7 @@ fun Menu(
                 performLogout()
                 navigateToInitialScreen()
             },
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            modifier = Modifier.wrapContentWidth()
         ) {
             Text("Deslogar")
         }
