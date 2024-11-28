@@ -22,14 +22,14 @@ import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun Formulario(
-    tipoUsuario: String,
-    form: String,
+    userType: String,
+    formName: String,
     navigateBack: () -> Unit
 ) {
     val context = LocalContext.current
 
     // Lista de perguntas
-    val questions = retorna_perguntas(tipoUsuario, form)
+    val questions = retorna_perguntas(userType, formName)
 
     // Lembrar Respostas
     val answers = remember { mutableStateListOf(*Array(questions.size) { 0 }) }
@@ -71,7 +71,7 @@ fun Formulario(
 
                     // Título centralizado
                     Text(
-                        text = "Formulário - $form",
+                        text = "Formulário - $formName",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.White,
                         modifier = Modifier.align(Alignment.Center), // Centraliza o título
@@ -143,9 +143,9 @@ fun Formulario(
 }
 
 
-fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
-    return when (tipoUsuario) {
-        "Aluno" -> when (form) {
+fun retorna_perguntas(userType: String, form: String): List<String> {
+    return when (userType) {
+        "ALUNO" -> when (form) {
             "Autonomia e Protagonismo" -> listOf(
                 "Você se sente desafiado e motivado nas aulas?",
                 "Você se sente à vontade para fazer perguntas e expressar suas dúvidas?",
@@ -196,7 +196,7 @@ fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
             else -> listOf("Formulário não encontrado.")
         }
 
-        "Professor" -> when (form) {
+        "PROFESSOR" -> when (form) {
             "Condições de Trabalho" -> listOf(
                 "Você se sente satisfeito com as condições de trabalho na escola?",
                 "Você tem acesso aos recursos e materiais necessários para dar aulas?",
@@ -239,7 +239,7 @@ fun retorna_perguntas(tipoUsuario: String, form: String): List<String> {
             else -> listOf("Formulário não encontrado.")
         }
 
-        "Funcionario" -> when (form) {
+        "FUNCIONARIO" -> when (form) {
             "Satisfação no Trabalho" -> listOf(
                 "Você se sente satisfeito com o seu trabalho na escola?",
                 "Você se sente valorizado e reconhecido por seu trabalho?",

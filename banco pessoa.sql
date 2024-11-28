@@ -12,7 +12,7 @@ CREATE TABLE pessoa (
     cpf VARCHAR(14) NOT NULL UNIQUE,
     data_nascimento DATE NOT NULL,
     telefone VARCHAR(15),
-    tipo ENUM('ALUNO', 'PROFESSOR', 'FUNCIONARIO') NOT NULL,
+    tipo ENUM('ALUNO', 'PROFESSOR', 'FUNCIONARIO', 'DIRETOR') NOT NULL,
     FOREIGN KEY (login) REFERENCES usuario(login) ON DELETE CASCADE
 );
 

@@ -39,9 +39,10 @@ fun UserVerification(
             password = password,
             onSuccess = { nome, tipo ->
                 isLoading = false
-                val mensagem = "Bem-vindo, $nome! Você está logado como $tipo."
+                val mensagem = "Bem-vindo, $nome!"
                 Toast.makeText(context, mensagem, Toast.LENGTH_LONG).show()
-                navigateToMenu(Route.menuAluno)
+                println("$mensagem Tipo de usuário: $tipo")
+                navigateToMenu(tipo)
             },
             onFailure = { erro ->
                 isLoading = false
