@@ -49,3 +49,15 @@ CREATE TABLE boletim (
     presenca DECIMAL(5, 2) NOT NULL,
     FOREIGN KEY (login_aluno) REFERENCES aluno(login) ON DELETE CASCADE
 );
+
+INSERT INTO usuario (login, senha) VALUES ('aluno123', SHA2('123', 256));
+
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo) 
+VALUES ('aluno123', 'João Silva', '123.456.789-00', '2005-06-15', '(11) 91234-5678', 'ALUNO');
+
+INSERT INTO aluno (login, matricula, turma, ausencias) 
+VALUES ('aluno123', '2023MATRICULA123', '3º Ano B', 2);
+
+SELECT * FROM usuario;
+SELECT * FROM pessoa;
+SELECT * FROM aluno;

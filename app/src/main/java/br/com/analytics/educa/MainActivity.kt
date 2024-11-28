@@ -1,6 +1,7 @@
 package br.com.analytics.educa
 
 import LoginScreen
+import UserVerification
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
