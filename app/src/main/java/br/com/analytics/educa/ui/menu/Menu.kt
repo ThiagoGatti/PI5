@@ -1,11 +1,14 @@
 package br.com.analytics.educa.ui.menu
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -14,6 +17,8 @@ fun Menu(
     navigateToMenuForm: () -> Unit,
     navigateToInitialScreen: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -37,7 +42,7 @@ fun Menu(
 
         Button(
             onClick = {
-                performLogout()
+                performLogout(context)
                 navigateToInitialScreen()
             },
             modifier = Modifier.wrapContentWidth()
@@ -47,8 +52,9 @@ fun Menu(
     }
 }
 
-// Função simulada para logout
-fun performLogout() {
-    // Limpeza de dados do usuário, token ou sessões (dependendo da lógica da aplicação)
-    println("Usuário deslogado!")
+fun performLogout(context: Context) {
+    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    sharedPreferences.edit().clear().apply()
+
+    Toast.makeText(context, "Usuário deslogado!", Toast.LENGTH_SHORT).show()
 }

@@ -17,6 +17,7 @@ import br.com.analytics.educa.data.retrofit.ApiService
 import br.com.analytics.educa.data.retrofit.LoginRequest
 import br.com.analytics.educa.data.retrofit.LoginResponse
 import br.com.analytics.educa.data.retrofit.RetrofitClient
+import br.com.analytics.educa.ui.menu.performLogout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,6 +48,7 @@ fun UserVerification(
                 isLoading = false
                 Toast.makeText(context, erro, Toast.LENGTH_LONG).show()
                 println("Erro na autenticação: $erro")
+                performLogout(context)
                 navigateToLogin()
             }
         )
@@ -86,7 +88,7 @@ fun autenticarUsuario(
     onFailure: (String) -> Unit
 ) {
     val apiService = RetrofitClient.createService(ApiService::class.java)
-    val loginRequest = LoginRequest("login" ,username, password)
+    val loginRequest = LoginRequest("login", username, password)
 
     apiService.autenticarUsuario(loginRequest).enqueue(object : Callback<LoginResponse> {
         override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {

@@ -9,6 +9,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import android.content.Context
+import android.util.Base64
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -16,8 +19,29 @@ fun LoginScreen(
     onLoginSubmit: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var saveLogin by remember { mutableStateOf(false) }
+    var autoLoginAttempted by remember { mutableStateOf(false) }
+
+    // Tentativa de login automático
+    LaunchedEffect(Unit) {
+        if (!autoLoginAttempted) {
+            val isSaveEnabled = sharedPreferences.getBoolean("save_login", false)
+            if (isSaveEnabled) {
+                val savedUsername = sharedPreferences.getString("username", null)
+                val savedPassword = sharedPreferences.getString("password", null)
+                if (savedUsername != null && savedPassword != null) {
+                    val decodedPassword = String(Base64.decode(savedPassword, Base64.DEFAULT))
+                    onLoginSubmit(savedUsername, decodedPassword)
+                }
+            }
+            autoLoginAttempted = true
+        }
+    }
 
     Scaffold(
         modifier = modifier
@@ -59,6 +83,7 @@ fun LoginScreen(
                         focusedBorderColor = Color.White,
                         unfocusedBorderColor = Color.LightGray
                     ),
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -78,14 +103,54 @@ fun LoginScreen(
                         focusedBorderColor = Color.White,
                         unfocusedBorderColor = Color.LightGray
                     ),
+                    textStyle = LocalTextStyle.current.copy(color = Color.White),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Switch para salvar login ao lado do texto
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Switch(
+                        checked = saveLogin,
+                        onCheckedChange = {
+                            saveLogin = it
+                            sharedPreferences.edit()
+                                .putBoolean("save_login", it)
+                                .apply()
+                        },
+                        modifier = Modifier.padding(end = 8.dp) // Espaçamento entre Switch e texto
+                    )
+                    Text(
+                        text = "Salvar login",
+                        color = Color.White
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Botão de Login
                 Button(
-                    onClick = { onLoginSubmit(username, password) },
+                    onClick = {
+                        // Salvar login e senha para futuras tentativas automáticas (se habilitado)
+                        if (saveLogin) {
+                            sharedPreferences.edit().apply {
+                                putString("username", username)
+                                putString(
+                                    "password",
+                                    Base64.encodeToString(password.toByteArray(), Base64.DEFAULT)
+                                )
+                                apply()
+                            }
+                        } else {
+                            // Limpar dados de login se a opção estiver desativada
+                            sharedPreferences.edit().remove("username").remove("password").apply()
+                        }
+                        onLoginSubmit(username, password)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.fillMaxWidth()
