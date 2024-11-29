@@ -1,9 +1,15 @@
-create database educa;
-use educa;
+CREATE DATABASE educa;
+USE educa;
 
 CREATE TABLE usuario (
     login VARCHAR(50) NOT NULL PRIMARY KEY,
     senha VARCHAR(64) NOT NULL
+);
+
+CREATE TABLE escola (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    endereco TEXT NOT NULL
 );
 
 CREATE TABLE pessoa (
@@ -13,6 +19,8 @@ CREATE TABLE pessoa (
     data_nascimento DATE NOT NULL,
     telefone VARCHAR(15),
     tipo ENUM('ALUNO', 'PROFESSOR', 'FUNCIONARIO', 'DIRETOR') NOT NULL,
+    id_escola INT NOT NULL,
+    FOREIGN KEY (id_escola) REFERENCES escola(id) ON DELETE CASCADE,
     FOREIGN KEY (login) REFERENCES usuario(login) ON DELETE CASCADE
 );
 
@@ -75,8 +83,11 @@ CREATE TABLE respostas (
 
 INSERT INTO usuario (login, senha) VALUES ('aluno123', SHA2('123', 256));
 
-INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo) 
-VALUES ('aluno123', 'João Silva', '123.456.789-00', '2005-06-15', '(11) 91234-5678', 'ALUNO');
+INSERT INTO escola (nome, endereco) 
+VALUES ('Escola Estadual Modelo', 'Rua Principal, 123, Cidade Exemplo');
+
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
+VALUES ('aluno123', 'João Silva', '123.456.789-00', '2005-06-15', '(11) 91234-5678', 'ALUNO', 1);
 
 INSERT INTO aluno (login, matricula, turma, ausencias) 
 VALUES ('aluno123', '2023MATRICULA123', '3º Ano B', 2);
