@@ -5,9 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -105,24 +103,41 @@ fun MenuForm(
                     )
                 }
             }
+        }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Botão "Voltar"
+        // Botão "Voltar" ajustado para o rodapé
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter) // Alinha ao rodapé
+                .padding(bottom = 32.dp), // Ajusta a posição para mais perto do rodapé
+            contentAlignment = Alignment.Center
+        ) {
             Button(
                 onClick = navigateBack,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF641864)),
-                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
+                    .width(150.dp) // Largura do botão
+                    .height(50.dp) // Altura do botão
             ) {
-                Text(
-                    text = "Voltar",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "Ícone de voltar",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Voltar",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
