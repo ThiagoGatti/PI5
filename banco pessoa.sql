@@ -140,3 +140,18 @@ VALUES
 ('aluno789', 'Português', 8.5, 95),
 ('aluno789', 'História', 7.0, 87),
 ('aluno789', 'Ciências', 8.2, 93);
+
+-- Inserindo professor
+INSERT INTO usuario (login, senha) VALUES ('prof123', SHA2('123', 256));
+
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
+VALUES ('prof123', 'Maria Santos', '456.789.123-00', '1980-08-20', '(11) 99988-7766', 'PROFESSOR', 1);
+
+INSERT INTO professor (login, numero_funcionario, funcao, turmas, ausencias) 
+VALUES ('prof123', 'FUNC123', 'Ensino Médio', '3B, 2A', 0);
+
+-- Inserindo diretor
+INSERT INTO usuario (login, senha) VALUES ('diretor123', SHA2('123', 256));
+
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
+VALUES ('diretor123', 'Carlos Almeida', '789.123.456-00', '1970-05-15', '(11) 98877-6655', 'DIRETOR', 1);

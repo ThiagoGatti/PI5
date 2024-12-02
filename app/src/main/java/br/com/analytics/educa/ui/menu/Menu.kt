@@ -24,7 +24,11 @@ fun Menu(
     userType: String,
     navigateToMenuForm: () -> Unit,
     navigateToCharts: () -> Unit,
-    navigateToInitialScreen: () -> Unit
+    navigateToInitialScreen: () -> Unit,
+    navigateToNotasAluno: () -> Unit,
+    navigateToNotasProfessor: () -> Unit,
+    navigateToUsuariosDiretor: () -> Unit,
+    navigateToPerfil: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -45,7 +49,6 @@ fun Menu(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título
             Text(
                 text = "Menu",
                 style = MaterialTheme.typography.headlineMedium,
@@ -56,28 +59,6 @@ fun Menu(
                     .padding(bottom = 32.dp)
                     .fillMaxWidth()
             )
-
-            // Botão "Formulários Avaliativos"
-            if (userType != "DIRETOR") {
-                Button(
-                    onClick = navigateToMenuForm,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .height(50.dp)
-                ) {
-                    Text(
-                        text = "Formulários Avaliativos",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = navigateToCharts,
@@ -120,9 +101,91 @@ fun Menu(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (userType == "DIRETOR") {
+                Button(
+                    onClick = navigateToUsuariosDiretor,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Manejar Usuários",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
+            } else {
+                Button(
+                    onClick = navigateToMenuForm,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Formulários Avaliativos",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = navigateToPerfil,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .height(50.dp)
+            ) {
+                Text(
+                    text = "Dados Pessoais",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (userType == "ALUNO" || userType == "PROFESSOR") {
+                Button(
+                    onClick = {
+                        when (userType) {
+                            "ALUNO" -> navigateToNotasAluno()
+                            "PROFESSOR" -> navigateToNotasProfessor()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Notas",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
+            }
         }
 
-        // Botão "Deslogar" no rodapé
         Box(
             modifier = Modifier
                 .fillMaxWidth()

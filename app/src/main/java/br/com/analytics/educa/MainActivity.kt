@@ -61,7 +61,11 @@ class MainActivity : ComponentActivity() {
                             navController.navigate(Route.initialScreen) {
                                 popUpTo(0) { inclusive = true }
                             }
-                        }
+                        },
+                        navigateToNotasAluno = { Route.telaBoletim },
+                        navigateToNotasProfessor = { Route.telaEnviarNotas },
+                        navigateToUsuariosDiretor = { Route.telaPessoas },
+                        navigateToPerfil = { Route.telaPerfil }
                     )
                 }
 
