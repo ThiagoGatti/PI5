@@ -9,4 +9,13 @@ object Route {
     const val menuForm = "menuForm"
 
     const val formulario = "formulario"
+
+    const val registrar = "registrar"
+
+    const val telaUsuario = "telaUsuario"
+    const val telaBoletim = "boletim"
+    const val telaEnviarNotas = "telaEnviarNotas"
+
+
+    
 }
