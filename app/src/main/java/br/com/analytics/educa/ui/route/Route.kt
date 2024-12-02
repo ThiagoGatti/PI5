@@ -12,10 +12,10 @@ object Route {
 
     const val registrar = "registrar"
 
-    const val telaUsuario = "telaUsuario"
+    const val telaUsuario = "userScreen"
     const val telaBoletim = "boletim"
     const val telaEnviarNotas = "telaEnviarNotas"
 
 
-    
+
 }
