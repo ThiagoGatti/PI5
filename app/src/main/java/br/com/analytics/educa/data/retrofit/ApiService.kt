@@ -8,7 +8,8 @@ import retrofit2.http.Query
 
 interface ApiService {
     @GET("api.php")
-    fun getAnsweredForms(
+    fun getFormsRespondidos(
+        @Query("action") action: String = "getAnsweredForms",
         @Query("userType") userType: String,
         @Query("login") login: String
     ): Call<List<String>>
@@ -18,9 +19,18 @@ interface ApiService {
 
     @POST("api.php")
     fun enviarRespostas(@Body responseRequest: ResponseRequest): Call<ApiResponse>
+
+    @GET("api.php")
+    fun getSchoolPerformance(
+        @Query("action") action: String = "schoolPerformance"
+    ): Call<List<SchoolPerformance>>
 }
 
-data class LoginRequest(val action: String, val username: String, val password: String)
+data class LoginRequest(
+    val action: String = "login",
+    val username: String,
+    val password: String
+)
 
 data class LoginResponse(
     val success: Boolean,
@@ -30,7 +40,7 @@ data class LoginResponse(
 )
 
 data class ResponseRequest(
-    val action: String,
+    val action: String = "saveAnswers",
     val userType: String,
     val formName: String,
     val username: String,
@@ -40,4 +50,10 @@ data class ResponseRequest(
 data class ApiResponse(
     val success: Boolean,
     val message: String
+)
+
+data class SchoolPerformance(
+    val materia: String,
+    val media_nota: Double,
+    val media_presenca: Double
 )

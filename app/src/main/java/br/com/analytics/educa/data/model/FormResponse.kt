@@ -8,7 +8,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-fun FormResponse(username: String, userType: String, formName: String, answers: Map<String, Int>) {
+fun postForm(username: String, userType: String, formName: String, answers: Map<String, Int>) {
     val apiService = RetrofitClient.createService(ApiService::class.java)
 
     val responseRequest = ResponseRequest(
@@ -36,4 +36,29 @@ fun FormResponse(username: String, userType: String, formName: String, answers: 
     })
 }
 
+fun buscarFormsRespondidos(
+    userType: String,
+    login: String,
+    onResult: (Set<String>) -> Unit,
+    onError: (String) -> Unit = {}
+) {
+    val apiService = RetrofitClient.createService(ApiService::class.java)
+    apiService.getFormsRespondidos(userType = userType, login = login).enqueue(object : Callback<List<String>> {
+        override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
+            if (response.isSuccessful) {
+                val forms = response.body()?.toSet() ?: emptySet()
+                onResult(forms)
+            } else {
+                val errorMessage = response.errorBody()?.string() ?: "Erro desconhecido"
+                onError("Erro na resposta: $errorMessage")
+                onResult(emptySet())
+            }
+        }
 
+        override fun onFailure(call: Call<List<String>>, t: Throwable) {
+            val errorMessage = t.localizedMessage ?: "Falha na conexão"
+            onError("Falha ao buscar formulários: $errorMessage")
+            onResult(emptySet())
+        }
+    })
+}

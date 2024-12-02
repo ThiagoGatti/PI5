@@ -19,8 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
-import br.com.analytics.educa.data.model.FormResponse
-
+import br.com.analytics.educa.data.model.postForm
 
 @Composable
 fun Formulario(
@@ -84,7 +83,6 @@ fun Formulario(
             }
 
 
-
             // Exibir perguntas com as estrelinhas
             itemsIndexed(questions) { index, question ->
                 Column(
@@ -125,7 +123,7 @@ fun Formulario(
                             responseData["q${index + 1}"] = answer
                         }
 
-                        FormResponse(username, userType, formName, responseData)
+                        postForm(username, userType, formName, responseData)
                         Toast.makeText(context, "Respostas enviadas.", Toast.LENGTH_LONG).show()
                         navigateBack()
                     },
@@ -149,8 +147,6 @@ fun Formulario(
         }
     }
 }
-
-
 
 fun retorna_perguntas(userType: String, form: String): List<String> {
     return when (userType) {
