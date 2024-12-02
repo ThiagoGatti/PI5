@@ -112,8 +112,8 @@ fun TelaGraficos(navigateBack: () -> Unit) {
                 onClick = navigateBack,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                 modifier = Modifier
-                    .width(150.dp) // Largura do botão
-                    .height(45.dp) // Altura do botão
+                    .width(150.dp)
+                    .height(45.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
