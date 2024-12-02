@@ -1,12 +1,13 @@
 package br.com.analytics.educa.ui.menu
 
-
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.InsertChart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import br.com.analytics.educa.data.model.performLogout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.analytics.educa.data.model.performLogout
 
 @Composable
 fun Menu(
@@ -80,7 +81,6 @@ fun Menu(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Botão "Ver Gráficos"
             Button(
                 onClick = navigateToCharts,
                 modifier = Modifier
@@ -96,7 +96,7 @@ fun Menu(
                         .fillMaxSize()
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf(Color(0xFF6A1B9A), Color(0xFF283593))
+                                colors = listOf(Color(0xFF5D145B), Color(0xFF0D1B44))
                             ),
                             shape = RoundedCornerShape(12.dp)
                         ),
@@ -107,7 +107,7 @@ fun Menu(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Star,
+                            imageVector = Icons.Default.InsertChart, // Ícone de gráfico
                             contentDescription = "Ícone de gráfico",
                             tint = Color.White,
                             modifier = Modifier.size(20.dp)
@@ -124,6 +124,7 @@ fun Menu(
             }
         }
 
+        // Botão "Deslogar" no rodapé
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -147,7 +148,7 @@ fun Menu(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ExitToApp,
+                        imageVector = Icons.Default.ExitToApp, // Ícone de porta saindo
                         contentDescription = "Ícone de sair",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
