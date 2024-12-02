@@ -11,12 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import br.com.analytics.educa.data.retrofit.ApiService
-import br.com.analytics.educa.data.retrofit.RetrofitClient
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import br.com.analytics.educa.data.model.buscarFormsRespondidos
 
 @Composable
 fun MenuForm(
@@ -26,18 +21,19 @@ fun MenuForm(
     navigateBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
-    // Estado para armazenar formulários já respondidos
     var answeredForms by remember { mutableStateOf(setOf<String>()) }
 
-    // Buscar formulários já respondidos ao carregar a tela
     LaunchedEffect(userType, username) {
-        coroutineScope.launch {
-            fetchAnsweredForms(userType, username) { answered ->
+        buscarFormsRespondidos(
+            userType = userType,
+            login = username,
+            onResult = { answered ->
                 answeredForms = answered
+            },
+            onError = { errorMessage ->
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             }
-        }
+        )
     }
 
     Column(
@@ -88,29 +84,6 @@ fun MenuForm(
     }
 }
 
-// Função para buscar formulários já respondidos
-fun fetchAnsweredForms(
-    userType: String,
-    login: String,
-    onResult: (Set<String>) -> Unit
-) {
-    val apiService = RetrofitClient.createService(ApiService::class.java)
-    apiService.getAnsweredForms(userType, login).enqueue(object : Callback<List<String>> {
-        override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
-            if (response.isSuccessful) {
-                onResult(response.body()?.toSet() ?: emptySet())
-            } else {
-                onResult(emptySet())
-            }
-        }
-
-        override fun onFailure(call: Call<List<String>>, t: Throwable) {
-            onResult(emptySet())
-        }
-    })
-}
-
-// Função para retornar os formulários com base no tipo de usuário
 fun forms(userType: String): List<String> {
     return when (userType) {
         "ALUNO" -> listOf(
