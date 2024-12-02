@@ -92,7 +92,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(route = Route.telaGraficos) {
-                    TelaGraficos()
+                    TelaGraficos(navigateBack =  {
+                        navController.popBackStack()
+                    })
                 }
             }
         }
