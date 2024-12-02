@@ -47,7 +47,7 @@ fun Menu(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título
+
             Text(
                 text = "Menu",
                 style = MaterialTheme.typography.headlineMedium,
@@ -59,7 +59,6 @@ fun Menu(
                     .fillMaxWidth()
             )
 
-            // Botão "Formulários Avaliativos"
             if (userType != "DIRETOR") {
                 Button(
                     onClick = navigateToMenuForm,
@@ -89,7 +88,7 @@ fun Menu(
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues() // Remove padding interno padrão
+                contentPadding = PaddingValues()
             ) {
                 Box(
                     modifier = Modifier
@@ -107,7 +106,7 @@ fun Menu(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.InsertChart, // Ícone de gráfico
+                            imageVector = Icons.Default.InsertChart,
                             contentDescription = "Ícone de gráfico",
                             tint = Color.White,
                             modifier = Modifier.size(20.dp)
@@ -124,7 +123,8 @@ fun Menu(
             }
         }
 
-        // Botão "Deslogar" no rodapé
+        // botao de logout
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,7 +148,7 @@ fun Menu(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ExitToApp, // Ícone de porta saindo
+                        imageVector = Icons.Default.ExitToApp,
                         contentDescription = "Ícone de sair",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
