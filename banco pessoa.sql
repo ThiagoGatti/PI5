@@ -155,3 +155,12 @@ INSERT INTO usuario (login, senha) VALUES ('diretor123', SHA2('123', 256));
 
 INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
 VALUES ('diretor123', 'Carlos Almeida', '789.123.456-00', '1970-05-15', '(11) 98877-6655', 'DIRETOR', 1);
+
+-- Inserindo funcionário
+INSERT INTO usuario (login, senha) VALUES ('func123', SHA2('123', 256));
+
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
+VALUES ('func123', 'Ana Silva', '321.654.987-00', '1985-03-25', '(11) 97766-5544', 'FUNCIONARIO', 1);
+
+INSERT INTO funcionario (login, numero_funcionario, funcao, ausencias) 
+VALUES ('func123', 'FUNC456', 'Secretaria', 0);
