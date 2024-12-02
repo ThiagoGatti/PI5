@@ -113,7 +113,7 @@ fun Formulario(
                             .height(32.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(7.dp))
             }
 
             if (showError) {
