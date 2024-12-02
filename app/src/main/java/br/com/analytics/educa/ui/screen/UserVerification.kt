@@ -17,7 +17,7 @@ import br.com.analytics.educa.data.retrofit.ApiService
 import br.com.analytics.educa.data.retrofit.LoginRequest
 import br.com.analytics.educa.data.retrofit.LoginResponse
 import br.com.analytics.educa.data.retrofit.RetrofitClient
-import br.com.analytics.educa.ui.menu.performLogout
+import br.com.analytics.educa.data.model.performLogout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
