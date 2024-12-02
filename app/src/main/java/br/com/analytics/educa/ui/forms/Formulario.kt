@@ -36,6 +36,9 @@ fun Formulario(
     // Lembrar Respostas
     val answers = remember { mutableStateListOf(*Array(questions.size) { 0 }) }
 
+    // Estado para controlar mensagem de erro
+    var showError by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +85,6 @@ fun Formulario(
                 }
             }
 
-
             // Exibir perguntas com as estrelinhas
             itemsIndexed(questions) { index, question ->
                 Column(
@@ -113,19 +115,37 @@ fun Formulario(
                 }
             }
 
+            // Exibir mensagem de erro se necessário
+            if (showError) {
+                item {
+                    Text(
+                        text = "Por favor, responda todas as perguntas antes de enviar.",
+                        color = Color.White,
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
             // Botão para enviar respostas
             item {
                 Spacer(modifier = Modifier.height(16.dp)) // Espaçamento antes do botão
                 Button(
                     onClick = {
-                        val responseData = mutableMapOf<String, Int>()
-                        answers.forEachIndexed { index, answer ->
-                            responseData["q${index + 1}"] = answer
-                        }
+                        if (answers.contains(0)) {
+                            showError = true // Exibe mensagem de erro
+                        } else {
+                            val responseData = mutableMapOf<String, Int>()
+                            answers.forEachIndexed { index, answer ->
+                                responseData["q${index + 1}"] = answer
+                            }
 
-                        postForm(username, userType, formName, responseData)
-                        Toast.makeText(context, "Respostas enviadas.", Toast.LENGTH_LONG).show()
-                        navigateBack()
+                            postForm(username, userType, formName, responseData)
+                            Toast.makeText(context, "Respostas enviadas.", Toast.LENGTH_LONG).show()
+                            navigateBack()
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF6C3483),
@@ -147,6 +167,9 @@ fun Formulario(
         }
     }
 }
+
+
+
 
 fun retorna_perguntas(userType: String, form: String): List<String> {
     return when (userType) {
