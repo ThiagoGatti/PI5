@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -92,12 +94,21 @@ fun InitialScreen(
                     containerColor = Color(0xFF5D145B), // Cor de Fundo
                     contentColor = Color.White // Cor do Texto
                 )
+
             ) {
+                Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Ícone de login",
+                tint = Color.White,
+                modifier = Modifier.size(20.dp)
+            )
                 Text(
+
                     text = "Logar",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
+
             }
         }
     }
