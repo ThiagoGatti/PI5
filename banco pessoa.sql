@@ -100,8 +100,8 @@ SELECT * FROM respostas;
 DESCRIBE respostas;
 
 -- Adicionando mais usuários
-INSERT INTO usuario (login, senha) VALUES ('aluno456', SHA2('456', 256));
-INSERT INTO usuario (login, senha) VALUES ('aluno789', SHA2('789', 256));
+INSERT INTO usuario (login, senha) VALUES ('aluno456', SHA2('123', 256));
+INSERT INTO usuario (login, senha) VALUES ('aluno789', SHA2('123', 256));
 
 -- Adicionando mais escolas
 INSERT INTO escola (nome, endereco) 
