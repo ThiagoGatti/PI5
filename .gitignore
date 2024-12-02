@@ -11,3 +11,4 @@ gradle/libs.versions.toml
 gradle/libs.versions.toml
 local.properties
 *.properties
+local.properties
