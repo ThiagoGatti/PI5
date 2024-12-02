@@ -90,7 +90,7 @@ INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola
 VALUES ('aluno123', 'João Silva', '123.456.789-00', '2005-06-15', '(11) 91234-5678', 'ALUNO', 1);
 
 INSERT INTO aluno (login, matricula, turma, ausencias) 
-VALUES ('aluno123', '2023MATRICULA123', '3º Ano B', 2);
+VALUES ('aluno123', '2023MATRICULA123', '3B', 2);
 
 SELECT * FROM usuario;
 SELECT * FROM pessoa;
