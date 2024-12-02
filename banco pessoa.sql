@@ -24,26 +24,33 @@ CREATE TABLE pessoa (
     FOREIGN KEY (login) REFERENCES usuario(login) ON DELETE CASCADE
 );
 
+CREATE TABLE turmas (
+    sigla VARCHAR(2) NOT NULL,
+    materia VARCHAR(100) NOT NULL,
+    PRIMARY KEY (sigla, materia)
+);
+
 CREATE TABLE aluno (
-    login VARCHAR(50) NOT NULL PRIMARY KEY,
-    matricula VARCHAR(20) NOT NULL UNIQUE,
-    turma VARCHAR(50),
+    matricula INT AUTO_INCREMENT PRIMARY KEY,
+    login VARCHAR(50) NOT NULL UNIQUE,
+    turma VARCHAR(2),
     ausencias INT DEFAULT 0,
-    FOREIGN KEY (login) REFERENCES pessoa(login) ON DELETE CASCADE
+    FOREIGN KEY (login) REFERENCES pessoa(login) ON DELETE CASCADE,
+    FOREIGN KEY (turma) REFERENCES turmas(sigla) ON DELETE SET NULL
 );
 
 CREATE TABLE professor (
-    login VARCHAR(50) NOT NULL PRIMARY KEY,
-    numero_funcionario VARCHAR(20) NOT NULL UNIQUE,
-    funcao VARCHAR(50),
+    numero_professor INT AUTO_INCREMENT PRIMARY KEY,
+    login VARCHAR(50) NOT NULL UNIQUE,
+    materia VARCHAR(50),
     turmas TEXT,
     ausencias INT DEFAULT 0,
     FOREIGN KEY (login) REFERENCES pessoa(login) ON DELETE CASCADE
 );
 
 CREATE TABLE funcionario (
-    login VARCHAR(50) NOT NULL PRIMARY KEY,
-    numero_funcionario VARCHAR(20) NOT NULL UNIQUE,
+    numero_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+    login VARCHAR(50) NOT NULL UNIQUE,
     funcao VARCHAR(50),
     ausencias INT DEFAULT 0,
     FOREIGN KEY (login) REFERENCES pessoa(login) ON DELETE CASCADE
@@ -81,86 +88,44 @@ CREATE TABLE respostas (
     FOREIGN KEY (login_usuario) REFERENCES usuario(login) ON DELETE CASCADE
 );
 
-INSERT INTO usuario (login, senha) VALUES ('aluno123', SHA2('123', 256));
-
 INSERT INTO escola (nome, endereco) 
 VALUES ('Escola Estadual Modelo', 'Rua Principal, 123, Cidade Exemplo');
 
-INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
-VALUES ('aluno123', 'João Silva', '123.456.789-00', '2005-06-15', '(11) 91234-5678', 'ALUNO', 1);
+INSERT INTO turmas (sigla, materia) 
+VALUES 
+('3B', 'Matemática'),
+('3B', 'Português'),
+('3B', 'História'),
+('3B', 'Ciências'),
+('2A', 'Matemática'),
+('2A', 'História'),
+('1C', 'Ciências');
 
-INSERT INTO aluno (login, matricula, turma, ausencias) 
-VALUES ('aluno123', '2023MATRICULA123', '3B', 2);
+INSERT INTO usuario (login, senha) VALUES 
+('aluno123', SHA2('123', 256)),
+('prof123', SHA2('123', 256)),
+('diretor123', SHA2('123', 256)),
+('func123', SHA2('123', 256));
 
-SELECT * FROM usuario;
-SELECT * FROM pessoa;
-SELECT * FROM aluno;
-SELECT * FROM respostas;
-
-DESCRIBE respostas;
-
--- Adicionando mais usuários
-INSERT INTO usuario (login, senha) VALUES ('aluno456', SHA2('123', 256));
-INSERT INTO usuario (login, senha) VALUES ('aluno789', SHA2('123', 256));
-
--- Adicionando mais escolas
-INSERT INTO escola (nome, endereco) 
-VALUES ('Escola Municipal Aprender', 'Rua Secundária, 45, Cidade Exemplo'),
-       ('Escola Técnica Saber', 'Avenida Central, 321, Cidade Exemplo');
-
--- Adicionando mais pessoas (alunos)
 INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
 VALUES 
-('aluno456', 'Maria Oliveira', '987.654.321-00', '2004-09-10', '(11) 99876-5432', 'ALUNO', 2),
-('aluno789', 'Carlos Santos', '654.321.987-00', '2003-11-20', '(11) 91234-8765', 'ALUNO', 3);
+('aluno123', 'João Silva', '123.456.789-00', '2005-06-15', '(11) 91234-5678', 'ALUNO', 1),
+('prof123', 'Maria Santos', '456.789.123-00', '1980-08-20', '(11) 99988-7766', 'PROFESSOR', 1),
+('diretor123', 'Carlos Almeida', '789.123.456-00', '1970-05-15', '(11) 98877-6655', 'DIRETOR', 1),
+('func123', 'Ana Silva', '321.654.987-00', '1985-03-25', '(11) 97766-5544', 'FUNCIONARIO', 1);
 
--- Adicionando mais alunos
-INSERT INTO aluno (login, matricula, turma, ausencias) 
-VALUES 
-('aluno456', '2023MATRICULA456', '2A', 1),
-('aluno789', '2023MATRICULA789', '1C', 3);
+INSERT INTO aluno (login, turma, ausencias) 
+VALUES ('aluno123', '3B', 2);
 
--- Adicionando registros ao boletim
+INSERT INTO professor (login, materia, turmas, ausencias) 
+VALUES ('prof123', 'Matemática', '3B,2A', 0);
+
+INSERT INTO funcionario (login, funcao, ausencias) 
+VALUES ('func123', 'Secretaria', 0);
+
 INSERT INTO boletim (login_aluno, materia, nota, presenca) 
 VALUES 
--- Notas e presenças de João Silva
-('aluno123', 'Matemática', 8.5, 95),
-('aluno123', 'Português', 7.0, 90),
-('aluno123', 'História', 9.0, 98),
-('aluno123', 'Ciências', 6.5, 85),
-
--- Notas e presenças de Maria Oliveira
-('aluno456', 'Matemática', 7.5, 88),
-('aluno456', 'Português', 8.0, 92),
-('aluno456', 'História', 7.8, 89),
-('aluno456', 'Ciências', 6.0, 80),
-
--- Notas e presenças de Carlos Santos
-('aluno789', 'Matemática', 9.0, 99),
-('aluno789', 'Português', 8.5, 95),
-('aluno789', 'História', 7.0, 87),
-('aluno789', 'Ciências', 8.2, 93);
-
--- Inserindo professor
-INSERT INTO usuario (login, senha) VALUES ('prof123', SHA2('123', 256));
-
-INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
-VALUES ('prof123', 'Maria Santos', '456.789.123-00', '1980-08-20', '(11) 99988-7766', 'PROFESSOR', 1);
-
-INSERT INTO professor (login, numero_funcionario, funcao, turmas, ausencias) 
-VALUES ('prof123', 'FUNC123', 'Ensino Médio', '3B, 2A', 0);
-
--- Inserindo diretor
-INSERT INTO usuario (login, senha) VALUES ('diretor123', SHA2('123', 256));
-
-INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
-VALUES ('diretor123', 'Carlos Almeida', '789.123.456-00', '1970-05-15', '(11) 98877-6655', 'DIRETOR', 1);
-
--- Inserindo funcionário
-INSERT INTO usuario (login, senha) VALUES ('func123', SHA2('123', 256));
-
-INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
-VALUES ('func123', 'Ana Silva', '321.654.987-00', '1985-03-25', '(11) 97766-5544', 'FUNCIONARIO', 1);
-
-INSERT INTO funcionario (login, numero_funcionario, funcao, ausencias) 
-VALUES ('func123', 'FUNC456', 'Secretaria', 0);
+('aluno123', 'Matemática', 8.5, 95.0),
+('aluno123', 'Português', 7.0, 90.0),
+('aluno123', 'História', 9.0, 98.0),
+('aluno123', 'Ciências', 6.5, 85.0);
