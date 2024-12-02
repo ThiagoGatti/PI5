@@ -1,11 +1,11 @@
 package br.com.analytics.educa.ui.menu
 
-import android.content.Context
-import android.widget.Toast
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import br.com.analytics.educa.data.model.performLogout
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -26,78 +29,138 @@ fun Menu(
 ) {
     val context = LocalContext.current
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(64.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))
+                )
+            )
+            .padding(16.dp)
     ) {
-        Text(text = "Menu", fontSize = 24.sp, color = Color.Black)
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Título
+            Text(
+                text = "Menu",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 32.dp)
+                    .fillMaxWidth()
+            )
 
-        if (userType == "DIRETOR") {
-            TODO()
-        } else {
+            // Botão "Formulários Avaliativos"
+            if (userType != "DIRETOR") {
+                Button(
+                    onClick = navigateToMenuForm,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Formulários Avaliativos",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botão "Ver Gráficos"
             Button(
-                onClick = navigateToMenuForm,
-                modifier = Modifier.fillMaxWidth()
+                onClick = navigateToCharts,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues() // Remove padding interno padrão
             ) {
-                Text("Formulários Avaliativos")
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(Color(0xFF6A1B9A), Color(0xFF283593))
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Ícone de gráfico",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Ver Gráficos",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = navigateToCharts,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(Color(0xFF6A1B9A), Color(0xFF283593))
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-            shape = RoundedCornerShape(16.dp)
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 40.dp),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+            Button(
+                onClick = {
+                    performLogout(context)
+                    navigateToInitialScreen()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .width(150.dp)
+                    .height(45.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "Ícone de gráfico",
-                    tint = Color.White
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Ver Gráficos",
-                    color = Color.White,
-                    fontSize = 16.sp
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ExitToApp,
+                        contentDescription = "Ícone de sair",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Deslogar",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                performLogout(context)
-                navigateToInitialScreen()
-            },
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            Text("Deslogar")
-        }
     }
-}
-
-fun performLogout(context: Context) {
-    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-    sharedPreferences.edit().clear().apply()
-
-    Toast.makeText(context, "Usuário deslogado!", Toast.LENGTH_SHORT).show()
 }
