@@ -62,11 +62,12 @@ class MainActivity : ComponentActivity() {
                                 popUpTo(0) { inclusive = true }
                             }
                         },
-                        navigateToNotasAluno = { Route.telaBoletim },
-                        navigateToNotasProfessor = { Route.telaEnviarNotas },
-                        navigateToUsuariosDiretor = { Route.telaPessoas },
-                        navigateToPerfil = { Route.telaPerfil }
+                        navigateToNotas = { navController.navigate("${Route.telaNotas}/$username") },
+                        navigateToEnviarNotas = { navController.navigate("${Route.telaEnviarNotas}/$username") },
+                        navigateToManejarUsuarios = { navController.navigate(Route.telaManejarUsuarios) },
+                        navigateToDadosPessoais = { navController.navigate(Route.telaDadosPessoais) }
                     )
+
                 }
 
                 composable(route = "${Route.menuForm}/{userType}/{username}") { backStackEntry ->
@@ -94,6 +95,35 @@ class MainActivity : ComponentActivity() {
                         navigateBack = { navController.popBackStack() }
                     )
                 }
+
+                composable(route = "${Route.telaEnviarNotas}/{username}") { backStackEntry ->
+                    val username = backStackEntry.arguments?.getString("username").toString()
+                    EnviarNotasScreen(
+                        navigateBack = { navController.popBackStack() },
+                        turmas = listOf("Turma 1", "Turma 2", "Turma 3"),
+                        getAlunosByTurma = { turma ->
+                            when (turma) {
+                                "Turma 1" -> listOf("Aluno 1", "Aluno 2", "Aluno 3")
+                                "Turma 2" -> listOf("Aluno 4", "Aluno 5", "Aluno 6")
+                                "Turma 3" -> listOf("Aluno 7", "Aluno 8", "Aluno 9")
+                                else -> emptyList()
+                            }
+                        },
+                        enviarNotaEFrequencia = { turma, aluno, nota, frequencia ->
+                            // Lógica para enviar os dados
+                            println("Enviando para $aluno da $turma: Nota = $nota, Frequência = $frequencia")
+                        }
+                    )
+                }
+
+
+                composable(route = "${Route.telaNotas}/{username}") { backStackEntry ->
+                    val username = backStackEntry.arguments?.getString("username").toString()
+                    NotasScreen(
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+
 
                 composable(route = Route.telaGraficos) {
                     TelaGraficos(navigateBack =  {

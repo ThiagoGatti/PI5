@@ -25,10 +25,10 @@ fun Menu(
     navigateToMenuForm: () -> Unit,
     navigateToCharts: () -> Unit,
     navigateToInitialScreen: () -> Unit,
-    navigateToNotasAluno: () -> Unit,
-    navigateToNotasProfessor: () -> Unit,
-    navigateToUsuariosDiretor: () -> Unit,
-    navigateToPerfil: () -> Unit
+    navigateToNotas: () -> Unit,
+    navigateToEnviarNotas: () -> Unit,
+    navigateToManejarUsuarios: () -> Unit,
+    navigateToDadosPessoais: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -106,7 +106,7 @@ fun Menu(
 
             if (userType == "DIRETOR") {
                 Button(
-                    onClick = navigateToUsuariosDiretor,
+                    onClick = navigateToManejarUsuarios,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
@@ -143,7 +143,7 @@ fun Menu(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = navigateToPerfil,
+                onClick = navigateToDadosPessoais,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
@@ -165,8 +165,8 @@ fun Menu(
                 Button(
                     onClick = {
                         when (userType) {
-                            "ALUNO" -> navigateToNotasAluno()
-                            "PROFESSOR" -> navigateToNotasProfessor()
+                            "ALUNO" -> navigateToNotas()
+                            "PROFESSOR" -> navigateToEnviarNotas()
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),

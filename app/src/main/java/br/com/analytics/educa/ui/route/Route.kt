@@ -10,9 +10,15 @@ object Route {
 
     const val formulario = "formulario"
 
-    const val telaPerfil = "telaPerfil"
-    const val telaBoletim = "boletim"
+
+
+    const val telaDadosPessoais = "telaDadosPessoais"
+
+    const val telaNotas = "telaNotas"
+
     const val telaEnviarNotas = "telaEnviarNotas"
-    const val telaPessoas = "telaPessoas"
+
+    const val telaManejarUsuarios = "telaManejarUsuarios"
+
     const val telaGraficos = "telaGraficos"
 }
