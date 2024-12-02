@@ -86,7 +86,7 @@ fun InitialScreen(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
                     .height(50.dp),
-                        
+
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF5D145B), // Cor de Fundo
