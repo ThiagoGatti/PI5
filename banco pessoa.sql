@@ -98,3 +98,45 @@ SELECT * FROM aluno;
 SELECT * FROM respostas;
 
 DESCRIBE respostas;
+
+-- Adicionando mais usuários
+INSERT INTO usuario (login, senha) VALUES ('aluno456', SHA2('456', 256));
+INSERT INTO usuario (login, senha) VALUES ('aluno789', SHA2('789', 256));
+
+-- Adicionando mais escolas
+INSERT INTO escola (nome, endereco) 
+VALUES ('Escola Municipal Aprender', 'Rua Secundária, 45, Cidade Exemplo'),
+       ('Escola Técnica Saber', 'Avenida Central, 321, Cidade Exemplo');
+
+-- Adicionando mais pessoas (alunos)
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
+VALUES 
+('aluno456', 'Maria Oliveira', '987.654.321-00', '2004-09-10', '(11) 99876-5432', 'ALUNO', 2),
+('aluno789', 'Carlos Santos', '654.321.987-00', '2003-11-20', '(11) 91234-8765', 'ALUNO', 3);
+
+-- Adicionando mais alunos
+INSERT INTO aluno (login, matricula, turma, ausencias) 
+VALUES 
+('aluno456', '2023MATRICULA456', '2A', 1),
+('aluno789', '2023MATRICULA789', '1C', 3);
+
+-- Adicionando registros ao boletim
+INSERT INTO boletim (login_aluno, materia, nota, presenca) 
+VALUES 
+-- Notas e presenças de João Silva
+('aluno123', 'Matemática', 8.5, 95),
+('aluno123', 'Português', 7.0, 90),
+('aluno123', 'História', 9.0, 98),
+('aluno123', 'Ciências', 6.5, 85),
+
+-- Notas e presenças de Maria Oliveira
+('aluno456', 'Matemática', 7.5, 88),
+('aluno456', 'Português', 8.0, 92),
+('aluno456', 'História', 7.8, 89),
+('aluno456', 'Ciências', 6.0, 80),
+
+-- Notas e presenças de Carlos Santos
+('aluno789', 'Matemática', 9.0, 99),
+('aluno789', 'Português', 8.5, 95),
+('aluno789', 'História', 7.0, 87),
+('aluno789', 'Ciências', 8.2, 93);

@@ -16,6 +16,5 @@ object Route {
     const val telaBoletim = "boletim"
     const val telaEnviarNotas = "telaEnviarNotas"
 
-
-    
+    const val telaGraficos = "telaGraficos"
 }

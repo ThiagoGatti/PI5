@@ -56,6 +56,7 @@ class MainActivity : ComponentActivity() {
                         navigateToMenuForm = {
                             navController.navigate("${Route.menuForm}/$userType/$username")
                         },
+                        navigateToCharts = { navController.navigate(Route.telaGraficos) },
                         navigateToInitialScreen = {
                             navController.navigate(Route.initialScreen) {
                                 popUpTo(0) { inclusive = true }
@@ -88,6 +89,10 @@ class MainActivity : ComponentActivity() {
                         formName = formName,
                         navigateBack = { navController.popBackStack() }
                     )
+                }
+
+                composable(route = Route.telaGraficos) {
+                    TelaGraficos()
                 }
             }
         }
