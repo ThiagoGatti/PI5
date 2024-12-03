@@ -107,5 +107,6 @@ fun autenticarUsuario(
         override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
             onFailure("Falha na conexão: ${t.message}")
         }
-    })
+    }
+    )
 }
