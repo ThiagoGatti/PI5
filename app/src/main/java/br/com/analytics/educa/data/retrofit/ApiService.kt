@@ -54,6 +54,6 @@ data class ApiResponse(
 
 data class SchoolPerformance(
     val materia: String,
-    val media_nota: Double,
-    val media_presenca: Double
+    val media_nota: Float,
+    val media_presenca: Float
 )
