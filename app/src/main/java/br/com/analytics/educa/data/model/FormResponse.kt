@@ -123,3 +123,17 @@ fun agruparRespostasPorTipoPessoa(respostas: List<ResponseBySchool>): Map<String
         }
     }
 }
+
+fun calcularMediaGeralPorTipoPessoa(agrupamento: Map<String, Map<String, Map<String, Float>>>): Map<String, Float> {
+    val mediasPorTipoPessoa = mutableMapOf<String, Float>()
+
+    agrupamento.forEach { (tipoPessoa, formularios) ->
+        val totalNotas = formularios.values.flatMap { it.values }.sum()
+        val totalPerguntas = formularios.values.flatMap { it.values }.size
+        val media = if (totalPerguntas > 0) totalNotas / totalPerguntas else 0f
+
+        mediasPorTipoPessoa[tipoPessoa] = media
+    }
+
+    return mediasPorTipoPessoa
+}
