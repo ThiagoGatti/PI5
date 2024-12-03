@@ -93,24 +93,33 @@ fun buscarRespostasPorEscola(
     )
 }
 
-fun agruparRespostas(respostas: List<ResponseBySchool>): Map<String, Map<String, Float>> {
-    val agrupamento = mutableMapOf<String, MutableMap<String, MutableList<Int>>>()
+fun agruparRespostasPorTipoPessoa(respostas: List<ResponseBySchool>): Map<String, Map<String, Map<String, Float>>> {
+    val agrupamento = mutableMapOf<String, MutableMap<String, MutableMap<String, MutableList<Int>>>>()
 
     respostas.forEach { resposta ->
+        val tipoPessoa = resposta.tipo_usuario
+        val formulario = resposta.nome_formulario
+
+        if (!agrupamento.containsKey(tipoPessoa)) {
+            agrupamento[tipoPessoa] = mutableMapOf()
+        }
+        if (!agrupamento[tipoPessoa]!!.containsKey(formulario)) {
+            agrupamento[tipoPessoa]!![formulario] = mutableMapOf()
+        }
+
         resposta.respostas.forEach { (pergunta, valor) ->
-            if (!agrupamento.containsKey(resposta.nome_formulario)) {
-                agrupamento[resposta.nome_formulario] = mutableMapOf()
+            if (!agrupamento[tipoPessoa]!![formulario]!!.containsKey(pergunta)) {
+                agrupamento[tipoPessoa]!![formulario]!![pergunta] = mutableListOf()
             }
-            if (!agrupamento[resposta.nome_formulario]!!.containsKey(pergunta)) {
-                agrupamento[resposta.nome_formulario]!![pergunta] = mutableListOf()
-            }
-            agrupamento[resposta.nome_formulario]!![pergunta]!!.add(valor)
+            agrupamento[tipoPessoa]!![formulario]!![pergunta]!!.add(valor)
         }
     }
 
-    return agrupamento.mapValues { (_, perguntas) ->
-        perguntas.mapValues { (_, valores) ->
-            valores.average().toFloat()
+    return agrupamento.mapValues { (_, formularios) ->
+        formularios.mapValues { (_, perguntas) ->
+            perguntas.mapValues { (_, valores) ->
+                valores.average().toFloat()
+            }
         }
     }
 }

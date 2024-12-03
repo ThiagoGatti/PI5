@@ -5,6 +5,7 @@ import android.widget.LinearLayout
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,6 +20,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.utils.ColorTemplate
 
 @Composable
 fun GraficoBarraRespostas(agrupamento: Map<String, Map<String, Float>>) {
@@ -108,4 +114,44 @@ fun GraficoLinhaTendencias(agrupamento: Map<String, Map<String, Float>>, pergunt
             .height(400.dp)
             .padding(16.dp)
     )
+}
+
+@Composable
+fun GraficoPizza(
+    dados: Map<String, Float>,
+    titulo: String
+) {
+    val total = dados.values.sum()
+    val porcentagens = dados.mapValues { (it.value / total) * 100 }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = titulo,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        AndroidView(
+            factory = { context ->
+                PieChart(context).apply {
+                    val entries = porcentagens.map { (tipoPessoa, porcentagem) ->
+                        PieEntry(porcentagem, tipoPessoa)
+                    }
+                    val dataSet = PieDataSet(entries, "Tipos de Pessoas").apply {
+                        colors = ColorTemplate.MATERIAL_COLORS.toList()
+                    }
+                    this.data = PieData(dataSet)
+                    this.description.text = ""
+                    this.invalidate()
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
+        )
+    }
 }

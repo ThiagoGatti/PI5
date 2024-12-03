@@ -59,10 +59,10 @@ data class ApiResponse(
 )
 
 data class ResponseBySchool(
+    val tipo_usuario: String,
     val nome_formulario: String,
     val respostas: Map<String, Int>
 )
-
 
 data class SchoolPerformance(
     val materia: String,

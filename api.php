@@ -66,7 +66,6 @@ if ($method === 'GET' && isset($_GET['action'])) {
             exit;
         }
     
-        // Buscar o ID da escola pelo login do usuário
         $stmt = $conn->prepare("
             SELECT id_escola 
             FROM pessoa 
@@ -84,9 +83,9 @@ if ($method === 'GET' && isset($_GET['action'])) {
     
         $id_escola = $result->fetch_assoc()['id_escola'];
     
-        // Buscar as respostas dos usuários da mesma escola
         $stmt = $conn->prepare("
             SELECT 
+                pessoa.tipo AS tipo_usuario,
                 respostas.nome_formulario,
                 respostas.q1, respostas.q2, respostas.q3, respostas.q4, respostas.q5,
                 respostas.q6, respostas.q7, respostas.q8, respostas.q9, respostas.q10,
@@ -103,12 +102,13 @@ if ($method === 'GET' && isset($_GET['action'])) {
         while ($row = $result->fetch_assoc()) {
             $filteredResponses = [];
             foreach ($row as $question => $value) {
-                if ($question !== 'nome_formulario' && $value > 0) {
+                if (!in_array($question, ['nome_formulario', 'tipo_usuario']) && $value > 0) {
                     $filteredResponses[$question] = $value;
                 }
             }
             if (!empty($filteredResponses)) {
                 $responses[] = [
+                    'tipo_usuario' => $row['tipo_usuario'],
                     'nome_formulario' => $row['nome_formulario'],
                     'respostas' => $filteredResponses
                 ];
@@ -117,7 +117,8 @@ if ($method === 'GET' && isset($_GET['action'])) {
     
         echo json_encode($responses);
         exit;
-    } else {
+    }
+     else {
         http_response_code(400);
         echo json_encode(["success" => false, "message" => "Ação inválida ou parâmetros ausentes"]);
         exit;
