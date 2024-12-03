@@ -127,7 +127,8 @@ class MainActivity : ComponentActivity() {
 
                 composable(route = "${Route.telaGraficos}/{username}") { backStackEntry ->
                     val username = backStackEntry.arguments?.getString("username").toString()
-                    TelaGraficos(username,
+                    TelaGraficos(
+                        username = username,
                         navigateBack =  {
                         navController.popBackStack()
                     })
