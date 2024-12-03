@@ -40,13 +40,18 @@ fun GraficoBarraMediaFormularios(
             factory = { context ->
                 BarChart(context).apply {
                     val entries = medias.entries.mapIndexed { index, (formulario, media) ->
-                        BarEntry(index.toFloat(), media)
+                        BarEntry(index.toFloat(), String.format("%.1f", media).toFloat())
                     }
 
                     val dataSet = BarDataSet(entries, "Médias").apply {
                         setColors(*ColorTemplate.COLORFUL_COLORS)
                         valueTextColor = Color.WHITE
                         valueTextSize = 12f
+                        valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                            override fun getFormattedValue(value: Float): String {
+                                return String.format("%.1f", value) // Formata os valores exibidos
+                            }
+                        }
                     }
 
                     this.data = BarData(dataSet)
