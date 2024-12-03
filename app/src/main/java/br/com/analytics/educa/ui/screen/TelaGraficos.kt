@@ -34,7 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun TelaGraficos(username, navigateBack: () -> Unit) {
+fun TelaGraficos(username: String, navigateBack: () -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var schoolPerformance by remember { mutableStateOf<List<SchoolPerformance>>(emptyList()) }
@@ -81,7 +81,7 @@ fun TelaGraficos(username, navigateBack: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Desempenho Escolar",
+                text = "Desempenho Escolar $username",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = androidx.compose.ui.graphics.Color.White,
