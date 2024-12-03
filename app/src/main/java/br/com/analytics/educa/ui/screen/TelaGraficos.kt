@@ -34,7 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun TelaGraficos(navigateBack: () -> Unit) {
+fun TelaGraficos(username, navigateBack: () -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var schoolPerformance by remember { mutableStateOf<List<SchoolPerformance>>(emptyList()) }

@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                         navigateToMenuForm = {
                             navController.navigate("${Route.menuForm}/$userType/$username")
                         },
-                        navigateToCharts = { navController.navigate(Route.telaGraficos) },
+                        navigateToCharts = { navController.navigate("${Route.telaGraficos}/$username") },
                         navigateToInitialScreen = {
                             navController.navigate(Route.initialScreen) {
                                 popUpTo(0) { inclusive = true }
@@ -125,8 +125,10 @@ class MainActivity : ComponentActivity() {
                 }
 
 
-                composable(route = Route.telaGraficos) {
-                    TelaGraficos(navigateBack =  {
+                composable(route = "${Route.telaGraficos}/{username}") { backStackEntry ->
+                    val username = backStackEntry.arguments?.getString("username").toString()
+                    TelaGraficos(username,
+                        navigateBack =  {
                         navController.popBackStack()
                     })
                 }

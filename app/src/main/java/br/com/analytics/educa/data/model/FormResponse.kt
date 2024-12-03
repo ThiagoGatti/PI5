@@ -2,6 +2,7 @@ package br.com.analytics.educa.data.model
 
 import br.com.analytics.educa.data.retrofit.ApiResponse
 import br.com.analytics.educa.data.retrofit.ApiService
+import br.com.analytics.educa.data.retrofit.ResponseBySchool
 import br.com.analytics.educa.data.retrofit.ResponseRequest
 import br.com.analytics.educa.data.retrofit.RetrofitClient
 import retrofit2.Call
@@ -59,6 +60,33 @@ fun buscarFormsRespondidos(
             val errorMessage = t.localizedMessage ?: "Falha na conexão"
             onError("Falha ao buscar formulários: $errorMessage")
             onResult(emptySet())
+        }
+    })
+}
+
+fun buscarRespostasPorEscola(
+    login: String,
+    onResult: (List<ResponseBySchool>) -> Unit,
+    onError: (String) -> Unit = {}
+) {
+    val apiService = RetrofitClient.createService(ApiService::class.java)
+    apiService.getResponsesBySchool(login = login).enqueue(object : Callback<List<ResponseBySchool>> {
+        override fun onResponse(
+            call: Call<List<ResponseBySchool>>,
+            response: Response<List<ResponseBySchool>>
+        ) {
+            if (response.isSuccessful) {
+                val responses = response.body() ?: emptyList()
+                onResult(responses)
+            } else {
+                val errorMessage = response.errorBody()?.string() ?: "Erro desconhecido"
+                onError("Erro na resposta: $errorMessage")
+            }
+        }
+
+        override fun onFailure(call: Call<List<ResponseBySchool>>, t: Throwable) {
+            val errorMessage = t.localizedMessage ?: "Falha na conexão"
+            onError("Falha ao buscar respostas: $errorMessage")
         }
     })
 }

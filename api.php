@@ -57,6 +57,66 @@ if ($method === 'GET' && isset($_GET['action'])) {
 
         echo json_encode($performance);
         exit;
+    } elseif ($method === 'GET' && $action === 'getResponsesBySchool') {
+        $login = $_GET['login'] ?? null;
+    
+        if (!$login) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "Login do usuário é obrigatório"]);
+            exit;
+        }
+    
+        // Buscar o ID da escola pelo login do usuário
+        $stmt = $conn->prepare("
+            SELECT id_escola 
+            FROM pessoa 
+            WHERE login = ?
+        ");
+        $stmt->bind_param("s", $login);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows === 0) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "message" => "Usuário não encontrado"]);
+            exit;
+        }
+    
+        $id_escola = $result->fetch_assoc()['id_escola'];
+    
+        // Buscar as respostas dos usuários da mesma escola
+        $stmt = $conn->prepare("
+            SELECT 
+                respostas.nome_formulario,
+                respostas.q1, respostas.q2, respostas.q3, respostas.q4, respostas.q5,
+                respostas.q6, respostas.q7, respostas.q8, respostas.q9, respostas.q10,
+                respostas.q11, respostas.q12, respostas.q13, respostas.q14, respostas.q15
+            FROM respostas
+            INNER JOIN pessoa ON respostas.login_usuario = pessoa.login
+            WHERE pessoa.id_escola = ?
+        ");
+        $stmt->bind_param("i", $id_escola);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $responses = [];
+        while ($row = $result->fetch_assoc()) {
+            $filteredResponses = [];
+            foreach ($row as $question => $value) {
+                if ($question !== 'nome_formulario' && $value > 0) {
+                    $filteredResponses[$question] = $value;
+                }
+            }
+            if (!empty($filteredResponses)) {
+                $responses[] = [
+                    'nome_formulario' => $row['nome_formulario'],
+                    'respostas' => $filteredResponses
+                ];
+            }
+        }
+    
+        echo json_encode($responses);
+        exit;
     } else {
         http_response_code(400);
         echo json_encode(["success" => false, "message" => "Ação inválida ou parâmetros ausentes"]);

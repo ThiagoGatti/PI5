@@ -21,6 +21,12 @@ interface ApiService {
     fun enviarRespostas(@Body responseRequest: ResponseRequest): Call<ApiResponse>
 
     @GET("api.php")
+    fun getResponsesBySchool(
+        @Query("action") action: String = "getResponsesBySchool",
+        @Query("login") login: String
+    ): Call<List<ResponseBySchool>>
+
+    @GET("api.php")
     fun getSchoolPerformance(
         @Query("action") action: String = "schoolPerformance"
     ): Call<List<SchoolPerformance>>
@@ -51,6 +57,12 @@ data class ApiResponse(
     val success: Boolean,
     val message: String
 )
+
+data class ResponseBySchool(
+    val nome_formulario: String,
+    val respostas: Map<String, Int>
+)
+
 
 data class SchoolPerformance(
     val materia: String,
