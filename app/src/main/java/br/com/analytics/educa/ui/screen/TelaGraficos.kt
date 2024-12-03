@@ -10,50 +10,87 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import br.com.analytics.educa.data.model.agruparRespostasPorTipoPessoa
 import br.com.analytics.educa.data.model.buscarRespostasPorEscola
 import br.com.analytics.educa.data.retrofit.ResponseBySchool
-import br.com.analytics.educa.ui.component.GraficoBarraRespostasPorFormulario
+import br.com.analytics.educa.ui.component.GraficoBarraMediaFormularios
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun TelaGraficos(
     username: String,
+    userType: String,
+    navigateBack: () -> Unit
+) {
+    // Estado principal para reloading da tela
+    var filtroTipoUsuario by remember { mutableStateOf(userType) }
+    var reloadKey by remember { mutableStateOf(0) } // Chave para forçar recomposição
+
+    // Recarrega a tela quando `reloadKey` muda
+    LaunchedEffect(reloadKey) {
+        // Não faz nada diretamente, só força a recomposição da tela
+    }
+
+    TelaGraficosInterna(
+        username = username,
+        tipoSelecionado = filtroTipoUsuario,
+        onTipoUsuarioChange = { novoTipo ->
+            filtroTipoUsuario = novoTipo
+            reloadKey++ // Força a recomposição
+        },
+        navigateBack = navigateBack
+    )
+}
+
+@Composable
+private fun TelaGraficosInterna(
+    username: String,
+    tipoSelecionado: String,
+    onTipoUsuarioChange: (String) -> Unit,
     navigateBack: () -> Unit
 ) {
     var respostasPorEscola by remember { mutableStateOf<List<ResponseBySchool>>(emptyList()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var formularioSelecionado by remember { mutableStateOf("") }
-    var formulariosDisponiveis by remember { mutableStateOf(emptyList<String>()) }
+    var tiposDeUsuario by remember { mutableStateOf(listOf(tipoSelecionado)) }
+    var agrupamentoMedias by remember { mutableStateOf<Map<String, Float>>(emptyMap()) }
+    var isLoading by remember { mutableStateOf(true) }
     var dropdownExpanded by remember { mutableStateOf(false) }
 
     // Busca dados ao iniciar
-    LaunchedEffect(Unit) {
+    LaunchedEffect(tipoSelecionado) {
+        isLoading = true
         buscarRespostasPorEscola(
             login = username,
             onResult = { respostas ->
                 respostasPorEscola = respostas
-                formulariosDisponiveis = respostas.map { it.nome_formulario }.distinct()
-                if (formulariosDisponiveis.isNotEmpty()) {
-                    formularioSelecionado = formulariosDisponiveis.first()
+                tiposDeUsuario = respostas.map { it.tipo_usuario }.distinct()
+                atualizarMedias(respostas, tipoSelecionado) { medias ->
+                    agrupamentoMedias = medias
                 }
+                isLoading = false
             },
             onError = { error ->
                 errorMessage = error
+                isLoading = false
             }
         )
     }
 
-    // Agrupando os dados
-    val agrupamento = if (respostasPorEscola.isNotEmpty()) {
-        respostasPorEscola
-            .groupBy { it.nome_formulario }
-            .mapValues { (_, respostas) ->
-                respostas.flatMap { it.respostas.entries }
-                    .groupBy({ it.key }, { it.value.toFloat() })
-                    .mapValues { (_, valores) -> valores.average().toFloat() }
-            }
-    } else {
-        emptyMap()
+    // Detecta a orientação da tela
+    val configuration = LocalConfiguration.current
+    val alignment = remember(configuration.orientation) {
+        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Alignment.TopEnd
+        } else {
+            Alignment.BottomCenter
+        }
+    }
+    val paddingValues = remember(configuration.orientation) {
+        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Modifier.padding(16.dp)
+        } else {
+            Modifier.padding(16.dp, 0.dp, 16.dp, 200.dp)
+        }
     }
 
     Box(
@@ -85,25 +122,34 @@ fun TelaGraficos(
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(16.dp)
                 )
-            } else if (agrupamento.isNotEmpty() && formulariosDisponiveis.isNotEmpty()) {
-                // Lista suspensa para selecionar o formulário
+            } else if (isLoading) {
+                Text(
+                    text = "Carregando dados...",
+                    color = Color.White,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else if (respostasPorEscola.isNotEmpty()) {
+                // Lista suspensa para selecionar o tipo de usuário
                 Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                     OutlinedButton(
-                        onClick = { dropdownExpanded = true },
+                        onClick = { dropdownExpanded = !dropdownExpanded },
                         colors = ButtonDefaults.outlinedButtonColors(containerColor = Color(0xFF9752E7))
                     ) {
-                        Text(text = formularioSelecionado.ifEmpty { "Selecione um formulário" }, color = Color.White)
+                        Text(
+                            text = tipoSelecionado.ifEmpty { "Selecione um tipo de usuário" },
+                            color = Color.White
+                        )
                     }
 
                     DropdownMenu(
                         expanded = dropdownExpanded,
                         onDismissRequest = { dropdownExpanded = false }
                     ) {
-                        formulariosDisponiveis.forEach { formulario ->
+                        tiposDeUsuario.forEach { tipo ->
                             DropdownMenuItem(
-                                text = { Text(formulario, color = Color.Black) },
+                                text = { Text(tipo, color = Color.Black) },
                                 onClick = {
-                                    formularioSelecionado = formulario
+                                    onTipoUsuarioChange(tipo) // Notifica o novo tipo
                                     dropdownExpanded = false
                                 }
                             )
@@ -111,29 +157,42 @@ fun TelaGraficos(
                     }
                 }
 
-                if (formularioSelecionado.isNotEmpty() && agrupamento.containsKey(formularioSelecionado)) {
-                    GraficoBarraRespostasPorFormulario(
-                        agrupamento = agrupamento,
-                        formularioSelecionado = formularioSelecionado
+                if (agrupamentoMedias.isNotEmpty()) {
+                    GraficoBarraMediaFormularios(
+                        medias = agrupamentoMedias
+                    )
+                } else {
+                    Text(
+                        text = "Nenhum dado disponível para este tipo de usuário.",
+                        color = Color.White,
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
-            } else {
-                Text(
-                    text = "Carregando dados...",
-                    color = Color.White,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-
-            Button(
-                onClick = navigateBack,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(16.dp)
-            ) {
-                Text("Voltar", color = Color.White)
             }
         }
+
+        Button(
+            onClick = navigateBack,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
+            modifier = paddingValues.align(alignment)
+        ) {
+            Text("Voltar", color = Color.White)
+        }
     }
+}
+
+private fun atualizarMedias(
+    respostas: List<ResponseBySchool>,
+    tipoSelecionado: String,
+    onResult: (Map<String, Float>) -> Unit
+) {
+    val medias = respostas
+        .filter { it.tipo_usuario == tipoSelecionado }
+        .groupBy { it.nome_formulario }
+        .mapValues { (_, respostas) ->
+            respostas.flatMap { it.respostas.values }
+                .average()
+                .toFloat()
+        }
+    onResult(medias)
 }

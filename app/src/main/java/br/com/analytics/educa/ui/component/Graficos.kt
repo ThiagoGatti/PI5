@@ -1,6 +1,5 @@
 package br.com.analytics.educa.ui.component
 
-import android.graphics.Color
 import android.widget.LinearLayout
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -18,24 +17,21 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
-import android.graphics.Color as AndroidColor
+import android.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 
 @Composable
-fun GraficoBarraRespostasPorFormulario(
-    agrupamento: Map<String, Map<String, Float>>,
-    formularioSelecionado: String
+fun GraficoBarraMediaFormularios(
+    medias: Map<String, Float>
 ) {
-    val respostas = agrupamento[formularioSelecionado] ?: emptyMap()
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Formulário: $formularioSelecionado",
+            text = "Médias por Formulário",
             style = MaterialTheme.typography.headlineMedium,
-            color = White, // Corrigido
+            color = White,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(16.dp)
         )
@@ -43,36 +39,31 @@ fun GraficoBarraRespostasPorFormulario(
         AndroidView(
             factory = { context ->
                 BarChart(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        600
-                    )
-                    val entries = respostas.entries.mapIndexed { index, (pergunta, media) ->
+                    val entries = medias.entries.mapIndexed { index, (formulario, media) ->
                         BarEntry(index.toFloat(), media)
                     }
 
-                    val dataSet = BarDataSet(entries, "Médias por Pergunta").apply {
+                    val dataSet = BarDataSet(entries, "Médias").apply {
                         setColors(*ColorTemplate.COLORFUL_COLORS)
-                        valueTextColor = AndroidColor.WHITE
+                        valueTextColor = Color.WHITE
                         valueTextSize = 12f
                     }
 
-                    val barData = BarData(dataSet)
-                    this.data = barData
+                    this.data = BarData(dataSet)
 
                     this.xAxis.apply {
                         valueFormatter = com.github.mikephil.charting.formatter.IndexAxisValueFormatter(
-                            respostas.keys.toList()
+                            medias.keys.toList()
                         )
                         position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
                         granularity = 1f
-                        textColor = AndroidColor.WHITE
+                        textColor = Color.WHITE
                     }
 
-                    this.axisLeft.textColor = AndroidColor.WHITE
+                    this.axisLeft.textColor = Color.WHITE
                     this.axisRight.isEnabled = false
                     this.description.text = ""
-                    this.legend.textColor = AndroidColor.WHITE
+                    this.legend.textColor = Color.WHITE
                 }
             },
             modifier = Modifier
@@ -118,7 +109,7 @@ fun GraficoPizza(
                             android.graphics.Color.parseColor("#FF6200EE"),
                             android.graphics.Color.parseColor("#FF3700B3")
                         ) // Cores personalizadas que combinam com o tema
-                        valueTextColor = android.graphics.Color.WHITE // Valores em branco
+                        valueTextColor = Color.WHITE // Valores em branco
                         valueTextSize = 12f
                     }
                     this.data = PieData(dataSet).apply {
