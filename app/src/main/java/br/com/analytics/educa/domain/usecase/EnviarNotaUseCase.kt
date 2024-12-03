@@ -6,13 +6,22 @@ class EnviarNotaUseCase {
         return if (notaDouble != null && notaDouble in 0.0..10.0) notaDouble else null
     }
 
+
     fun validarFaltas(faltas: String): Int? {
 
-        //aulas totais - falta
+        val totalAulas = 20
+        val faltasInt = faltas.toIntOrNull()
 
-        // -> procentagem
+        if(faltasInt != null && faltasInt in 0..totalAulas){
 
-        return faltas.toIntOrNull()
+            val aulasAssistidas = totalAulas - faltasInt
+            val porcentagemPresenca = (aulasAssistidas * 100) / totalAulas
+
+            return porcentagemPresenca
+        }
+        else {
+            return null
+        }
 
     }
 }

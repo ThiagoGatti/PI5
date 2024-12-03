@@ -61,7 +61,8 @@ fun buscarFormsRespondidos(
             onError("Falha ao buscar formulários: $errorMessage")
             onResult(emptySet())
         }
-    })
+        }
+    )
 }
 
 fun buscarRespostasPorEscola(
@@ -87,6 +88,7 @@ fun buscarRespostasPorEscola(
         override fun onFailure(call: Call<List<ResponseBySchool>>, t: Throwable) {
             val errorMessage = t.localizedMessage ?: "Falha na conexão"
             onError("Falha ao buscar respostas: $errorMessage")
+            }
         }
-    })
+    )
 }
