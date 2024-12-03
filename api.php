@@ -38,24 +38,50 @@ if ($method === 'GET' && isset($_GET['action'])) {
 
         echo json_encode($forms);
         exit;
-    } elseif ($action === 'schoolPerformance') {
+    } elseif ($action === 'schoolPerformance' && isset($_GET['login'])) {
+        $login = $_GET['login'];
+    
         $stmt = $conn->prepare("
-            SELECT 
-                AVG(nota) AS media_nota,
-                AVG(presenca) AS media_presenca,
-                materia
-            FROM boletim
-            GROUP BY materia
+            SELECT escola.nome AS nome_escola, escola.id AS id_escola
+            FROM pessoa
+            INNER JOIN escola ON pessoa.id_escola = escola.id
+            WHERE pessoa.login = ?
         ");
+        $stmt->bind_param("s", $login);
         $stmt->execute();
         $result = $stmt->get_result();
-
-        $performance = [];
-        while ($row = $result->fetch_assoc()) {
-            $performance[] = $row;
+    
+        if ($result->num_rows === 0) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "message" => "Usuário ou escola não encontrados"]);
+            exit;
         }
-
-        echo json_encode($performance);
+    
+        $row = $result->fetch_assoc();
+        $nomeEscola = $row['nome_escola'];
+        $idEscola = $row['id_escola'];
+    
+        $stmt = $conn->prepare("
+            SELECT AVG(boletim.nota) AS media_nota
+            FROM boletim
+            INNER JOIN aluno ON boletim.login_aluno = aluno.login
+            INNER JOIN pessoa ON aluno.login = pessoa.login
+            WHERE pessoa.id_escola = ?
+        ");
+        $stmt->bind_param("i", $idEscola);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $mediaNotas = 0;
+        if ($result->num_rows > 0) {
+            $mediaNotas = $result->fetch_assoc()['media_nota'];
+        }
+    
+        echo json_encode([
+            "success" => true,
+            "nome_escola" => $nomeEscola,
+            "media_nota" => round($mediaNotas, 1)
+        ]);
         exit;
     } elseif ($method === 'GET' && $action === 'getResponsesBySchool') {
         $login = $_GET['login'] ?? null;
