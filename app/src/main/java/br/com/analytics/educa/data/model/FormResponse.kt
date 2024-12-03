@@ -90,3 +90,25 @@ fun buscarRespostasPorEscola(
         }
     })
 }
+
+fun agruparRespostas(respostas: List<ResponseBySchool>): Map<String, Map<String, Float>> {
+    val agrupamento = mutableMapOf<String, MutableMap<String, MutableList<Int>>>()
+
+    respostas.forEach { resposta ->
+        resposta.respostas.forEach { (pergunta, valor) ->
+            if (!agrupamento.containsKey(resposta.nome_formulario)) {
+                agrupamento[resposta.nome_formulario] = mutableMapOf()
+            }
+            if (!agrupamento[resposta.nome_formulario]!!.containsKey(pergunta)) {
+                agrupamento[resposta.nome_formulario]!![pergunta] = mutableListOf()
+            }
+            agrupamento[resposta.nome_formulario]!![pergunta]!!.add(valor)
+        }
+    }
+
+    return agrupamento.mapValues { (_, perguntas) ->
+        perguntas.mapValues { (_, valores) ->
+            valores.average().toFloat()
+        }
+    }
+}
