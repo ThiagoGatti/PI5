@@ -81,7 +81,7 @@ fun TelaGraficos(username: String, navigateBack: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Desempenho Escolar $username",
+                text = "Desempenho Escolar",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = androidx.compose.ui.graphics.Color.White,
