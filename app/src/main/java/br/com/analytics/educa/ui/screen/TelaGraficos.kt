@@ -1,7 +1,8 @@
 package br.com.analytics.educa.ui.screen
 
+import android.content.Context
+import android.graphics.Color
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,16 +14,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import br.com.analytics.educa.data.retrofit.ApiService
 import br.com.analytics.educa.data.retrofit.RetrofitClient
 import br.com.analytics.educa.data.retrofit.SchoolPerformance
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -63,7 +68,7 @@ fun TelaGraficos(navigateBack: () -> Unit) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7)) // Gradiente roxo
+                    colors = listOf(androidx.compose.ui.graphics.Color(0xFF551BA8), androidx.compose.ui.graphics.Color(0xFF9752E7))
                 )
             )
             .padding(16.dp)
@@ -71,46 +76,46 @@ fun TelaGraficos(navigateBack: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()), // Permite rolar conteúdo longo
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título da tela
             Text(
                 text = "Desempenho Escolar",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = androidx.compose.ui.graphics.Color.White,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(vertical = 16.dp)
                     .fillMaxWidth()
             )
 
-            // Exibir mensagens de erro ou carregamento
             if (errorMessage != null) {
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                Text(text = "Erro: $errorMessage", color = Color.Red)
+                Text(text = "Erro: $errorMessage", color = androidx.compose.ui.graphics.Color.Red)
             } else if (schoolPerformance.isEmpty()) {
-                Text(text = "Carregando dados...", color = Color.Gray)
+                Text(text = "Carregando dados...", color = androidx.compose.ui.graphics.Color.Gray)
             } else {
-                RenderBarChart(data = schoolPerformance)
+                AndroidView(
+                    factory = { ctx -> createBarChart(ctx, schoolPerformance) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp)
+                )
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
         }
 
-        // Botão de voltar no rodapé
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter) // Alinha o botão no rodapé
+                .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp),
             contentAlignment = Alignment.Center
         ) {
             Button(
                 onClick = navigateBack,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFF5D145B)),
                 modifier = Modifier
                     .width(150.dp)
                     .height(45.dp)
@@ -122,7 +127,7 @@ fun TelaGraficos(navigateBack: () -> Unit) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Ícone de voltar",
-                        tint = Color.White,
+                        tint = androidx.compose.ui.graphics.Color.White,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -130,7 +135,7 @@ fun TelaGraficos(navigateBack: () -> Unit) {
                         text = "Voltar",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.White
+                        color = androidx.compose.ui.graphics.Color.White
                     )
                 }
             }
@@ -138,41 +143,37 @@ fun TelaGraficos(navigateBack: () -> Unit) {
     }
 }
 
-@Composable
-fun RenderBarChart(data: List<SchoolPerformance>) {
-    val barWidth = 60f
-    val barSpacing = 40f
-    val maxBarHeight = 300f
-    val maxNota = data.maxOf { it.media_nota }
-    val maxPresenca = data.maxOf { it.media_presenca }
+fun createBarChart(context: Context, data: List<SchoolPerformance>): BarChart {
+    val barChart = BarChart(context)
 
-    Canvas(modifier = Modifier
-        .fillMaxWidth()
-        .height(400.dp)) {
-        translate(left = barSpacing / 2) {
-            data.forEachIndexed { index, performance ->
-                val barHeightNota = (performance.media_nota / maxNota) * maxBarHeight
-                val barHeightPresenca = (performance.media_presenca / maxPresenca) * maxBarHeight
+    val entriesNotas = data.mapIndexed { index, performance ->
+        BarEntry(index.toFloat(), performance.media_nota)
+    }
 
-                val barX = index * (barWidth + barSpacing)
+    val entriesPresenca = data.mapIndexed { index, performance ->
+        BarEntry(index.toFloat(), performance.media_presenca)
+    }
 
-                // Nota Bar
-                drawRect(
-                    color = Color(0xFFFF0032),
-                    topLeft = androidx.compose.ui.geometry.Offset(barX, (size.height - barHeightNota).toFloat()),
-                    size = androidx.compose.ui.geometry.Size(barWidth, barHeightNota.toFloat())
-                )
+    val dataSetNotas = BarDataSet(entriesNotas, "Média de Notas").apply {
+        color = Color.GREEN
+    }
 
-                // Presença Bar
-                drawRect(
-                    color = Color(0xFF444329),
-                    topLeft = androidx.compose.ui.geometry.Offset(
-                        barX + barWidth + 10, // Espaço entre barras
-                        (size.height - barHeightPresenca).toFloat()
-                    ),
-                    size = androidx.compose.ui.geometry.Size(barWidth, barHeightPresenca.toFloat())
-                )
+    val dataSetPresenca = BarDataSet(entriesPresenca, "Média de Presença (%)").apply {
+        color = Color.BLUE
+    }
+
+    barChart.data = BarData(dataSetNotas, dataSetPresenca)
+    barChart.description.text = "Desempenho Escolar"
+    barChart.xAxis.apply {
+        position = XAxis.XAxisPosition.BOTTOM
+        valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return data.getOrNull(value.toInt())?.materia ?: ""
             }
         }
     }
+    barChart.animateY(1000)
+    barChart.invalidate()
+
+    return barChart
 }
