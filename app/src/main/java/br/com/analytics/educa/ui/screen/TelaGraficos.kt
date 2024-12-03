@@ -1,7 +1,5 @@
 package br.com.analytics.educa.ui.screen
 
-import android.graphics.Color
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,8 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.data.model.agruparRespostas
@@ -20,14 +16,18 @@ import br.com.analytics.educa.ui.component.GraficoBarraRespostas
 import br.com.analytics.educa.ui.component.GraficoLinhaTendencias
 
 @Composable
-fun TelaGraficos(login: String, navigateBack: () -> Unit) {
-    val context = LocalContext.current
+fun TelaGraficos(
+    username: String,
+    navigateBack: () -> Unit
+) {
+    // Estado para armazenar respostas por escola
     var respostasPorEscola by remember { mutableStateOf<List<ResponseBySchool>>(emptyList()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    // Busca as respostas do banco de dados ao montar a tela
     LaunchedEffect(Unit) {
         buscarRespostasPorEscola(
-            login = login,
+            login = username,
             onResult = { respostas ->
                 respostasPorEscola = respostas
             },
@@ -37,6 +37,7 @@ fun TelaGraficos(login: String, navigateBack: () -> Unit) {
         )
     }
 
+    // Agrupa as respostas para os gráficos
     val agrupamento = if (respostasPorEscola.isNotEmpty()) {
         agruparRespostas(respostasPorEscola)
     } else {
@@ -46,7 +47,6 @@ fun TelaGraficos(login: String, navigateBack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-//            .background(brush = Brush.horizontalGradient(colors = listOf(Color(0xFF00FF00), Color(0xFFFF0000))))
             .padding(16.dp)
     ) {
         Column(
@@ -57,27 +57,27 @@ fun TelaGraficos(login: String, navigateBack: () -> Unit) {
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "Gráficos por Escola",
+                text = "Gráficos de Respostas",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(16.dp)
             )
 
             if (errorMessage != null) {
-                /*Text(
+                Text(
                     text = "Erro: $errorMessage",
-                    color = Color.RED,
+                    color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(16.dp)
-                )*/
+                )
             } else if (agrupamento.isNotEmpty()) {
                 GraficoBarraRespostas(agrupamento)
-                GraficoLinhaTendencias(agrupamento, pergunta = "q1")
+                GraficoLinhaTendencias(agrupamento, pergunta = "q1") // Substituir "q1" pela pergunta desejada
             } else {
-                /*Text(
+                Text(
                     text = "Carregando dados...",
-                    color = Color.GRAY,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(16.dp)
-                )*/
+                )
             }
         }
 
