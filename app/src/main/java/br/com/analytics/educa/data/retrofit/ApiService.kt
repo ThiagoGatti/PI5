@@ -20,6 +20,12 @@ interface ApiService {
     @POST("api.php")
     fun enviarRespostas(@Body responseRequest: ResponseRequest): Call<ApiResponse>
 
+    @POST("api.php")
+    fun editUser(@Body user: UserEditRequest): Call<ApiResponse>
+
+    @POST("api.php")
+    fun removeUser(@Body user: UserRemoveRequest): Call<ApiResponse>
+
     @GET("api.php")
     fun getResponsesBySchool(
         @Query("action") action: String = "getResponsesBySchool",
@@ -37,6 +43,23 @@ interface ApiService {
         @Query("action") action: String = "getBoletim",
         @Query("login") login: String
     ): Call<List<Boletim>>
+
+    @GET("api.php")
+    fun getUsersByType(
+        @Query("action") action: String = "getUsersByType",
+        @Query("type") type: String
+    ): Call<List<User>>
+
+    @GET("api.php")
+    fun getTurmas(
+        @Query("action") action: String = "getTurmas"
+    ): Call<List<String>>
+
+    @GET("api.php")
+    fun getUsersByTurma(
+        @Query("action") action: String = "getUsersByTurma",
+        @Query("turma") turma: String
+    ): Call<List<User>>
 }
 
 data class LoginRequest(
@@ -80,4 +103,23 @@ data class Boletim(
     val materia: String,
     val nota: Float,
     val presenca: Int
+)
+
+data class User(
+    val login: String,
+    val name: String,
+    val phone: String,
+    val type: String
+)
+
+data class UserEditRequest(
+    val action: String = "editUser",
+    val login: String,
+    val name: String,
+    val phone: String
+)
+
+data class UserRemoveRequest(
+    val action: String = "removeUser",
+    val login: String
 )

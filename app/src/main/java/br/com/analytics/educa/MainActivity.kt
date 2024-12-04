@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                         },
                         navigateToNotas = { navController.navigate("${Route.telaNotas}/$username") },
                         navigateToEnviarNotas = { navController.navigate("${Route.telaEnviarNotas}/$username") },
-                        navigateToManejarUsuarios = { navController.navigate(Route.telaManejarUsuarios) },
+                        navigateToManejarUsuarios = { navController.navigate("${Route.telaManejarUsuarios}/$username") },
                         navigateToDadosPessoais = { navController.navigate(Route.telaDadosPessoais) }
                     )
 
@@ -142,8 +142,9 @@ class MainActivity : ComponentActivity() {
                         })
                 }
 
-                composable(route = Route.telaManejarUsuarios) {
+                composable(route = "${Route.telaManejarUsuarios}/{username}") { backStackEntry ->
                     TelaManejarUsuarios(
+                        backStackEntry.arguments?.getString("username").toString(),
                         navigateBack = { navController.popBackStack() }
                     )
                 }

@@ -1,6 +1,8 @@
 package br.com.analytics.educa.data.model
 
 import br.com.analytics.educa.data.retrofit.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -236,6 +238,72 @@ fun buscarBoletim(
         override fun onFailure(call: Call<List<Boletim>>, t: Throwable) {
             val errorMessage = t.localizedMessage ?: "Falha na conexão"
             onError("Falha ao buscar boletim: $errorMessage")
+        }
+    })
+}
+
+fun fetchUsersByType(type: String, onResult: (List<User>) -> Unit) {
+    val call = apiService.getUsersByType(type = type)
+    call.enqueue(object : Callback<List<User>> {
+        override fun onResponse(
+            call: Call<List<User>>,
+            response: Response<List<User>>
+        ) {
+            if (response.isSuccessful) {
+                onResult(response.body() ?: emptyList())
+            }
+        }
+
+        override fun onFailure(call: Call<List<User>>, t: Throwable) {
+            onResult(emptyList())
+        }
+    })
+}
+
+suspend fun removeUser(login: String, onComplete: () -> Unit) {
+    withContext(Dispatchers.IO) {
+        val call = apiService.removeUser(UserRemoveRequest(login = login))
+        call.execute()
+    }
+    withContext(Dispatchers.Main) {
+        onComplete()
+    }
+}
+
+fun fetchTurmas(onResult: (List<String>) -> Unit) {
+    val call = apiService.getTurmas()
+    call.enqueue(object : Callback<List<String>> {
+        override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
+            if (response.isSuccessful) {
+                onResult(response.body() ?: emptyList())
+            } else {
+                onResult(emptyList())
+            }
+        }
+
+        override fun onFailure(call: Call<List<String>>, t: Throwable) {
+            onResult(emptyList())
+        }
+    })
+}
+
+fun fetchUsersByTurma(
+    turma: String,
+    onResult: (List<User>) -> Unit = {}, // Comportamento padrão para `onResult`
+    onError: (String) -> Unit = {}
+) {
+    val call = apiService.getUsersByTurma(turma = turma)
+    call.enqueue(object : Callback<List<User>> {
+        override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+            if (response.isSuccessful) {
+                onResult(response.body() ?: emptyList())
+            } else {
+                onError("Erro na resposta: ${response.message()}")
+            }
+        }
+
+        override fun onFailure(call: Call<List<User>>, t: Throwable) {
+            onError("Falha na conexão: ${t.message}")
         }
     })
 }
