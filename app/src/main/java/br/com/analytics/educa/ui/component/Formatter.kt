@@ -67,7 +67,7 @@ fun formaterCPF(cpf: String, cursorPos: Int): Pair<String, Int> {
  * @param cursorPosition A posição atual do cursor.
  * @return Um par com a string formatada e a nova posição do cursor, ou null se a data for inválida.
  */
-fun fomaterValidarData(input: String, cursorPosition: Int): Pair<String, Int> {
+fun fomaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, Int> {
     val digitsOnly = input.filter { it.isDigit() } // Remove caracteres não numéricos
         .take(8) // Limita os números a no máximo 8 dígitos (DDMMYYYY sem barras)
 

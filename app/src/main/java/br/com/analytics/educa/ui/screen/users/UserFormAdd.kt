@@ -8,9 +8,9 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.ui.component.entradaTextoCPF
+import br.com.analytics.educa.ui.component.fomaterValidarDataCursor
 import br.com.analytics.educa.ui.component.formaterCelular
 import br.com.analytics.educa.ui.screen.forms.SpecificUserFields
-import formatAndValidateDatePreservingCursor
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +46,7 @@ fun UserForm(
         OutlinedTextField(
             value = TextFieldValue(dataNascimento, TextRange(dataNascimentoCursor)),
             onValueChange = { input ->
-                val result = formatAndValidateDatePreservingCursor(input.text, input.selection.start)
+                val result = fomaterValidarDataCursor(input.text, input.selection.start)
                 if (result != null) {
                     dataNascimento = result.first
                     dataNascimentoCursor = result.second

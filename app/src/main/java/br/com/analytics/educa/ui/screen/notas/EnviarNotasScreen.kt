@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
-import br.com.analytics.educa.ui.component.usecase.ValidarEnviarNota
+import br.com.analytics.educa.ui.component.usecase.EnviarNotaUseCase
 import br.com.analytics.educa.ui.component.TurmasList
 import br.com.analytics.educa.ui.component.AlunosList
 
@@ -25,7 +25,7 @@ fun EnviarNotasScreen(
     getAlunosByTurma: (String) -> List<String>,
     enviarNotaEFrequencia: (String, String, Double, Int) -> Unit
 ) {
-    val validarEnviarNota = ValidarEnviarNota()
+    val enviarNotaUseCase = EnviarNotaUseCase()
 
     var turmaSelecionada by remember { mutableStateOf<String?>(null) }
     var alunoSelecionado by remember { mutableStateOf<String?>(null) }
@@ -153,8 +153,8 @@ fun EnviarNotasScreen(
 
                     Button(
                         onClick = {
-                            val notaValidada = validarEnviarNota.validarNota(nota)
-                            val faltasValidadas = validarEnviarNota.validarFaltas(faltas)
+                            val notaValidada = enviarNotaUseCase.validarNota(nota)
+                            val faltasValidadas = enviarNotaUseCase.validarFaltas(faltas)
 
                             if (notaValidada != null && faltasValidadas != null) {
                                 enviarNotaEFrequencia(
