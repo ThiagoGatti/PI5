@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-<<<<<<< Updated upstream
+
                 composable(route = "${Route.telaDadosEscola}/{username}/{userType}") { backStackEntry ->
                     val username = backStackEntry.arguments?.getString("username").toString()
                     TelaDadosEscola(
@@ -137,14 +137,14 @@ class MainActivity : ComponentActivity() {
                             navController.popBackStack()
                         })
                 }
-=======
+
                 composable(route = Route.telaManejarUsuarios) {
                     TelaManejarUsuarios(
                         navigateBack = { navController.popBackStack() }
                     )
                 }
 
->>>>>>> Stashed changes
+
 
                 composable(route = "${Route.telaGraficoBarra}/{username}/{userType}") { backStackEntry ->
                     TelaGraficoBarra(
