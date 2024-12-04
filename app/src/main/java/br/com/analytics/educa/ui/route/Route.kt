@@ -21,5 +21,6 @@ object Route {
     const val telaManejarUsuarios = "telaManejarUsuarios"
 
     const val telaDadosEscola = "telaDadosEscola"
-    const val telaGraficos = "telaGraficos"
+    const val telaGraficoBarra = "telaGraficoBarra"
+    const val telaGraficoPizza = "telaGraficoPizza"
 }

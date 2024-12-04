@@ -56,8 +56,7 @@ class MainActivity : ComponentActivity() {
                         navigateToMenuForm = {
                             navController.navigate("${Route.menuForm}/$userType/$username")
                         },
-                        navigateToCharts = { navController.navigate("${Route.telaDadosEscola}/$username") },
-//                        navigateToCharts = { navController.navigate("${Route.telaDadosEscola}/$username/$userType") },
+                        navigateToCharts = { navController.navigate("${Route.telaDadosEscola}/$username/$userType") },
                         navigateToInitialScreen = {
                             navController.navigate(Route.initialScreen) {
                                 popUpTo(0) { inclusive = true }
@@ -125,23 +124,35 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                composable(route = "${Route.telaDadosEscola}/{username}") { backStackEntry ->
+                composable(route = "${Route.telaDadosEscola}/{username}/{userType}") { backStackEntry ->
+                    val username = backStackEntry.arguments?.getString("username").toString()
                     TelaDadosEscola(
-                        backStackEntry.arguments?.getString("username").toString(),
-                        navigateBack =  {
+                        username,
+                        navigateToTelaGraficoBarra = { navController.navigate(
+                            "${Route.telaGraficoBarra}/$username/${backStackEntry.arguments?.getString("userType").toString()}"
+                        ) },
+                        navigateToTelaGraficoPizza = { navController.navigate("${Route.telaGraficoPizza}/$username") },
+                        navigateBack = {
                             navController.popBackStack()
                         })
                 }
-                /*
-                composable(route = "${Route.telaGraficos}/{username}/{userType}") { backStackEntry ->
-                    TelaGraficos(
+
+                composable(route = "${Route.telaGraficoBarra}/{username}/{userType}") { backStackEntry ->
+                    TelaGraficoBarra(
                         backStackEntry.arguments?.getString("username").toString(),
                         backStackEntry.arguments?.getString("userType").toString(),
-                        navigateBack =  {
-                        navController.popBackStack()
-                    })
+                        navigateBack = {
+                            navController.popBackStack()
+                        })
                 }
-                 */
+
+                composable(route = "${Route.telaGraficoPizza}/{username}") { backStackEntry ->
+                    TelaGraficoPizza(
+                        backStackEntry.arguments?.getString("username").toString(),
+                        navigateBack = {
+                            navController.popBackStack()
+                        })
+                }
             }
         }
     }

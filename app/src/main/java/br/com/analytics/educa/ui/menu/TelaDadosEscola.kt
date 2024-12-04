@@ -18,6 +18,8 @@ import kotlin.collections.component2
 @Composable
 fun TelaDadosEscola(
     login: String,
+    navigateToTelaGraficoBarra: () -> Unit,
+    navigateToTelaGraficoPizza: () -> Unit,
     navigateBack: () -> Unit
 ) {
     var nomeEscola by remember { mutableStateOf("Carregando...") }
@@ -77,6 +79,20 @@ fun TelaDadosEscola(
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
+                }
+                Button(
+                    onClick = navigateToTelaGraficoBarra,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Ir para Gráfico de Barra", color = Color.White)
+                }
+                Button(
+                    onClick = navigateToTelaGraficoPizza,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Ir para Gráfico de Pizza", color = Color.White)
                 }
                 Button(
                     onClick = navigateBack,

@@ -17,7 +17,7 @@ import android.content.res.Configuration
 import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
-fun TelaGraficos(
+fun TelaGraficoBarra(
     username: String,
     userType: String,
     navigateBack: () -> Unit
