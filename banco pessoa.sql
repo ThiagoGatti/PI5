@@ -33,7 +33,6 @@ CREATE TABLE aluno (
     matricula INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(50) NOT NULL UNIQUE,
     turma VARCHAR(2),
-    ausencias INT DEFAULT 0,
     FOREIGN KEY (login) REFERENCES pessoa(login) ON DELETE CASCADE,
     FOREIGN KEY (turma) REFERENCES turmas(sigla) ON DELETE SET NULL
 );
@@ -42,8 +41,7 @@ CREATE TABLE professor (
     numero_professor INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(50) NOT NULL UNIQUE,
     materia VARCHAR(50),
-    turmas TEXT,
-    ausencias INT DEFAULT 0,
+    turmas JSON,
     FOREIGN KEY (login) REFERENCES pessoa(login) ON DELETE CASCADE
 );
 
@@ -51,7 +49,6 @@ CREATE TABLE funcionario (
     numero_funcionario INT AUTO_INCREMENT PRIMARY KEY,
     login VARCHAR(50) NOT NULL UNIQUE,
     funcao VARCHAR(50),
-    ausencias INT DEFAULT 0,
     FOREIGN KEY (login) REFERENCES pessoa(login) ON DELETE CASCADE
 );
 
@@ -60,7 +57,7 @@ CREATE TABLE boletim (
     login_aluno VARCHAR(50) NOT NULL,
     materia VARCHAR(100) NOT NULL,
     nota DECIMAL(5, 2) NOT NULL,
-    presenca DECIMAL(5, 2) NOT NULL,
+    presenca TINYINT NOT NULL,
     FOREIGN KEY (login_aluno) REFERENCES aluno(login) ON DELETE CASCADE
 );
 
@@ -108,14 +105,14 @@ VALUES
 ('diretor123', 'Carlos Almeida', '789.123.456-00', '1970-05-15', '(11) 98877-6655', 'DIRETOR', 1),
 ('func123', 'Ana Silva', '321.654.987-00', '1985-03-25', '(11) 97766-5544', 'FUNCIONARIO', 1);
 
-INSERT INTO aluno (login, turma, ausencias) 
-VALUES ('aluno123', '3B', 2);
+INSERT INTO aluno (login, turma) 
+VALUES ('aluno123', '3B');
 
-INSERT INTO professor (login, materia, turmas, ausencias) 
-VALUES ('prof123', 'Matemática', '3B,2A', 0);
+INSERT INTO professor (login, materia, turmas) 
+VALUES ('prof123', 'Matemática', '["3B", "2A"]');
 
-INSERT INTO funcionario (login, funcao, ausencias) 
-VALUES ('func123', 'Secretaria', 0);
+INSERT INTO funcionario (login, funcao) 
+VALUES ('func123', 'Secretaria');
 
 INSERT INTO boletim (login_aluno, materia, nota, presenca) 
 VALUES 
