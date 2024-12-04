@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen
+package br.com.analytics.educa.ui.screen.graphs
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.data.model.buscarRespostasPorEscola
 import br.com.analytics.educa.data.retrofit.ResponseBySchool
-import br.com.analytics.educa.ui.component.GraficoBarraMediaFormularios
+import br.com.analytics.educa.ui.component.design.GraficoBarraMediaFormularios
 import android.content.res.Configuration
 import androidx.compose.ui.platform.LocalConfiguration
 

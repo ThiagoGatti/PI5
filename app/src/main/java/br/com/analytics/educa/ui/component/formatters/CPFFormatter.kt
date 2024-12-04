@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.component
+package br.com.analytics.educa.ui.component.formatters
 
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text

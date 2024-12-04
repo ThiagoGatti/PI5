@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.menu
+package br.com.analytics.educa.ui.screen.menu
 
 import android.widget.Toast
 import androidx.compose.foundation.background

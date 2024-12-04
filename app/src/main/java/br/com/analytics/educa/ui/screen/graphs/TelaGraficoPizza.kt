@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen
+package br.com.analytics.educa.ui.screen.graphs
 
 import androidx.compose.runtime.Composable
 

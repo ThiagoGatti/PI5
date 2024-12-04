@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen
+package br.com.analytics.educa.ui.screen.notas
 
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
 import br.com.analytics.educa.domain.usecase.EnviarNotaUseCase
-import br.com.analytics.educa.ui.component.TurmasList
-import br.com.analytics.educa.ui.component.AlunosList
+import br.com.analytics.educa.ui.component.lists.TurmasList
+import br.com.analytics.educa.ui.component.lists.AlunosList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

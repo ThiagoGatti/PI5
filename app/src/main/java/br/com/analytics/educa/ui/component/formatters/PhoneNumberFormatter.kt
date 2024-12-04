@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.component
+package br.com.analytics.educa.ui.component.formatters
 
 fun formatPhoneNumberPreservingCursor(input: String, cursorPosition: Int): Pair<String, Int> {
     val digitsOnly = input.filter { it.isDigit() }.take(11) // Limita a 11 dígitos

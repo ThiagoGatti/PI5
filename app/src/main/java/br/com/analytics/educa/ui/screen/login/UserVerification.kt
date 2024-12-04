@@ -14,14 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import br.com.analytics.educa.data.model.autenticarUsuario
-import br.com.analytics.educa.data.retrofit.ApiService
-import br.com.analytics.educa.data.retrofit.LoginRequest
-import br.com.analytics.educa.data.retrofit.LoginResponse
-import br.com.analytics.educa.data.retrofit.RetrofitClient
 import br.com.analytics.educa.data.model.performLogout
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 @Composable
 fun UserVerification(

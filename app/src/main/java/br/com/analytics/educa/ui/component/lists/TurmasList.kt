@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.component
+package br.com.analytics.educa.ui.component.lists
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen
+package br.com.analytics.educa.ui.screen.users
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,17 +19,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.analytics.educa.ui.component.AlunosList
-import br.com.analytics.educa.ui.component.CpfTextField
-import br.com.analytics.educa.ui.component.TurmasList
-import br.com.analytics.educa.ui.component.formatPhoneNumberPreservingCursor
+import br.com.analytics.educa.ui.component.lists.AlunosList
+import br.com.analytics.educa.ui.component.formatters.CpfTextField
+import br.com.analytics.educa.ui.component.lists.TurmasList
+import br.com.analytics.educa.ui.component.formatters.formatPhoneNumberPreservingCursor
 import formatAndValidateDatePreservingCursor
 import isValidDate
-import isValidDateInput
-import java.text.SimpleDateFormat
-import java.util.*
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)

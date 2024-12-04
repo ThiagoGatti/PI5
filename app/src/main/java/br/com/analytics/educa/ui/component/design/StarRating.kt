@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.component
+package br.com.analytics.educa.ui.component.design
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
