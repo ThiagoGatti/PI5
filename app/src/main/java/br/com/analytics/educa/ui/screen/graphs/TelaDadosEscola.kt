@@ -85,14 +85,14 @@ fun TelaDadosEscola(
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
-                    Text("Ir para Gráfico de Barra", color = Color.White)
+                    Text("Gráficos de Respostas", color = Color.White)
                 }
                 Button(
                     onClick = navigateToTelaGraficoPizza,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
-                    Text("Ir para Gráfico de Pizza", color = Color.White)
+                    Text("Comparação de Usuários", color = Color.White)
                 }
                 Button(
                     onClick = navigateBack,
