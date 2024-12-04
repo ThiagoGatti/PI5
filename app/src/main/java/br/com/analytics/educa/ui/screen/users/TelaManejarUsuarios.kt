@@ -2,8 +2,6 @@ package br.com.analytics.educa.ui.screen.users
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +24,7 @@ fun TelaManejarUsuarios(
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     var showRemoveDialog by remember { mutableStateOf(false) }
+    var showActionDialog by remember { mutableStateOf(false) }
     var selectedUserType by remember { mutableStateOf<String?>(null) }
     var selectedUser by remember { mutableStateOf<String?>(null) }
     var showAlunoList by remember { mutableStateOf(false) }
@@ -54,14 +53,12 @@ fun TelaManejarUsuarios(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Header fixado no topo
             Header(
                 onShowAddDialog = { showAddDialog = true }
             )
 
-            Spacer(modifier = Modifier.height(16.dp)) // Espaçamento entre o cabeçalho e o conteúdo
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Conteúdo principal
             when {
                 selectedUserType == null -> {
                     TipoUsuarioList(
@@ -85,7 +82,7 @@ fun TelaManejarUsuarios(
                             alunos = alunosByTurma,
                             onAlunoSelected = { aluno ->
                                 selectedUser = aluno
-                                showEditDialog = true
+                                showActionDialog = true
                             },
                             onBackToTurmas = { showAlunoList = false }
                         )
@@ -97,17 +94,16 @@ fun TelaManejarUsuarios(
                         usuarios = usuariosMockados[selectedUserType] ?: emptyList(),
                         onUsuarioSelected = { usuario ->
                             selectedUser = usuario
-                            showEditDialog = true
+                            showActionDialog = true
                         },
                         onBack = { selectedUserType = null }
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f)) // Preenche espaço para empurrar o Footer para baixo
+            Spacer(modifier = Modifier.weight(1f))
         }
 
-        // Footer fixado na parte inferior
         Footer(
             showAlunoList = showAlunoList,
             selectedUserType = selectedUserType,
@@ -120,7 +116,6 @@ fun TelaManejarUsuarios(
         )
     }
 
-    // Dialogs
     if (showAddDialog) {
         AddUserDialog(
             onDismiss = { showAddDialog = false }
@@ -128,7 +123,6 @@ fun TelaManejarUsuarios(
     }
 
     if (showEditDialog) {
-        // Dialog de edição (defina sua implementação aqui)
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
             title = { Text("Editar Usuário") },
@@ -152,7 +146,6 @@ fun TelaManejarUsuarios(
     }
 
     if (showRemoveDialog) {
-        // Dialog de remoção (defina sua implementação aqui)
         AlertDialog(
             onDismissRequest = { showRemoveDialog = false },
             title = { Text("Remover Usuário") },
@@ -169,6 +162,40 @@ fun TelaManejarUsuarios(
             },
             dismissButton = {
                 Button(onClick = { showRemoveDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    if (showActionDialog) {
+        AlertDialog(
+            onDismissRequest = { showActionDialog = false },
+            title = { Text("Ações para $selectedUser") },
+            text = { Text("Escolha uma ação para o usuário:") },
+            confirmButton = {
+                Column {
+                    Button(
+                        onClick = {
+                            showActionDialog = false
+                            showEditDialog = true
+                        }
+                    ) {
+                        Text("Editar")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            showActionDialog = false
+                            showRemoveDialog = true
+                        }
+                    ) {
+                        Text("Remover")
+                    }
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showActionDialog = false }) {
                     Text("Cancelar")
                 }
             }
