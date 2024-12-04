@@ -123,3 +123,12 @@ VALUES
 ('aluno123', 'Português', 7.0, 90.0),
 ('aluno123', 'História', 9.0, 98.0),
 ('aluno123', 'Ciências', 6.5, 85.0);
+
+INSERT INTO escola (nome, endereco) 
+VALUES ('Escola Estadual Nova', 'Avenida Secundária, 456, Outra Cidade');
+
+INSERT INTO usuario (login, senha) 
+VALUES ('diretor2', SHA2('123', 256));
+
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) 
+VALUES ('diretor2', 'Laura Pereira', '987.654.321-00', '1980-07-25', '(11) 92222-3333', 'DIRETOR', 2);
