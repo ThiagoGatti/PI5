@@ -86,7 +86,8 @@ fun EnviarNotasScreen(
             if (turmaSelecionada == null) {
                 TurmasList(
                     turmas = turmas,
-                    onTurmaSelected = { turmaSelecionada = it }
+                    onTurmaSelected = { turmaSelecionada = it },
+                    onBackToUserTypeSelection = TODO()
                 )
             } else if (alunoSelecionado == null) {
                 // Listar Alunos

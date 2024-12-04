@@ -20,12 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.analytics.educa.ui.component.lists.AlunosList
+import br.com.analytics.educa.ui.component.lists.ProfessorList
+import br.com.analytics.educa.ui.component.lists.FuncionarioList
+import br.com.analytics.educa.ui.component.lists.DiretorList
 import br.com.analytics.educa.ui.component.formatters.CpfTextField
 import br.com.analytics.educa.ui.component.lists.TurmasList
 import br.com.analytics.educa.ui.component.formatters.formatPhoneNumberPreservingCursor
 import formatAndValidateDatePreservingCursor
 import isValidDate
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +38,10 @@ fun TelaManejarUsuarios(
     var showAlunoList by remember { mutableStateOf(false) }
     var selectedTurma by remember { mutableStateOf<String?>(null) }
     var alunosByTurma by remember { mutableStateOf<List<String>>(emptyList()) }
+    var selectedUserType by remember { mutableStateOf<String?>(null) }
+    var selectedUser by remember { mutableStateOf<String?>(null) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var showRemoveDialog by remember { mutableStateOf(false) }
     var nome by remember { mutableStateOf("") }
     var dataNascimentoCursor by remember { mutableStateOf(0) }
     var cpfState by remember { mutableStateOf(TextFieldValue("")) }
@@ -50,10 +56,11 @@ fun TelaManejarUsuarios(
 
     val tipoOptions = listOf("ALUNO", "PROFESSOR", "FUNCIONARIO", "DIRETOR")
     val turmas = listOf("Turma 1", "Turma 2", "Turma 3")
-    val alunosMockados = mapOf(
-        "Turma 1" to listOf("Aluno 1", "Aluno 2", "Aluno 3"),
-        "Turma 2" to listOf("Aluno 4", "Aluno 5", "Aluno 6"),
-        "Turma 3" to listOf("Aluno 7", "Aluno 8", "Aluno 9")
+    val usuariosMockados = mapOf(
+        "ALUNO" to listOf("Aluno 1", "Aluno 2", "Aluno 3"),
+        "PROFESSOR" to listOf("Professor 1", "Professor 2"),
+        "FUNCIONARIO" to listOf("Funcionario 1", "Funcionario 2"),
+        "DIRETOR" to listOf("Diretor 1")
     )
 
     Box(
@@ -106,27 +113,70 @@ fun TelaManejarUsuarios(
                 }
             }
 
-            if (!showAlunoList) {
-                // Lista de turmas
-                TurmasList(
-                    turmas = turmas,
-                    onTurmaSelected = { turma ->
-                        selectedTurma = turma
-                        alunosByTurma = alunosMockados[turma].orEmpty()
-                        showAlunoList = true
+            when {
+                selectedUserType == null -> {
+                    Text(
+                        text = "Selecione o tipo de usuário:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    tipoOptions.forEach { tipo ->
+                        Button(
+                            onClick = { selectedUserType = tipo },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Text(text = tipo, color = Color.White)
+                        }
                     }
-                )
-            } else {
-                // Lista de alunos
-                AlunosList(
-                    alunos = alunosByTurma,
-                    onAlunoSelected = { aluno ->
-                        println("Aluno selecionado: $aluno")
-                    },
-                    onBackToTurmas = {
-                        showAlunoList = false
+                }
+                selectedUserType == "ALUNO" -> {
+                    if (!showAlunoList) {
+                        TurmasList(
+                            turmas = turmas,
+                            onTurmaSelected = { turma ->
+                                selectedTurma = turma
+                                alunosByTurma = usuariosMockados["ALUNO"].orEmpty()
+                                showAlunoList = true
+                            },
+                            onBackToUserTypeSelection = {
+                                selectedUserType = null
+                            }
+                        )
+                    } else {
+                        AlunosList(
+                            alunos = alunosByTurma,
+                            onAlunoSelected = { aluno ->
+                                selectedUser = aluno
+                                showEditDialog = true
+                            },
+                            onBackToTurmas = {
+                                showAlunoList = false
+                            }
+                        )
                     }
-                )
+                }
+                else -> {
+                    usuariosMockados[selectedUserType]?.let { usuarios ->
+                        Column {
+                            usuarios.forEach { usuario ->
+                                Button(
+                                    onClick = {
+                                        selectedUser = usuario
+                                        showEditDialog = true
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                ) {
+                                    Text(text = usuario, color = Color.White)
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -139,7 +189,13 @@ fun TelaManejarUsuarios(
             contentAlignment = Alignment.Center
         ) {
             Button(
-                onClick = navigateBack,
+                onClick = {
+                    when {
+                        showAlunoList -> showAlunoList = false
+                        selectedUserType != null -> selectedUserType = null
+                        else -> navigateBack()
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                 modifier = Modifier
                     .width(150.dp)
@@ -154,7 +210,7 @@ fun TelaManejarUsuarios(
         }
     }
 
-    // Diálogo para cadastrar novo usuário
+    // Diálogo de adicionar novo usuário
     if (showAddDialog) {
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
@@ -219,71 +275,16 @@ fun TelaManejarUsuarios(
                         label = { Text("Senha") },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = tipo,
-                            onValueChange = {},
-                            label = { Text("Tipo") },
-                            modifier = Modifier.fillMaxWidth(),
-                            readOnly = true,
-                            trailingIcon = {
-                                IconButton(onClick = { expandedTipo = !expandedTipo }) {
-                                    Icon(
-                                        imageVector = if (expandedTipo) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                        DropdownMenu(
-                            expanded = expandedTipo,
-                            onDismissRequest = { expandedTipo = false }
-                        ) {
-                            tipoOptions.forEach { option ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        tipo = option
-                                        expandedTipo = false
-                                    },
-                                    text = { Text(option) }
-                                )
-                            }
-                        }
-                    }
-
-                    // Exibir mensagem de erro, se houver
-                    errorMessage?.let {
-                        Text(
-                            text = it,
-                            color = Color.Red,
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
                 }
             },
             confirmButton = {
                 Button(
                     onClick = {
-                        if (nome.isEmpty() || !isValidDate(dataNascimento) || telefone.isEmpty() || login.isEmpty() || senha.isEmpty() || tipo.isEmpty() || cpfState.text.length != 14) {
+                        if (nome.isEmpty() || !isValidDate(dataNascimento) || telefone.isEmpty() || login.isEmpty() || senha.isEmpty()) {
                             errorMessage = "Preencha todos os campos corretamente!"
                         } else {
-                            println("Usuário cadastrado: Nome=$nome, CPF=${cpfState.text}, Data Nascimento=$dataNascimento, Telefone=$telefone, Login=$login, Tipo=$tipo")
+                            println("Usuário cadastrado: Nome=$nome, CPF=${cpfState.text}")
                             errorMessage = null
-
-                            // Limpar os campos após salvar
-                            nome = ""
-                            cpfState = TextFieldValue("")
-                            dataNascimento = ""
-                            telefone = ""
-                            telefoneCursor = 0
-                            login = ""
-                            senha = ""
-                            tipo = ""
-                            dataNascimentoCursor = 0
-
                             showAddDialog = false
                         }
                     }
@@ -298,8 +299,52 @@ fun TelaManejarUsuarios(
             }
         )
     }
+
+    // Diálogo de edição
+    if (showEditDialog) {
+        AlertDialog(
+            onDismissRequest = { showEditDialog = false },
+            title = { Text("Editar Usuário") },
+            text = { Text("Aqui você pode editar informações do usuário: $selectedUser.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        println("Usuário editado: $selectedUser")
+                        showEditDialog = false
+                    }
+                ) {
+                    Text("Salvar")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showEditDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
+    // Diálogo de remoção
+    if (showRemoveDialog) {
+        AlertDialog(
+            onDismissRequest = { showRemoveDialog = false },
+            title = { Text("Remover Usuário") },
+            text = { Text("Deseja remover o usuário: $selectedUser?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        println("Usuário removido: $selectedUser")
+                        showRemoveDialog = false
+                    }
+                ) {
+                    Text("Remover")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showRemoveDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 }
-
-
-
-
