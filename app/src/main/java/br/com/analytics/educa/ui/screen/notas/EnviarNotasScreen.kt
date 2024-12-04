@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
-import br.com.analytics.educa.data.model.ValidarEnviarNota
+import br.com.analytics.educa.ui.component.usecase.ValidarEnviarNota
 import br.com.analytics.educa.ui.component.TurmasList
 import br.com.analytics.educa.ui.component.AlunosList
 

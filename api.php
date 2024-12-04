@@ -38,6 +38,68 @@ if ($method === 'GET' && isset($_GET['action'])) {
 
         echo json_encode($forms);
         exit;
+    } elseif ($action === 'getTurmas') {
+        // Endpoint para buscar turmas
+        $stmt = $conn->prepare("SELECT sigla FROM turmas");
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $turmas = [];
+        while ($row = $result->fetch_assoc()) {
+            $turmas[] = $row['sigla'];
+        }
+
+        echo json_encode($turmas);
+        exit;
+    } elseif ($action === 'getUsersByTurma' && isset($_GET['turma'])) {
+        // Endpoint para buscar usuários por turma
+        $turma = $_GET['turma'];
+
+        $stmt = $conn->prepare("
+            SELECT p.login, p.nome, p.telefone, p.tipo
+            FROM pessoa p
+            INNER JOIN aluno a ON p.login = a.login
+            WHERE a.turma = ?
+        ");
+        $stmt->bind_param("s", $turma);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = [
+                "login" => $row['login'],
+                "name" => $row['nome'],
+                "phone" => $row['telefone'],
+                "type" => $row['tipo']
+            ];
+        }
+
+        echo json_encode($users);
+        exit;
+    } elseif ($action === 'getUsersByType' && isset($_GET['type'])) {
+        $type = $_GET['type'];
+        $stmt = $conn->prepare("
+            SELECT login, nome, telefone, tipo 
+            FROM pessoa 
+            WHERE tipo = ?
+        ");
+        $stmt->bind_param("s", $type);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = [
+                "login" => $row['login'],
+                "name" => $row['nome'],
+                "phone" => $row['telefone'],
+                "type" => $row['tipo']
+            ];
+        }
+    
+        echo json_encode($users);
+        exit;
     } elseif ($action === 'getBoletim' && isset($_GET['login'])) {
         $login = $_GET['login'];
         
@@ -205,6 +267,48 @@ if ($method === 'POST') {
         }
 
         $stmt->close();
+    } elseif ($action === 'editUser') {
+        $login = $input['login'] ?? null;
+        $name = $input['name'] ?? null;
+        $phone = $input['phone'] ?? null;
+    
+        if (!$login || !$name || !$phone) {
+            http_response_code(400);    
+            echo json_encode(["success" => false, "message" => "Dados incompletos"]);
+            exit;
+        }
+    
+        $stmt = $conn->prepare("
+            UPDATE pessoa 
+            SET nome = ?, telefone = ? 
+            WHERE login = ?
+        ");
+        $stmt->bind_param("sss", $name, $phone, $login);
+    
+        if ($stmt->execute()) {
+            echo json_encode(["success" => true, "message" => "Usuário atualizado com sucesso"]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Erro ao atualizar usuário"]);
+        }
+        exit;
+    } elseif ($action === 'removeUser') {
+        $login = $input['login'] ?? null;
+    
+        if (!$login) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "Login é obrigatório"]);
+            exit;
+        }
+    
+        $stmt = $conn->prepare("DELETE FROM pessoa WHERE login = ?");
+        $stmt->bind_param("s", $login);
+    
+        if ($stmt->execute()) {
+            echo json_encode(["success" => true, "message" => "Usuário removido com sucesso"]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Erro ao remover usuário"]);
+        }
+        exit;
     } elseif ($action === 'login') {
         $login = $input['username'] ?? null;
         $senha = $input['password'] ?? null;

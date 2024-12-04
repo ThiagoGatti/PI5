@@ -1,4 +1,4 @@
-package br.com.analytics.educa.data.model
+package br.com.analytics.educa.ui.component.usecase
 
 class ValidarEnviarNota {
     fun validarNota(nota: String): Double? {
