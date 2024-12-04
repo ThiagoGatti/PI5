@@ -188,6 +188,29 @@ fun TurmasList(
 }
 
 @Composable
+fun TurmasListNotas(
+    turmas: List<String>,
+    onTurmaSelected: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Listagem de turmas
+        turmas.forEach { turma ->
+            Button(
+                onClick = { onTurmaSelected(turma) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(text = turma, color = Color.White)
+            }
+        }
+    }
+}
+
+
+@Composable
 fun UsuarioList(
     usuarios: List<String>,
     onUsuarioSelected: (String) -> Unit,

@@ -16,6 +16,7 @@ import androidx.compose.foundation.background
 import br.com.analytics.educa.ui.component.usecase.EnviarNotaUseCase
 import br.com.analytics.educa.ui.component.TurmasList
 import br.com.analytics.educa.ui.component.AlunosList
+import br.com.analytics.educa.ui.component.TurmasListNotas
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,20 +85,17 @@ fun EnviarNotasScreen(
 
             // Listar Turmas
             if (turmaSelecionada == null) {
-                TurmasList(
+                TurmasListNotas(
                     turmas = turmas,
                     onTurmaSelected = { turmaSelecionada = it },
-                    onBackToUserTypeSelection = TODO()
                 )
             } else if (alunoSelecionado == null) {
-                // Listar Alunos
                 AlunosList(
                     alunos = alunos,
                     onAlunoSelected = { alunoSelecionado = it },
                     onBackToTurmas = { turmaSelecionada = null }
                 )
             } else {
-                // Formulário para Envio de Nota e Faltas
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
