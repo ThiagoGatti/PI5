@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen.forms
+package br.com.analytics.educa.ui.screen.users.fields
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

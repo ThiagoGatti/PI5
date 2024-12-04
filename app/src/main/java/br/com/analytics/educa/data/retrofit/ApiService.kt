@@ -60,6 +60,15 @@ interface ApiService {
         @Query("action") action: String = "getUsersByTurma",
         @Query("turma") turma: String
     ): Call<List<User>>
+
+    @POST("api.php")
+    fun editUserCompleto(@Body user: UserCompleto): Call<ApiResponse>
+
+    @GET("api.php")
+    fun getUserCompleto(
+        @Query("action") action: String = "getUserDetails",
+        @Query("login") login: String
+    ): Call<UserCompleto>
 }
 
 data class LoginRequest(
@@ -122,4 +131,15 @@ data class UserEditRequest(
 data class UserRemoveRequest(
     val action: String = "removeUser",
     val login: String
+)
+
+data class UserCompleto(
+    val login: String,
+    val name: String,
+    val cpf: String,
+    val birthDate: String,
+    val phone: String,
+    val type: String,
+    val idEscola: Int,
+    val components: Map<String, Any> = emptyMap() // Campos específicos do tipo
 )

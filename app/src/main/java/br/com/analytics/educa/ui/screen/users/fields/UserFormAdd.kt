@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.screen.users
+package br.com.analytics.educa.ui.screen.users.fields
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.ui.component.entradaTextoCPF
 import br.com.analytics.educa.ui.component.fomaterValidarDataCursor
 import br.com.analytics.educa.ui.component.formaterCelular
-import br.com.analytics.educa.ui.screen.forms.SpecificUserFields
 
 
 @OptIn(ExperimentalMaterial3Api::class)

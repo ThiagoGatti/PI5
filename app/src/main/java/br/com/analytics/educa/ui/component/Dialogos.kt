@@ -5,7 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import br.com.analytics.educa.ui.screen.users.UserForm
+import br.com.analytics.educa.data.retrofit.UserCompleto
+import br.com.analytics.educa.ui.screen.users.fields.UserForm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +87,7 @@ fun DialogosUsuarios(
     showAddDialog: Boolean,
     showEditDialog: Boolean,
     showRemoveDialog: Boolean,
-    selectedUser: String?,
+    selectedUser: UserCompleto?, // Corrigido para UserCompleto
     onDismissAdd: () -> Unit,
     onDismissEdit: () -> Unit,
     onDismissRemove: () -> Unit
@@ -95,35 +96,109 @@ fun DialogosUsuarios(
         AddUserDialog(onDismiss = onDismissAdd)
     }
 
-    if (showEditDialog) {
+    if (showEditDialog && selectedUser != null) {
         EditUserDialog(
-            selectedUser = selectedUser,
-            onDismiss = onDismissEdit
+            user = selectedUser,
+            onDismiss = onDismissEdit,
+            onSave = { updatedUser ->
+                println("Usuário atualizado: $updatedUser") // Adicionar lógica para salvar
+            }
         )
     }
 
-    if (showRemoveDialog) {
+    if (showRemoveDialog && selectedUser != null) {
         RemoveUserDialog(
-            selectedUser = selectedUser,
-            onDismiss = onDismissRemove
+            user = selectedUser,
+            onDismiss = onDismissRemove,
+            onConfirm = {
+                println("Usuário removido: ${selectedUser.login}") // Adicionar lógica para remover
+            }
         )
     }
 }
 
 @Composable
 fun EditUserDialog(
-    selectedUser: String?,
-    onDismiss: () -> Unit
+    user: UserCompleto,
+    onDismiss: () -> Unit,
+    onSave: (UserCompleto) -> Unit
 ) {
+    var name by remember { mutableStateOf(user.name) }
+    var cpf by remember { mutableStateOf(user.cpf) }
+    var birthDate by remember { mutableStateOf(user.birthDate) }
+    var phone by remember { mutableStateOf(user.phone) }
+    var idEscola by remember { mutableStateOf(user.idEscola.toString()) }
+    var components by remember { mutableStateOf(user.components) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Editar Usuário") },
-        text = { Text("Aqui você pode editar informações do usuário: $selectedUser.") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Nome") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = cpf,
+                    onValueChange = { cpf = it },
+                    label = { Text("CPF") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = { Text("Telefone") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = birthDate,
+                    onValueChange = { birthDate = it },
+                    label = { Text("Data de Nascimento (DD/MM/YYYY)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = idEscola,
+                    onValueChange = { idEscola = it },
+                    label = { Text("ID da Escola") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                if (components.isNotEmpty()) {
+                    Text("Componentes Específicos", style = MaterialTheme.typography.bodyMedium)
+                    components.forEach { (key, value) ->
+                        OutlinedTextField(
+                            value = value.toString(),
+                            onValueChange = {
+                                components = components.toMutableMap().apply { this[key] = it }
+                            },
+                            label = { Text(key.replaceFirstChar { it.uppercase() }) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+            }
+        },
         confirmButton = {
             Button(
                 onClick = {
-                    println("Usuário editado: $selectedUser")
-                    onDismiss()
+                    onSave(
+                        user.copy(
+                            name = name,
+                            cpf = cpf,
+                            birthDate = birthDate,
+                            phone = phone,
+                            idEscola = idEscola.toIntOrNull() ?: user.idEscola,
+                            components = components
+                        )
+                    )
                 }
             ) {
                 Text("Salvar")
@@ -139,21 +214,48 @@ fun EditUserDialog(
 
 @Composable
 fun RemoveUserDialog(
-    selectedUser: String?,
-    onDismiss: () -> Unit
+    user: UserCompleto, // Atualizado para UserCompleto
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Remover Usuário") },
-        text = { Text("Deseja remover o usuário: $selectedUser?") },
+        text = { Text("Tem certeza de que deseja remover o usuário ${user.name}?") },
         confirmButton = {
-            Button(
-                onClick = {
-                    println("Usuário removido: $selectedUser")
-                    onDismiss()
-                }
-            ) {
+            Button(onClick = onConfirm) {
                 Text("Remover")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+
+// Diálogo de Ações
+@Composable
+fun ActionDialog(
+    user: UserCompleto,
+    onEdit: () -> Unit,
+    onRemove: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Ações para ${user.name}") },
+        text = { Text("Escolha uma ação:") },
+        confirmButton = {
+            Column {
+                Button(onClick = onEdit, modifier = Modifier.fillMaxWidth()) {
+                    Text("Editar")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = onRemove, modifier = Modifier.fillMaxWidth()) {
+                    Text("Remover")
+                }
             }
         },
         dismissButton = {
