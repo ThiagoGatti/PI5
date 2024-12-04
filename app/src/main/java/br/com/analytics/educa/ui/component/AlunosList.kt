@@ -12,23 +12,20 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun AlunosList(
     alunos: List<String>,
-    turma: String,
     onAlunoSelected: (String) -> Unit,
     onBackToTurmas: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "Turma Selecionada: $turma",
-            color = Color.White,
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center,
+        Button(
+            onClick = onBackToTurmas,
             modifier = Modifier
-                .padding(vertical = 8.dp)
                 .fillMaxWidth()
-        )
-
+                .padding(vertical = 8.dp)
+        ) {
+            Text("Voltar para Turmas")
+        }
 
         alunos.forEach { aluno ->
             Button(
@@ -40,14 +37,6 @@ fun AlunosList(
                 Text(aluno)
             }
         }
-
-        Button(
-            onClick = { onBackToTurmas() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            Text("Voltar para Seleção de Turma")
-        }
     }
 }
+

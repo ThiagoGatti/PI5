@@ -92,7 +92,6 @@ fun EnviarNotasScreen(
                 // Listar Alunos
                 AlunosList(
                     alunos = alunos,
-                    turma = turmaSelecionada!!,
                     onAlunoSelected = { alunoSelecionado = it },
                     onBackToTurmas = { turmaSelecionada = null }
                 )
@@ -210,4 +209,5 @@ fun EnviarNotasScreen(
         }
     }
 }
+
 
