@@ -116,14 +116,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-
                 composable(route = "${Route.telaNotas}/{username}") { backStackEntry ->
                     val username = backStackEntry.arguments?.getString("username").toString()
                     NotasScreen(
                         navigateBack = { navController.popBackStack() }
                     )
                 }
-
 
                 composable(route = "${Route.telaDadosEscola}/{username}/{userType}") { backStackEntry ->
                     val username = backStackEntry.arguments?.getString("username").toString()
@@ -143,8 +141,6 @@ class MainActivity : ComponentActivity() {
                         navigateBack = { navController.popBackStack() }
                     )
                 }
-
-
 
                 composable(route = "${Route.telaGraficoBarra}/{username}/{userType}") { backStackEntry ->
                     TelaGraficoBarra(
