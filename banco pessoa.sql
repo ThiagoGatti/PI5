@@ -19,7 +19,7 @@ CREATE TABLE pessoa (
     data_nascimento DATE NOT NULL,
     telefone VARCHAR(15),
     tipo ENUM('ALUNO', 'PROFESSOR', 'FUNCIONARIO', 'DIRETOR') NOT NULL,
-    id_escola INT NOT NULL,
+    id_escola INT DEFAULT 1 NOT NULL,
     FOREIGN KEY (id_escola) REFERENCES escola(id) ON DELETE CASCADE,
     FOREIGN KEY (login) REFERENCES usuario(login) ON DELETE CASCADE
 );
