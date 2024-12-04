@@ -25,9 +25,8 @@ CREATE TABLE pessoa (
 );
 
 CREATE TABLE turmas (
-    sigla VARCHAR(2) NOT NULL,
-    materia VARCHAR(100) NOT NULL,
-    PRIMARY KEY (sigla, materia)
+    sigla VARCHAR(2) NOT NULL PRIMARY KEY,
+    materias JSON NOT NULL
 );
 
 CREATE TABLE aluno (
@@ -91,15 +90,10 @@ CREATE TABLE respostas (
 INSERT INTO escola (nome, endereco) 
 VALUES ('Escola Estadual Modelo', 'Rua Principal, 123, Cidade Exemplo');
 
-INSERT INTO turmas (sigla, materia) 
-VALUES 
-('3B', 'Matemática'),
-('3B', 'Português'),
-('3B', 'História'),
-('3B', 'Ciências'),
-('2A', 'Matemática'),
-('2A', 'História'),
-('1C', 'Ciências');
+INSERT INTO turmas (sigla, materias) VALUES
+('3B', '["Matemática", "Português", "História", "Ciências"]'),
+('2A', '["Matemática", "História"]'),
+('1C', '["Ciências"]');
 
 INSERT INTO usuario (login, senha) VALUES 
 ('aluno123', SHA2('123', 256)),
