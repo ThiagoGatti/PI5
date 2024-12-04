@@ -56,7 +56,7 @@ fun TelaGraficoPizza(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Comparação dos Usuários",
+                    text = "Comparação de Usuários",
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.White,
                     modifier = Modifier.padding(bottom = 16.dp)
