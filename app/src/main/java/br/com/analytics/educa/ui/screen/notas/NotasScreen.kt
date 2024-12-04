@@ -6,6 +6,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -14,118 +16,138 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.com.analytics.educa.data.model.buscarBoletim
+import br.com.analytics.educa.data.retrofit.Boletim
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 @Composable
 fun NotasScreen(
+    login: String,
     navigateBack: () -> Unit
 ) {
-    val notas = listOf(
-        Triple("Matemática", 8.5, 90),
-        Triple("História", 7.8, 85),
-        Triple("Química", 9.2, 95),
-        Triple("Física", 6.4, 70),
-        Triple("Português", 8.9, 92)
-    )
+    var boletim by remember { mutableStateOf<List<Boletim>>(emptyList()) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Busca os dados ao carregar a tela
+    LaunchedEffect (Unit) {
+        buscarBoletim(
+            login = login,
+            onResult = { dados ->
+                boletim = dados
+            },
+            onError = { error ->
+                errorMessage = error
+            }
+        )
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7)) // Gradiente de fundo
+                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))
                 )
             )
             .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Título
+        if (errorMessage != null) {
             Text(
-                text = "Notas e Frequência",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth()
+                text = "Erro: $errorMessage",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.align(Alignment.Center)
             )
-
-            Text(
-                text = "Bem-vindo!",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = Color.White,
-                textAlign = TextAlign.Center,
+        } else {
+            Column(
                 modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .fillMaxWidth()
-            )
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = "Notas e Frequência",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth()
+                )
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                notas.forEach { (disciplina, nota, frequencia) ->
-                    Card(
+                if (boletim.isEmpty()) {
+                    Text(
+                        text = "Nenhum dado encontrado.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier
+                            .padding(vertical = 16.dp)
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                        Row(
+                    )
+                } else {
+                    boletim.forEach { item ->
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(vertical = 8.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
-                            Column(modifier = Modifier.weight(2f)) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(2f)) {
+                                    Text(
+                                        text = item.materia,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp,
+                                        color = Color.Black
+                                    )
+                                    Text(
+                                        text = "Nota: ${item.nota}",
+                                        fontSize = 14.sp,
+                                        color = Color.Black
+                                    )
+                                }
                                 Text(
-                                    text = disciplina,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = Color.Black
-                                )
-                                Text(
-                                    text = "Nota: $nota",
+                                    text = "Freq: ${item.presenca}%",
+                                    fontWeight = FontWeight.Medium,
                                     fontSize = 14.sp,
-                                    color = Color.Black
+                                    color = Color.Gray,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.weight(1f)
                                 )
                             }
-                            Text(
-                                text = "Freq: $frequencia%",
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                                color = Color.Gray,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier.weight(1f)
-                            )
                         }
                     }
                 }
             }
-        }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(
-                onClick = navigateBack,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+            Box(
                 modifier = Modifier
-                    .width(150.dp)
-                    .height(50.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "Voltar",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.White
-                )
+                Button(
+                    onClick = navigateBack,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Voltar",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
+                    )
+                }
             }
         }
     }

@@ -31,6 +31,12 @@ interface ApiService {
         @Query("action") action: String = "schoolPerformance",
         @Query("login") login: String
     ): Call<SchoolPerformanceResponse>
+
+    @GET("api.php")
+    fun getBoletim(
+        @Query("action") action: String = "getBoletim",
+        @Query("login") login: String
+    ): Call<List<Boletim>>
 }
 
 data class LoginRequest(
@@ -68,4 +74,10 @@ data class ResponseBySchool(
 data class SchoolPerformanceResponse(
     val nome_escola: String?,
     val media_nota: Float
+)
+
+data class Boletim(
+    val materia: String,
+    val nota: Float,
+    val presenca: Int
 )

@@ -123,8 +123,8 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(route = "${Route.telaNotas}/{username}") { backStackEntry ->
-                    val username = backStackEntry.arguments?.getString("username").toString()
                     NotasScreen(
+                        backStackEntry.arguments?.getString("username").toString(),
                         navigateBack = { navController.popBackStack() }
                     )
                 }

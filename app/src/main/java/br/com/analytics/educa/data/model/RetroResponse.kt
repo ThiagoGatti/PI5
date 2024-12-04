@@ -216,3 +216,26 @@ fun mediaEscola(mediasPorTipo : Map<String, Float>, mediaNotas : Float): Float {
     mediaEscola = String.format("%.1f", mediaEscola).toFloat()
     return mediaEscola
 }
+
+fun buscarBoletim(
+    login: String,
+    onResult: (List<Boletim>) -> Unit,
+    onError: (String) -> Unit = {}
+) {
+    apiService.getBoletim(login = login).enqueue(object : Callback<List<Boletim>> {
+        override fun onResponse(call: Call<List<Boletim>>, response: Response<List<Boletim>>) {
+            if (response.isSuccessful) {
+                val boletim = response.body() ?: emptyList()
+                onResult(boletim)
+            } else {
+                val errorMessage = response.errorBody()?.string() ?: "Erro desconhecido"
+                onError("Erro na resposta: $errorMessage")
+            }
+        }
+
+        override fun onFailure(call: Call<List<Boletim>>, t: Throwable) {
+            val errorMessage = t.localizedMessage ?: "Falha na conexão"
+            onError("Falha ao buscar boletim: $errorMessage")
+        }
+    })
+}

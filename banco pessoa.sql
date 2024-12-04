@@ -116,10 +116,10 @@ VALUES ('func123', 'Secretaria');
 
 INSERT INTO boletim (login_aluno, materia, nota, presenca) 
 VALUES 
-('aluno123', 'Matemática', 8.5, 95.0),
-('aluno123', 'Português', 7.0, 90.0),
-('aluno123', 'História', 9.0, 98.0),
-('aluno123', 'Ciências', 6.5, 85.0);
+('aluno123', 'Matemática', 8.5, 95),
+('aluno123', 'Português', 7.0, 90),
+('aluno123', 'História', 9.0, 98),
+('aluno123', 'Ciências', 6.5, 85);
 
 INSERT INTO escola (nome, endereco) 
 VALUES ('Escola Estadual Nova', 'Avenida Secundária, 456, Outra Cidade');

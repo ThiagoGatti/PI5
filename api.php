@@ -38,6 +38,29 @@ if ($method === 'GET' && isset($_GET['action'])) {
 
         echo json_encode($forms);
         exit;
+    } elseif ($action === 'getBoletim' && isset($_GET['login'])) {
+        $login = $_GET['login'];
+        
+        $stmt = $conn->prepare("
+            SELECT materia, nota, presenca
+            FROM boletim
+            WHERE login_aluno = ?
+        ");
+        $stmt->bind_param("s", $login);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $boletim = [];
+        while ($row = $result->fetch_assoc()) {
+            $boletim[] = [
+                "materia" => $row['materia'],
+                "nota" => round($row['nota'], 2),
+                "presenca" => $row['presenca']
+            ];
+        }
+        
+        echo json_encode($boletim);
+        exit;
     } elseif ($action === 'schoolPerformance' && isset($_GET['login'])) {
         $login = $_GET['login'];
     
