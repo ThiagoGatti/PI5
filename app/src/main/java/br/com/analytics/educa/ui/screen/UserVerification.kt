@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import br.com.analytics.educa.data.model.autenticarUsuario
 import br.com.analytics.educa.data.retrofit.ApiService
 import br.com.analytics.educa.data.retrofit.LoginRequest
 import br.com.analytics.educa.data.retrofit.LoginResponse
@@ -79,34 +80,4 @@ fun UserVerification(
             }
         }
     }
-}
-
-fun autenticarUsuario(
-    username: String,
-    password: String,
-    onSuccess: (String, String) -> Unit,
-    onFailure: (String) -> Unit
-) {
-    val apiService = RetrofitClient.createService(ApiService::class.java)
-    val loginRequest = LoginRequest("login", username, password)
-
-    apiService.autenticarUsuario(loginRequest).enqueue(object : Callback<LoginResponse> {
-        override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-            if (response.isSuccessful) {
-                val loginResponse = response.body()
-                if (loginResponse != null && loginResponse.success) {
-                    onSuccess(loginResponse.nome ?: "Usuário", loginResponse.tipo ?: "Desconhecido")
-                } else {
-                    onFailure(loginResponse?.message ?: "Erro desconhecido")
-                }
-            } else {
-                onFailure("Erro no servidor: ${response.message()}")
-            }
-        }
-
-        override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-            onFailure("Falha na conexão: ${t.message}")
-        }
-    }
-    )
 }

@@ -1,16 +1,13 @@
 package br.com.analytics.educa.data.model
 
-import br.com.analytics.educa.data.retrofit.ApiResponse
-import br.com.analytics.educa.data.retrofit.ApiService
-import br.com.analytics.educa.data.retrofit.ResponseBySchool
-import br.com.analytics.educa.data.retrofit.ResponseRequest
-import br.com.analytics.educa.data.retrofit.RetrofitClient
+import br.com.analytics.educa.data.retrofit.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+val apiService = RetrofitClient.createService(ApiService::class.java)
+
 fun postForm(username: String, userType: String, formName: String, answers: Map<String, Int>) {
-    val apiService = RetrofitClient.createService(ApiService::class.java)
 
     val responseRequest = ResponseRequest(
         action = "saveAnswers",
@@ -37,13 +34,42 @@ fun postForm(username: String, userType: String, formName: String, answers: Map<
     })
 }
 
+fun autenticarUsuario(
+    username: String,
+    password: String,
+    onSuccess: (String, String) -> Unit,
+    onFailure: (String) -> Unit
+) {
+    val apiService = RetrofitClient.createService(ApiService::class.java)
+    val loginRequest = LoginRequest("login", username, password)
+
+    apiService.autenticarUsuario(loginRequest).enqueue(object : Callback<LoginResponse> {
+        override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+            if (response.isSuccessful) {
+                val loginResponse = response.body()
+                if (loginResponse != null && loginResponse.success) {
+                    onSuccess(loginResponse.nome ?: "Usuário", loginResponse.tipo ?: "Desconhecido")
+                } else {
+                    onFailure(loginResponse?.message ?: "Erro desconhecido")
+                }
+            } else {
+                onFailure("Erro no servidor: ${response.message()}")
+            }
+        }
+
+        override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+            onFailure("Falha na conexão: ${t.message}")
+        }
+    }
+    )
+}
+
 fun buscarFormsRespondidos(
     userType: String,
     login: String,
     onResult: (Set<String>) -> Unit,
     onError: (String) -> Unit = {}
 ) {
-    val apiService = RetrofitClient.createService(ApiService::class.java)
     apiService.getFormsRespondidos(userType = userType, login = login).enqueue(object : Callback<List<String>> {
         override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
             if (response.isSuccessful) {
@@ -70,7 +96,6 @@ fun buscarRespostasPorEscola(
     onResult: (List<ResponseBySchool>) -> Unit,
     onError: (String) -> Unit = {}
 ) {
-    val apiService = RetrofitClient.createService(ApiService::class.java)
     apiService.getResponsesBySchool(login = login).enqueue(object : Callback<List<ResponseBySchool>> {
         override fun onResponse(
             call: Call<List<ResponseBySchool>>,
@@ -136,4 +161,58 @@ fun calcularMediaGeralPorTipoPessoa(agrupamento: Map<String, Map<String, Map<Str
     }
 
     return mediasPorTipoPessoa
+}
+
+fun buscarDadosEscola(
+    login: String,
+    onResult: (String, Float, Map<String, Float>) -> Unit,
+    onError: (String) -> Unit = {}
+) {
+    apiService.getSchoolPerformance(login = login).enqueue(object : Callback<SchoolPerformanceResponse> {
+        override fun onResponse(
+            call: Call<SchoolPerformanceResponse>,
+            response: Response<SchoolPerformanceResponse>
+        ) {
+            if (response.isSuccessful) {
+                val schoolData = response.body()
+                if (schoolData != null) {
+                    val nomeEscola = schoolData.nome_escola
+                    val mediaNotas = schoolData.media_nota
+
+                    buscarRespostasPorEscola(
+                        login = login,
+                        onResult = { respostas ->
+                            val agrupamento = agruparRespostasPorTipoPessoa(respostas)
+                            val mediasPorTipoPessoa = calcularMediaGeralPorTipoPessoa(agrupamento)
+                            onResult(nomeEscola.toString(), mediaNotas, mediasPorTipoPessoa)
+                        },
+                        onError = { error ->
+                            onError("Erro ao buscar respostas: $error")
+                        }
+                    )
+                } else {
+                    onError("Erro: Resposta inválida do servidor")
+                }
+            } else {
+                val errorMessage = response.errorBody()?.string() ?: "Erro desconhecido"
+                onError("Erro na resposta: $errorMessage")
+            }
+        }
+
+        override fun onFailure(call: Call<SchoolPerformanceResponse>, t: Throwable) {
+            val errorMessage = t.localizedMessage ?: "Falha na conexão"
+            onError("Falha ao buscar dados da escola: $errorMessage")
+        }
+    })
+}
+
+fun mediaEscola(mediasPorTipo : Map<String, Float>, mediaNotas : Float): Float {
+    var mediaEscola : Float = 0f
+    mediasPorTipo.forEach { (_, media) ->
+        mediaEscola = media + mediaEscola
+    }
+    mediaEscola = mediaNotas + mediaEscola
+    mediaEscola = mediaEscola / (mediasPorTipo.size + 1)
+    mediaEscola = String.format("%.1f", mediaEscola).toFloat()
+    return mediaEscola
 }

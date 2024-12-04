@@ -78,7 +78,6 @@ if ($method === 'GET' && isset($_GET['action'])) {
         }
     
         echo json_encode([
-            "success" => true,
             "nome_escola" => $nomeEscola,
             "media_nota" => round($mediaNotas, 1)
         ]);

@@ -28,8 +28,9 @@ interface ApiService {
 
     @GET("api.php")
     fun getSchoolPerformance(
-        @Query("action") action: String = "schoolPerformance"
-    ): Call<List<SchoolPerformance>>
+        @Query("action") action: String = "schoolPerformance",
+        @Query("login") login: String
+    ): Call<SchoolPerformanceResponse>
 }
 
 data class LoginRequest(
@@ -64,8 +65,7 @@ data class ResponseBySchool(
     val respostas: Map<String, Int>
 )
 
-data class SchoolPerformance(
-    val materia: String,
-    val media_nota: Float,
-    val media_presenca: Float
+data class SchoolPerformanceResponse(
+    val nome_escola: String?,
+    val media_nota: Float
 )
