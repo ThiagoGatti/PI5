@@ -8,11 +8,17 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.analytics.educa.ui.forms.Formulario
-import br.com.analytics.educa.ui.menu.Menu
-import br.com.analytics.educa.ui.menu.MenuForm
+import br.com.analytics.educa.ui.screen.forms.Formulario
+import br.com.analytics.educa.ui.screen.menu.Menu
+import br.com.analytics.educa.ui.screen.menu.MenuForm
 import br.com.analytics.educa.ui.route.Route
 import br.com.analytics.educa.ui.screen.*
+import br.com.analytics.educa.ui.screen.graphs.TelaGraficoBarra
+import br.com.analytics.educa.ui.screen.graphs.TelaGraficoPizza
+import br.com.analytics.educa.ui.screen.login.InitialScreen
+import br.com.analytics.educa.ui.screen.notas.EnviarNotasScreen
+import br.com.analytics.educa.ui.screen.notas.NotasScreen
+import br.com.analytics.educa.ui.screen.users.TelaManejarUsuarios
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
