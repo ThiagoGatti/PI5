@@ -7,8 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import br.com.analytics.educa.ui.component.formatters.CpfTextField
-import br.com.analytics.educa.ui.component.formatters.formatPhoneNumberPreservingCursor
+import br.com.analytics.educa.ui.component.entradaTextoCPF
+import br.com.analytics.educa.ui.component.formaterCelular
 import br.com.analytics.educa.ui.screen.forms.SpecificUserFields
 import formatAndValidateDatePreservingCursor
 
@@ -37,7 +37,7 @@ fun UserForm(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
-        CpfTextField(
+        entradaTextoCPF(
             value = cpfState,
             onValueChange = { cpfState = it },
             modifier = Modifier.fillMaxWidth()
@@ -63,7 +63,7 @@ fun UserForm(
         OutlinedTextField(
             value = TextFieldValue(telefone, TextRange(telefoneCursor)),
             onValueChange = { input ->
-                val (formatted, cursor) = formatPhoneNumberPreservingCursor(input.text, input.selection.start)
+                val (formatted, cursor) = formaterCelular(input.text, input.selection.start)
                 telefone = formatted
                 telefoneCursor = cursor
             },

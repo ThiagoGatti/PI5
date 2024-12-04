@@ -1,6 +1,6 @@
-package br.com.analytics.educa.domain.usecase
+package br.com.analytics.educa.data.model
 
-class EnviarNotaUseCase {
+class ValidarEnviarNota {
     fun validarNota(nota: String): Double? {
         val notaDouble = nota.toDoubleOrNull()
         return if (notaDouble != null && notaDouble in 0.0..10.0) notaDouble else null

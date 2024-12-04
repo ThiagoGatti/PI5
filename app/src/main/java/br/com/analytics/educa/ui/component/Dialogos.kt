@@ -1,4 +1,4 @@
-package br.com.analytics.educa.ui.component.dialog
+package br.com.analytics.educa.ui.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -76,6 +76,89 @@ fun AddUserDialog(
                 }
             ) {
                 Text(if (step == 1) "Cancelar" else "Voltar")
+            }
+        }
+    )
+}
+
+@Composable
+fun DialogosUsuarios(
+    showAddDialog: Boolean,
+    showEditDialog: Boolean,
+    showRemoveDialog: Boolean,
+    selectedUser: String?,
+    onDismissAdd: () -> Unit,
+    onDismissEdit: () -> Unit,
+    onDismissRemove: () -> Unit
+) {
+    if (showAddDialog) {
+        AddUserDialog(onDismiss = onDismissAdd)
+    }
+
+    if (showEditDialog) {
+        EditUserDialog(
+            selectedUser = selectedUser,
+            onDismiss = onDismissEdit
+        )
+    }
+
+    if (showRemoveDialog) {
+        RemoveUserDialog(
+            selectedUser = selectedUser,
+            onDismiss = onDismissRemove
+        )
+    }
+}
+
+@Composable
+fun EditUserDialog(
+    selectedUser: String?,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar Usuário") },
+        text = { Text("Aqui você pode editar informações do usuário: $selectedUser.") },
+        confirmButton = {
+            Button(
+                onClick = {
+                    println("Usuário editado: $selectedUser")
+                    onDismiss()
+                }
+            ) {
+                Text("Salvar")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+
+@Composable
+fun RemoveUserDialog(
+    selectedUser: String?,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Remover Usuário") },
+        text = { Text("Deseja remover o usuário: $selectedUser?") },
+        confirmButton = {
+            Button(
+                onClick = {
+                    println("Usuário removido: $selectedUser")
+                    onDismiss()
+                }
+            ) {
+                Text("Remover")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancelar")
             }
         }
     )
