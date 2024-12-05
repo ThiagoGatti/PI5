@@ -185,7 +185,8 @@ if ($method === 'POST') {
             $turmas = $components['turmas'] ?? [];
             if ($materia && !empty($turmas)) {
                 $stmt = $conn->prepare("INSERT INTO professor (login, materia, turmas) VALUES (?, ?, ?)");
-                $stmt->bind_param("sss", $login, $materia, json_encode($turmas));
+                $turmasJson = json_encode($turmas);
+                $stmt->bind_param("sss", $login, $materia, $turmasJson);
                 $stmt->execute();
             }
         } elseif ($type === 'FUNCIONARIO') {
