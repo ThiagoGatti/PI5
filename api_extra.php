@@ -200,7 +200,7 @@ if ($method === 'POST') {
     
         echo json_encode(["success" => true, "message" => "Usuário criado com sucesso"]);
         exit;
-    } elseif ($action === 'editUserCompleto') {
+    } elseif ($action === 'updateUserCompleto') {
         $login = $input['login'] ?? null;
         $name = $input['name'] ?? null;
         $cpf = $input['cpf'] ?? null;
@@ -211,57 +211,78 @@ if ($method === 'POST') {
         $components = $input['components'] ?? [];
     
         if (!$login || !$name || !$cpf || !$birthDate || !$phone || !$type) {
-            http_response_code(400);
-            echo json_encode(["success" => false, "message" => "Dados incompletos"]);
+            echo json_encode(["success" => false, "message" => "Dados incompletos para edição"]);
             exit;
         }
     
-        $stmt = $conn->prepare("SELECT login FROM pessoa WHERE login = ?");
-        $stmt->bind_param("s", $login);
-        $stmt->execute();
-        if ($stmt->get_result()->num_rows === 0) {
-            echo json_encode(["success" => false, "message" => "Usuário não encontrado"]);
+        // Atualizar informações gerais do usuário na tabela `pessoa`
+        $stmt = $conn->prepare("
+            UPDATE pessoa 
+            SET nome = ?, cpf = ?, data_nascimento = ?, telefone = ?, tipo = ?
+            WHERE login = ?
+        ");
+        $stmt->bind_param("ssssss", $name, $cpf, $birthDate, $phone, $type, $login);
+        if (!$stmt->execute()) {
+            echo json_encode(["success" => false, "message" => "Erro ao atualizar na tabela pessoa: " . $stmt->error]);
             exit;
         }
     
-        $stmt = $conn->prepare("UPDATE pessoa SET nome = ?, cpf = ?, data_nascimento = ?, telefone = ? WHERE login = ?");
-        $stmt->bind_param("sssss", $name, $cpf, $birthDate, $phone, $login);
-        $stmt->execute();
-    
+        // Atualizar senha, se fornecida
         if ($password) {
             $hashedPassword = hash('sha256', $password);
             $stmt = $conn->prepare("UPDATE usuario SET senha = ? WHERE login = ?");
             $stmt->bind_param("ss", $hashedPassword, $login);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                echo json_encode(["success" => false, "message" => "Erro ao atualizar senha: " . $stmt->error]);
+                exit;
+            }
         }
     
-        handleComponents($conn, $login, $type, $components);
+        // Atualizar informações específicas do tipo de usuário
+        if ($type === 'ALUNO') {
+            $turma = $components['turma'] ?? null;
+            if ($turma) {
+                $stmt = $conn->prepare("
+                    INSERT INTO aluno (login, turma) VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE turma = VALUES(turma)
+                ");
+                $stmt->bind_param("ss", $login, $turma);
+                if (!$stmt->execute()) {
+                    echo json_encode(["success" => false, "message" => "Erro ao atualizar informações de aluno"]);
+                    exit;
+                }
+            }
+        } elseif ($type === 'PROFESSOR') {
+            $materia = $components['materia'] ?? null;
+            $turmas = $components['turmas'] ?? [];
+            if ($materia && !empty($turmas)) {
+                $turmasJson = json_encode($turmas);
+                $stmt = $conn->prepare("
+                    INSERT INTO professor (login, materia, turmas) VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE materia = VALUES(materia), turmas = VALUES(turmas)
+                ");
+                $stmt->bind_param("sss", $login, $materia, $turmasJson);
+                if (!$stmt->execute()) {
+                    echo json_encode(["success" => false, "message" => "Erro ao atualizar informações de professor"]);
+                    exit;
+                }
+            }
+        } elseif ($type === 'FUNCIONARIO') {
+            $funcao = $components['funcao'] ?? null;
+            if ($funcao) {
+                $stmt = $conn->prepare("
+                    INSERT INTO funcionario (login, funcao) VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE funcao = VALUES(funcao)
+                ");
+                $stmt->bind_param("ss", $login, $funcao);
+                if (!$stmt->execute()) {
+                    echo json_encode(["success" => false, "message" => "Erro ao atualizar informações de funcionário"]);
+                    exit;
+                }
+            }
+        }
     
         echo json_encode(["success" => true, "message" => "Usuário atualizado com sucesso"]);
-        exit;
-    } elseif ($action === 'editUser') {
-        $login = $input['login'] ?? null;
-        $name = $input['name'] ?? null;
-        $phone = $input['phone'] ?? null;
-    
-        if (!$login || !$name || !$phone) {
-            http_response_code(400);    
-            echo json_encode(["success" => false, "message" => "Dados incompletos"]);
-            exit;
-        }
-    
-        $stmt = $conn->prepare("
-            UPDATE pessoa 
-            SET nome = ?, telefone = ? 
-            WHERE login = ?
-        ");
-        $stmt->bind_param("sss", $name, $phone, $login);
-    
-        if ($stmt->execute()) {
-            echo json_encode(["success" => true, "message" => "Usuário atualizado com sucesso"]);
-        } else {
-            echo json_encode(["success" => false, "message" => "Erro ao atualizar usuário"]);
-        }
         exit;
     } else {
         http_response_code(400);
@@ -272,35 +293,6 @@ if ($method === 'POST') {
     echo json_encode(["success" => false, "message" => "Método não permitido"]);
 }
 
-function handleComponents($conn, $login, $type, $components) {
-    if ($type === 'ALUNO') {
-        $turma = $components['turma'] ?? null;
-        if ($turma) {
-            $stmt = $conn->prepare("INSERT INTO turmas (sigla) VALUES (?) ON DUPLICATE KEY UPDATE sigla = sigla");
-            $stmt->bind_param("s", $turma);
-            $stmt->execute();
-
-            $stmt = $conn->prepare("INSERT INTO aluno (login, turma) VALUES (?, ?) ON DUPLICATE KEY UPDATE turma = VALUES(turma)");
-            $stmt->bind_param("ss", $login, $turma);
-            $stmt->execute();
-        }
-    } elseif ($type === 'PROFESSOR') {
-        $materia = $components['materia'] ?? null;
-        $turmas = $components['turmas'] ?? [];
-        if ($materia) {
-            $stmt = $conn->prepare("INSERT INTO professor (login, materia, turmas) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE materia = VALUES(materia), turmas = VALUES(turmas)");
-            $stmt->bind_param("sss", $login, $materia, json_encode($turmas));
-            $stmt->execute();
-        }
-    } elseif ($type === 'FUNCIONARIO') {
-        $funcao = $components['funcao'] ?? null;
-        if ($funcao) {
-            $stmt = $conn->prepare("INSERT INTO funcionario (login, funcao) VALUES (?, ?) ON DUPLICATE KEY UPDATE funcao = VALUES(funcao)");
-            $stmt->bind_param("ss", $login, $funcao);
-            $stmt->execute();
-        }
-    }
-}
 }catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["success" => false, "message" => $e->getMessage()]);
