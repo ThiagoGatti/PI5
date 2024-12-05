@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 @Composable
@@ -60,6 +61,7 @@ fun formaterCPF(cpf: String, cursorPos: Int): Pair<String, Int> {
     return Pair(builder.toString(), newCursorPos.coerceAtMost(builder.length))
 }
 
+
 /**
  * Formata e valida uma data no formato DD/MM/YYYY.
  *
@@ -94,18 +96,47 @@ fun formaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, 
  * @param date A string da data no formato DD/MM/YYYY.
  * @return True se a data for válida, False caso contrário.
  */
+/**
+ * Verifica se uma data no formato DD/MM/YYYY é válida.
+ *
+ * @param date A string da data no formato DD/MM/YYYY.
+ * @return True se a data for válida, False caso contrário.
+ */
 fun validarData(date: String): Boolean {
     if (date.length != 10) return false // Garantir que o comprimento seja DD/MM/YYYY
 
-    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    dateFormatter.isLenient = false
+    val parts = date.split("/")
+    if (parts.size != 3) return false // Garantir que a data tenha dia, mês e ano
 
-    return try {
-        dateFormatter.parse(date) != null
-    } catch (e: Exception) {
-        false
+    val day = parts[0].toIntOrNull() ?: return false
+    val month = parts[1].toIntOrNull() ?: return false
+    val year = parts[2].toIntOrNull() ?: return false
+
+    // Verificar limites de mês e ano
+    if (month !in 1..12) return false
+    if (year !in 1900..Calendar.getInstance().get(Calendar.YEAR)) return false
+
+    // Verificar limites de dia baseado no mês e ano
+    val daysInMonth = when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(year)) 29 else 28
+        else -> return false
     }
+
+    return day in 1..daysInMonth
 }
+
+/**
+ * Verifica se um ano é bissexto.
+ *
+ * @param year O ano a ser verificado.
+ * @return True se o ano for bissexto, False caso contrário.
+ */
+fun isLeapYear(year: Int): Boolean {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+}
+
 
 /**
  * Permite entrada gradual de data no formato DD/MM/YYYY.
