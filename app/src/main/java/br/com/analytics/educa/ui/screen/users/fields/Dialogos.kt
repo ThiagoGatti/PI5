@@ -1,19 +1,19 @@
-package br.com.analytics.educa.ui.component
+package br.com.analytics.educa.ui.screen.users.fields
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.data.model.updateUserCompleto
 import br.com.analytics.educa.data.retrofit.UserCompleto
-import br.com.analytics.educa.ui.screen.users.fields.DropdownField
-import br.com.analytics.educa.ui.screen.users.fields.MultiSelectDropdown
-import br.com.analytics.educa.ui.screen.users.fields.SpecificUserFields
-import br.com.analytics.educa.ui.screen.users.fields.UserForm
+import br.com.analytics.educa.ui.component.entradaTextoCPF
+import br.com.analytics.educa.ui.component.formatDateFromDatabase
+import br.com.analytics.educa.ui.component.formatDateToDatabase
+import br.com.analytics.educa.ui.component.formaterCelular
+import br.com.analytics.educa.ui.component.formaterValidarDataCursor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

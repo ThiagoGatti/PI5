@@ -20,10 +20,10 @@ import br.com.analytics.educa.data.model.removeUser
 import br.com.analytics.educa.data.model.updateUserCompleto
 import br.com.analytics.educa.data.retrofit.User
 import br.com.analytics.educa.data.retrofit.UserCompleto
-import br.com.analytics.educa.ui.component.ActionDialog
-import br.com.analytics.educa.ui.component.AddUserDialog
-import br.com.analytics.educa.ui.component.EditUserDialog
-import br.com.analytics.educa.ui.component.RemoveUserDialog
+import br.com.analytics.educa.ui.screen.users.fields.ActionDialog
+import br.com.analytics.educa.ui.screen.users.fields.AddUserDialog
+import br.com.analytics.educa.ui.screen.users.fields.EditUserDialog
+import br.com.analytics.educa.ui.screen.users.fields.RemoveUserDialog
 import kotlinx.coroutines.launch
 
 @Composable
