@@ -67,7 +67,7 @@ fun formaterCPF(cpf: String, cursorPos: Int): Pair<String, Int> {
  * @param cursorPosition A posição atual do cursor.
  * @return Um par com a string formatada e a nova posição do cursor, ou null se a data for inválida.
  */
-fun fomaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, Int> {
+fun formaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, Int> {
     val digitsOnly = input.filter { it.isDigit() } // Remove caracteres não numéricos
         .take(8) // Limita os números a no máximo 8 dígitos (DDMMYYYY sem barras)
 
@@ -142,4 +142,26 @@ fun formaterCelular(input: String, cursorPosition: Int): Pair<String, Int> {
     }
 
     return formatted.toString() to adjustedCursor.coerceAtMost(formatted.length)
+}
+
+fun formatDateFromDatabase(date: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val parsedDate = inputFormat.parse(date)
+        outputFormat.format(parsedDate ?: date)
+    } catch (e: Exception) {
+        date
+    }
+}
+
+fun formatDateToDatabase(date: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val parsedDate = inputFormat.parse(date)
+        outputFormat.format(parsedDate ?: date)
+    } catch (e: Exception) {
+        date
+    }
 }

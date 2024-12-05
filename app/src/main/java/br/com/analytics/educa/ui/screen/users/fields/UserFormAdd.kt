@@ -8,7 +8,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.ui.component.entradaTextoCPF
-import br.com.analytics.educa.ui.component.fomaterValidarDataCursor
+import br.com.analytics.educa.ui.component.formaterValidarDataCursor
 import br.com.analytics.educa.ui.component.formaterCelular
 
 
@@ -45,7 +45,7 @@ fun UserForm(
         OutlinedTextField(
             value = TextFieldValue(dataNascimento, TextRange(dataNascimentoCursor)),
             onValueChange = { input ->
-                val result = fomaterValidarDataCursor(input.text, input.selection.start)
+                val result = formaterValidarDataCursor(input.text, input.selection.start)
                 if (result != null) {
                     dataNascimento = result.first
                     dataNascimentoCursor = result.second
@@ -90,6 +90,6 @@ fun UserForm(
         Spacer(modifier = Modifier.height(8.dp))
 
         // Campos específicos
-        SpecificUserFields(userType = userType)
+//        SpecificUserFields(userType = userType)
     }
 }

@@ -16,13 +16,16 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun SpecificUserFields(userType: String) {
+fun SpecificUserFields(
+    userType: String,
+    onFieldsUpdated: (Map<String, Any>) -> Unit // Callback para atualizar os campos
+) {
     Column {
         when (userType) {
-            "Aluno" -> {
+            "ALUNO" -> {
                 var selectedYear by remember { mutableStateOf("1") }
                 var selectedClass by remember { mutableStateOf("A") }
-                var combinedValue by remember { mutableStateOf("") }
+                val combinedValue = selectedYear + selectedClass
 
                 val yearOptions = (1..9).map { it.toString() }
                 val classOptions = listOf("A", "B", "C", "D", "E")
@@ -36,7 +39,7 @@ fun SpecificUserFields(userType: String) {
                     selectedOption = selectedYear,
                     onOptionSelected = { year ->
                         selectedYear = year
-                        combinedValue = selectedYear + selectedClass
+                        onFieldsUpdated(mapOf("Turma" to combinedValue))
                     }
                 )
 
@@ -48,19 +51,12 @@ fun SpecificUserFields(userType: String) {
                     selectedOption = selectedClass,
                     onOptionSelected = { classLetter ->
                         selectedClass = classLetter
-                        combinedValue = selectedYear + selectedClass
+                        onFieldsUpdated(mapOf("Turma" to combinedValue))
                     }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Ano e Turma Selecionados: $combinedValue",
-                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
-            "Professor" -> {
+            "PROFESSOR" -> {
                 var selectedSubject by remember { mutableStateOf("") }
                 val subjectOptions = listOf(
                     "Matemática", "Português", "Ciências", "História", "Geografia",
@@ -80,13 +76,18 @@ fun SpecificUserFields(userType: String) {
                     label = "Selecione a Matéria",
                     options = subjectOptions,
                     selectedOption = selectedSubject,
-                    onOptionSelected = { selectedSubject = it }
+                    onOptionSelected = {
+                        selectedSubject = it
+                        onFieldsUpdated(
+                            mapOf(
+                                "Matéria" to selectedSubject,
+                                "Turmas" to selectedClasses.toList()
+                            )
+                        )
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-                Text("Selecione as Turmas:", style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.height(8.dp))
 
                 MultiSelectDropdown(
                     label = "Turmas",
@@ -95,24 +96,19 @@ fun SpecificUserFields(userType: String) {
                     onSelectionChange = { updatedClasses ->
                         selectedClasses.clear()
                         selectedClasses.addAll(updatedClasses)
+                        onFieldsUpdated(
+                            mapOf(
+                                "Matéria" to selectedSubject,
+                                "Turmas" to selectedClasses.toList()
+                            )
+                        )
                     }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "Matéria Selecionada: $selectedSubject",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = "Turmas Selecionadas: ${selectedClasses.joinToString(", ")}",
-                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
-            "Funcionário" -> {
+            "FUNCIONARIO" -> {
                 var selectedDepartment by remember { mutableStateOf("") }
-                val departmentOptions = listOf("Secretaria", "Manutenção", "TI", "Recepção", "Faxineiro", "Merendeira", "Recepcionista")
+                val departmentOptions = listOf("Secretaria", "Manutenção", "TI", "Recepção")
 
                 Text("Informações Específicas do Funcionário", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -121,18 +117,14 @@ fun SpecificUserFields(userType: String) {
                     label = "Selecione a Função",
                     options = departmentOptions,
                     selectedOption = selectedDepartment,
-                    onOptionSelected = { selectedDepartment = it }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "Departamento Selecionado: $selectedDepartment",
-                    style = MaterialTheme.typography.bodyMedium
+                    onOptionSelected = {
+                        selectedDepartment = it
+                        onFieldsUpdated(mapOf("Função" to selectedDepartment))
+                    }
                 )
             }
 
-            "Diretor" -> {
+            "DIRETOR" -> {
                 Text(
                     text = "Diretor não possui campos específicos.",
                     style = MaterialTheme.typography.bodyMedium

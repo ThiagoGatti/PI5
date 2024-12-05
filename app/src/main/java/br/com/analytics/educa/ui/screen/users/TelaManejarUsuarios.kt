@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import br.com.analytics.educa.data.model.updateUserCompleto
 import br.com.analytics.educa.data.retrofit.User
 import br.com.analytics.educa.data.retrofit.UserCompleto
 import br.com.analytics.educa.ui.component.ActionDialog
+import br.com.analytics.educa.ui.component.AddUserDialog
 import br.com.analytics.educa.ui.component.EditUserDialog
 import br.com.analytics.educa.ui.component.RemoveUserDialog
 import kotlinx.coroutines.launch
@@ -29,42 +31,62 @@ fun TelaManejarUsuarios(
     currentUserLogin: String,
     navigateBack: () -> Unit
 ) {
+    var showAddDialog by remember { mutableStateOf(false) }
+
+
+    var contentState by remember { mutableStateOf("Tipo") } // Estados: Tipo, Turma, Usuarios
     var selectedUserType by remember { mutableStateOf<String?>(null) }
     var selectedTurma by remember { mutableStateOf<String?>(null) }
     var selectedUser by remember { mutableStateOf<UserCompleto?>(null) }
 
     var showEditDialog by remember { mutableStateOf(false) }
     var showRemoveDialog by remember { mutableStateOf(false) }
+    var showActionDialog by remember { mutableStateOf(false) }
     var usersList by remember { mutableStateOf<List<User>>(emptyList()) }
     var turmasList by remember { mutableStateOf<List<String>>(emptyList()) }
 
     val scope = rememberCoroutineScope()
 
-    // Função para carregar usuários por tipo
-    fun loadUsersByType(type: String) {
-        fetchUsersByType(type) { users ->
-            usersList = users
-        }
-    }
-
-    // Função para carregar turmas
-    fun loadTurmas() {
-        fetchTurmas { turmas ->
-            turmasList = turmas
-        }
-    }
-
-    // Função para carregar usuários de uma turma
-    fun loadUsersByTurma(turma: String) {
-        fetchUsersByTurma(turma) { users ->
-            usersList = users
-        }
-    }
-
+    // Carregar turmas ao iniciar
     LaunchedEffect(Unit) {
-        loadTurmas() // Carrega as turmas ao iniciar
+        fetchTurmas { turmas -> turmasList = turmas }
     }
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))
+                )
+            )
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Gerenciar Usuários",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White
+                )
+                IconButton(onClick = { showAddDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Adicionar usuário",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
     // Layout principal
     Box(
         modifier = Modifier
@@ -76,60 +98,239 @@ fun TelaManejarUsuarios(
             )
             .padding(16.dp)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Text("Gerenciar Usuários", style = MaterialTheme.typography.headlineMedium, color = Color.White)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Título fixo
+            Text(
+                text = when (contentState) {
+                    "Tipo" -> "Selecione o Tipo de Usuário"
+                    "Turma" -> "Selecione a Turma"
+                    else -> "Usuários"
+                },
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White,
+                modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
+            )
 
-            // Seleção de Tipo
-            Text("Selecione o Tipo:", color = Color.White)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("Aluno", "Professor", "Funcionário").forEach { type ->
-                    Button(onClick = {
-                        selectedUserType = type
-                        loadUsersByType(type) // Carrega usuários por tipo
-                    }) {
-                        Text(type)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Seleção de Turma (se o tipo for "Aluno")
-            if (selectedUserType == "Aluno") {
-                Text("Selecione a Turma:", color = Color.White)
-                turmasList.forEach { turma ->
-                    Button(onClick = {
-                        selectedTurma = turma
-                        loadUsersByTurma(turma) // Carrega usuários por turma
-                    }) {
-                        Text(turma)
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Lista de Usuários
-            Text("Usuários:", color = Color.White)
-            usersList.forEach { user ->
-                Button(
-                    onClick = {
-                        if (user.login != currentUserLogin) {
-                            scope.launch {
-                                fetchUserCompleto(user.login, { fetchedUser ->
-                                    selectedUser = fetchedUser
-                                    showEditDialog = true
-                                }, { error ->
-                                    println("Erro ao buscar usuário completo: $error")
-                                })
+            // Conteúdo dinâmico baseado no estado
+            when (contentState) {
+                "Tipo" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Botões de tipo de usuário
+                        listOf(
+                            "Aluno",
+                            "Professor",
+                            "Funcionário",
+                            "Diretor"
+                        ).forEach { type ->
+                            Button(
+                                onClick = {
+                                    selectedUserType = type
+                                    contentState =
+                                        if (type == "Aluno") "Turma" else "Usuarios"
+                                    if (type != "Aluno") {
+                                        fetchUsersByType(type) { users ->
+                                            usersList = users
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(0.7f)
+                            ) {
+                                Text(type)
                             }
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("${user.name} (${user.login})")
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Botão "Voltar" visível somente na seleção de tipo
+                        Button(
+                            onClick = navigateBack,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF5D145B
+                                )
+                            ),
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(60.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBackIosNew,
+                                    contentDescription = "Ícone de voltar",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Voltar",
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                    fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+
+                "Turma" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        turmasList.forEach { turma ->
+                            Button(
+                                onClick = {
+                                    selectedTurma = turma
+                                    contentState = "Usuarios"
+                                    fetchUsersByTurma(turma) { users -> usersList = users }
+                                },
+                                modifier = Modifier.fillMaxWidth(0.7f)
+                            ) {
+                                Text(turma)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Botão para voltar à seleção de tipo
+                        Button(
+                            onClick = { contentState = "Tipo" },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF5D145B
+                                )
+                            ),
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(60.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBackIosNew,
+                                    contentDescription = "Ícone de voltar",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Voltar",
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                    fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+
+                "Usuarios" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        usersList.forEach { user ->
+                            val isCurrentUser = user.login == currentUserLogin
+                            Button(
+                                onClick = {
+                                    if (!isCurrentUser) {
+                                        scope.launch {
+                                            fetchUserCompleto(user.login, { fetchedUser ->
+                                                selectedUser = fetchedUser
+                                                showActionDialog = true
+                                            }, { error ->
+                                                println("Erro ao buscar usuário completo: $error")
+                                            })
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(0.7f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isCurrentUser) Color.Gray else MaterialTheme.colorScheme.primary,
+                                    contentColor = if (isCurrentUser) Color.DarkGray else Color.White
+                                ),
+                                enabled = !isCurrentUser // Desabilitar o botão se for o usuário atual
+                            ) {
+                                Text("${user.name} (${user.login})")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Botão para voltar à seleção anterior
+                        Button(
+                            onClick = {
+                                contentState =
+                                    if (selectedUserType == "Aluno") "Turma" else "Tipo"
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF5D145B
+                                )
+                            ),
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(60.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBackIosNew,
+                                    contentDescription = "Ícone de voltar",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Voltar",
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                    fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
                 }
             }
+        }
+
+        if (showAddDialog) {
+            AddUserDialog(
+                onDismiss = { showAddDialog = false },
+                onUserCreated = { newUser ->
+                    // Atualize a lista de usuários ou execute qualquer ação necessária
+                    println("Novo usuário criado: $newUser")
+                }
+            )
+        }
+
+        // Diálogo de Ações
+        if (showActionDialog && selectedUser != null) {
+            ActionDialog(
+                user = selectedUser!!,
+                onEdit = {
+                    showEditDialog = true
+                    showActionDialog = false
+                },
+                onRemove = {
+                    showRemoveDialog = true
+                    showActionDialog = false
+                },
+                onDismiss = { showActionDialog = false }
+            )
         }
 
         // Diálogo para edição
@@ -163,7 +364,8 @@ fun TelaManejarUsuarios(
                 onConfirm = {
                     scope.launch {
                         removeUser(selectedUser!!.login) {
-                            usersList = usersList.filter { it.login != selectedUser!!.login }
+                            usersList =
+                                usersList.filter { it.login != selectedUser!!.login }
                             showRemoveDialog = false
                         }
                     }

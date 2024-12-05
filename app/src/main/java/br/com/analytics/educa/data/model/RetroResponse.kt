@@ -337,6 +337,7 @@ fun updateUserCompleto(
 
         override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
             onComplete(false)
+            println("Falha na conexão: ${t.message}")
         }
     })
 }

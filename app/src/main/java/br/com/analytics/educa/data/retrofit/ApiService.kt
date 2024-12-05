@@ -140,6 +140,6 @@ data class UserCompleto(
     val birthDate: String,
     val phone: String,
     val type: String,
-    val idEscola: Int,
-    val components: Map<String, Any> = emptyMap() // Campos específicos do tipo
+    val password: String?,
+    val components: Map<String, Any> = emptyMap()
 )
