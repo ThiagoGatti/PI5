@@ -9,7 +9,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.ui.component.entradaTextoCPF
 import br.com.analytics.educa.ui.component.formaterValidarDataCursor
-import br.com.analytics.educa.ui.component.formaterCelular
+import br.com.analytics.educa.ui.component.phoneNumberFormatter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +62,7 @@ fun UserForm(
         OutlinedTextField(
             value = TextFieldValue(telefone, TextRange(telefoneCursor)),
             onValueChange = { input ->
-                val (formatted, cursor) = formaterCelular(input.text, input.selection.start)
+                val (formatted, cursor) = phoneNumberFormatter(input.text, input.selection.start)
                 telefone = formatted
                 telefoneCursor = cursor
             },

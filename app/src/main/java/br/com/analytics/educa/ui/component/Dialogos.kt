@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -18,7 +19,7 @@ import kotlin.String
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddUserDialog(
-    turmasList : List<String>,
+    turmasList: List<String>,
     onDismiss: () -> Unit,
     onUserCreated: (UserCompleto) -> Unit
 ) {
@@ -31,6 +32,7 @@ fun AddUserDialog(
     var cpf by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
+    var phoneCursorPosition by remember { mutableStateOf(0) } // Adicionando controle do cursor
     var components by remember { mutableStateOf(mapOf<String, Any>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -78,10 +80,19 @@ fun AddUserDialog(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = phone,
-                        onValueChange = { phone = it },
-                        label = { Text("Telefone") },
-                        modifier = Modifier.fillMaxWidth()
+                        value = TextFieldValue(phone, TextRange(phoneCursorPosition)),
+                        onValueChange = { input ->
+                            val (formattedPhone, newCursorPosition) =
+                                phoneNumberFormatter(input.text, input.selection.start)
+                            phone = formattedPhone
+                            phoneCursorPosition = newCursorPosition
+                        },
+                        label = { Text("Telefone (Ex.: (XX) XXXXX-XXXX)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     DropdownField(
@@ -145,6 +156,7 @@ fun AddUserDialog(
         }
     )
 }
+
 
 @Composable
 fun DialogosUsuarios(
@@ -231,7 +243,7 @@ fun EditUserDialog(
                 OutlinedTextField(
                     value = TextFieldValue(phone),
                     onValueChange = { input ->
-                        val (formatted, cursor) = formaterCelular(input.text, input.selection.start)
+                        val (formatted, cursor) = phoneNumberFormatter(input.text, input.selection.start)
                         phone = formatted
                     },
                     label = { Text("Telefone (Ex.: (XX) XXXXX-XXXX)") },

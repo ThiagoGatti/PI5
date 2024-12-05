@@ -118,7 +118,7 @@ fun isValidDateInput(input: String): Boolean {
     return regex.matches(input)
 }
 
-fun formaterCelular(input: String, cursorPosition: Int): Pair<String, Int> {
+fun phoneNumberFormatter(input: String, cursorPosition: Int): Pair<String, Int> {
     val digitsOnly = input.filter { it.isDigit() }.take(11) // Limita a 11 dígitos
     val formatted = StringBuilder()
     var adjustedCursor = cursorPosition
