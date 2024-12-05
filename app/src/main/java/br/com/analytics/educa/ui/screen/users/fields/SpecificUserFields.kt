@@ -100,8 +100,7 @@ fun SpecificUserFields(
 
             "Funcionario" -> {
                 var selectedDepartment by remember { mutableStateOf(initialValues["funcao"]?.toString() ?: "") }
-                val departmentOptions = listOf("Secretaria", "Manutenção", "TI", "Recepção")
-
+                val departmentOptions = listOf("Secretaria", "Manutenção", "TI", "Recepção", "Faxineiro", "Merendeira", "Recepcionista")
                 LaunchedEffect(selectedDepartment) {
                     onFieldsUpdated(mapOf("funcao" to selectedDepartment))
                 }
