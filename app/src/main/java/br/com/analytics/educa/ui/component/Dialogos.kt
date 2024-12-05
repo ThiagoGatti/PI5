@@ -270,17 +270,6 @@ fun EditUserDialog(
                     modifier = Modifier.fillMaxWidth(),
                     visualTransformation = PasswordVisualTransformation()
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Campos Específicos
-                SpecificUserFields(
-                    initialValues = components,
-                    turmasList = turmasList,
-                    userType = user.type.first().toUpperCase() + user.type.substring(1).toLowerCase(),
-                    onFieldsUpdated = { updatedComponents ->
-                        components = updatedComponents
-                    }
-                )
             }
         },
         confirmButton = {
@@ -293,10 +282,19 @@ fun EditUserDialog(
                             cpf = cpfState.text,
                             birthDate = formatDateToDatabase(birthDateState.text),
                             phone = phone,
-                            password = if (password.isNotEmpty()) password else null,
+                            password = if (password.isNotEmpty()) password else "",
                             components = components
                         )
                     )
+                    println(user.copy(
+                        action = "updateUserCompleto",
+                        name = name,
+                        cpf = cpfState.text,
+                        birthDate = formatDateToDatabase(birthDateState.text),
+                        phone = phone,
+                        password = if (password.isNotEmpty()) password else "",
+                        components = components
+                    ))
                 }
             ) {
                 Text("Salvar")
@@ -309,7 +307,6 @@ fun EditUserDialog(
         }
     )
 }
-
 
 @Composable
 fun RemoveUserDialog(
