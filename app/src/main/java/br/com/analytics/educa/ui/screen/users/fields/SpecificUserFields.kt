@@ -65,42 +65,37 @@ fun SpecificUserFields(
 
                 val availableClasses = turmasList
 
-                val selectedClasses = remember {
-                    mutableStateListOf<String>().apply {
-                        addAll(initialValues["turmas"] as? List<String> ?: emptyList())
-                    }
-                }
+                var selectedClasses by remember { mutableStateOf(initialValues["turmas"] as? List<String> ?: emptyList()) }
 
-                LaunchedEffect(selectedSubject, selectedClasses) {
+                DisposableEffect(selectedSubject, selectedClasses) {
                     onFieldsUpdated(
                         mapOf(
                             "materia" to selectedSubject,
-                            "turmas" to selectedClasses.toList()
+                            "turmas" to selectedClasses
                         )
                     )
+                    onDispose {}
                 }
 
-                Text("Informações Específicas do Professor", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(8.dp))
+                Column {
+                    DropdownField(
+                        label = "Matéria",
+                        options = subjectOptions,
+                        selectedOption = selectedSubject,
+                        onOptionSelected = { selectedSubject = it }
+                    )
 
-                DropdownField(
-                    label = "Selecione a Matéria",
-                    options = subjectOptions,
-                    selectedOption = selectedSubject,
-                    onOptionSelected = { selectedSubject = it }
-                )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                MultiSelectDropdown(
-                    label = "Turmas",
-                    options = availableClasses,
-                    selectedOptions = selectedClasses.toList(),
-                    onSelectionChange = { updatedClasses ->
-                        selectedClasses.clear()
-                        selectedClasses.addAll(updatedClasses)
-                    }
-                )
+                    MultiSelectDropdown(
+                        label = "Turmas",
+                        options = availableClasses,
+                        selectedOptions = selectedClasses,
+                        onSelectionChange = { updatedClasses ->
+                            selectedClasses = updatedClasses
+                        }
+                    )
+                }
             }
 
             "Funcionario" -> {
