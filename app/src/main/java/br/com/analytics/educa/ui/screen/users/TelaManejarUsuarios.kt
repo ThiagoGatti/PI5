@@ -2,17 +2,28 @@ package br.com.analytics.educa.ui.screen.users
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.data.model.fetchTurmas
+import br.com.analytics.educa.data.model.fetchUserCompleto
 import br.com.analytics.educa.data.model.fetchUsersByTurma
 import br.com.analytics.educa.data.model.fetchUsersByType
 import br.com.analytics.educa.data.model.removeUser
+import br.com.analytics.educa.data.model.updateUserCompleto
 import br.com.analytics.educa.data.retrofit.User
+import br.com.analytics.educa.data.retrofit.UserCompleto
+import br.com.analytics.educa.ui.component.ActionDialog
+import br.com.analytics.educa.ui.component.AddUserDialog
+import br.com.analytics.educa.ui.component.EditUserDialog
+import br.com.analytics.educa.ui.component.RemoveUserDialog
 import kotlinx.coroutines.launch
 
 @Composable
@@ -20,14 +31,26 @@ fun TelaManejarUsuarios(
     currentUserLogin: String,
     navigateBack: () -> Unit
 ) {
+    var showAddDialog by remember { mutableStateOf(false) }
+
+
+    var contentState by remember { mutableStateOf("Tipo") } // Estados: Tipo, Turma, Usuarios
     var selectedUserType by remember { mutableStateOf<String?>(null) }
     var selectedTurma by remember { mutableStateOf<String?>(null) }
-    var selectedUser by remember { mutableStateOf<User?>(null) }
+    var selectedUser by remember { mutableStateOf<UserCompleto?>(null) }
+
     var showEditDialog by remember { mutableStateOf(false) }
     var showRemoveDialog by remember { mutableStateOf(false) }
+    var showActionDialog by remember { mutableStateOf(false) }
     var usersList by remember { mutableStateOf<List<User>>(emptyList()) }
     var turmasList by remember { mutableStateOf<List<String>>(emptyList()) }
+
     val scope = rememberCoroutineScope()
+
+    // Carregar turmas ao iniciar
+    LaunchedEffect(Unit) {
+        fetchTurmas { turmas -> turmasList = turmas }
+    }
 
     Box(
         modifier = Modifier
@@ -39,204 +62,315 @@ fun TelaManejarUsuarios(
             )
             .padding(16.dp)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Gerenciar Usuários",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White
+                )
+                IconButton(onClick = { showAddDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Adicionar usuário",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
+    // Layout principal
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))
+                )
+            )
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Título fixo
             Text(
-                text = "Gerenciar Usuários",
+                text = when (contentState) {
+                    "Tipo" -> "Selecione o Tipo de Usuário"
+                    "Turma" -> "Selecione a Turma"
+                    else -> "Usuários"
+                },
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
-                modifier = Modifier.padding(vertical = 16.dp)
+                modifier = Modifier.padding(top = 16.dp, bottom = 32.dp)
             )
 
-            when {
-                selectedUserType == null -> {
-                    // Seleção de tipo de usuário
-                    Text(
-                        text = "Selecione o tipo de usuário:",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    listOf("ALUNO", "PROFESSOR", "FUNCIONARIO", "DIRETOR").forEach { tipo ->
-                        Button(
-                            onClick = {
-                                selectedUserType = tipo
-                                if (tipo == "ALUNO") {
-                                    fetchTurmas { turmas ->
-                                        turmasList = turmas
+            // Conteúdo dinâmico baseado no estado
+            when (contentState) {
+                "Tipo" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Botões de tipo de usuário
+                        listOf(
+                            "Aluno",
+                            "Professor",
+                            "Funcionário",
+                            "Diretor"
+                        ).forEach { type ->
+                            Button(
+                                onClick = {
+                                    selectedUserType = type
+                                    contentState =
+                                        if (type == "Aluno") "Turma" else "Usuarios"
+                                    if (type != "Aluno") {
+                                        fetchUsersByType(type) { users ->
+                                            usersList = users
+                                        }
                                     }
-                                } else {
-                                    fetchUsersByType(tipo) { users ->
-                                        usersList = users
-                                    }
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            Text(tipo, color = Color.White)
+                                },
+                                modifier = Modifier.fillMaxWidth(0.7f)
+                            ) {
+                                Text(type)
+                            }
                         }
-                    }
-                }
 
-                selectedUserType == "ALUNO" && selectedTurma == null -> {
-                    // Exibição de turmas
-                    Text(
-                        text = "Selecione a turma:",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    turmasList.forEach { turma ->
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Botão "Voltar" visível somente na seleção de tipo
                         Button(
-                            onClick = {
-                                selectedTurma = turma
-                                fetchUsersByTurma(
-                                    turma = turma,
-                                    onResult = { users ->
-                                        usersList = users
-                                    },
-                                    onError = { errorMessage ->
-                                        println("Erro ao buscar usuários: $errorMessage")
-                                    }
+                            onClick = navigateBack,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF5D145B
                                 )
-                            },
+                            ),
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
+                                .width(160.dp)
+                                .height(60.dp)
                         ) {
-                            Text("${turma.first()}° Ano ${turma.last()}", color = Color.White)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBackIosNew,
+                                    contentDescription = "Ícone de voltar",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Voltar",
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                    fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                                    color = Color.White
+                                )
+                            }
                         }
-                    }
-                    Button(
-                        onClick = { selectedUserType = null },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Text("Voltar", color = Color.White)
                     }
                 }
 
-                else -> {
-                    // Exibição de lista de usuários
-                    usersList.forEach { user ->
-                        val isCurrentUser = user.login == currentUserLogin
+                "Turma" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        turmasList.forEach { turma ->
+                            Button(
+                                onClick = {
+                                    selectedTurma = turma
+                                    contentState = "Usuarios"
+                                    fetchUsersByTurma(turma) { users -> usersList = users }
+                                },
+                                modifier = Modifier.fillMaxWidth(0.7f)
+                            ) {
+                                Text(turma)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Botão para voltar à seleção de tipo
                         Button(
-                            onClick = { if (!isCurrentUser) selectedUser = user },
+                            onClick = { contentState = "Tipo" },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF5D145B
+                                )
+                            ),
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            colors = if (isCurrentUser) ButtonDefaults.buttonColors(
-                                containerColor = Color.Green
-                            ) else ButtonDefaults.buttonColors()
+                                .width(160.dp)
+                                .height(60.dp)
                         ) {
-                            Text(
-                                text = "${user.name} (${user.login})",
-                                color = if (isCurrentUser) Color.Black else Color.White
-                            )
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBackIosNew,
+                                    contentDescription = "Ícone de voltar",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Voltar",
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                    fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
+                }
 
-                    // Botão Voltar após a lista de usuários
-                    Button(
-                        onClick = {
-                            if (selectedUserType == "ALUNO") selectedTurma =
-                                null else selectedUserType = null
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                "Usuarios" -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text("Voltar", color = Color.White)
+                        usersList.forEach { user ->
+                            val isCurrentUser = user.login == currentUserLogin
+                            Button(
+                                onClick = {
+                                    if (!isCurrentUser) {
+                                        scope.launch {
+                                            fetchUserCompleto(user.login, { fetchedUser ->
+                                                selectedUser = fetchedUser
+                                                showActionDialog = true
+                                            }, { error ->
+                                                println("Erro ao buscar usuário completo: $error")
+                                            })
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(0.7f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isCurrentUser) Color.Gray else MaterialTheme.colorScheme.primary,
+                                    contentColor = if (isCurrentUser) Color.DarkGray else Color.White
+                                ),
+                                enabled = !isCurrentUser // Desabilitar o botão se for o usuário atual
+                            ) {
+                                Text("${user.name} (${user.login})")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // Botão para voltar à seleção anterior
+                        Button(
+                            onClick = {
+                                contentState =
+                                    if (selectedUserType == "Aluno") "Turma" else "Tipo"
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF5D145B
+                                )
+                            ),
+                            modifier = Modifier
+                                .width(160.dp)
+                                .height(60.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBackIosNew,
+                                    contentDescription = "Ícone de voltar",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Voltar",
+                                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                                    fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
+                                    color = Color.White
+                                )
+                            }
+                        }
                     }
                 }
             }
+        }
 
-            if (selectedUser != null) {
-                AlertDialog(
-                    onDismissRequest = { selectedUser = null },
-                    title = { Text("Ações para ${selectedUser?.name}") },
-                    text = { Text("Escolha uma ação:") },
-                    confirmButton = {
-                        Column {
-                            Button(
-                                onClick = {
-                                    showEditDialog = true
-                                    selectedUser = null
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text("Editar")
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(
-                                onClick = {
-                                    showRemoveDialog = true
-                                    selectedUser = null
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text("Remover")
-                            }
-                        }
-                    },
-                    dismissButton = {
-                        Button(onClick = { selectedUser = null }) {
-                            Text("Cancelar")
-                        }
-                    }
-                )
-            }
+        if (showAddDialog) {
+            AddUserDialog(
+                onDismiss = { showAddDialog = false },
+                onUserCreated = { newUser ->
+                    // Atualize a lista de usuários ou execute qualquer ação necessária
+                    println("Novo usuário criado: $newUser")
+                }
+            )
+        }
 
-            if (showEditDialog) {
-                AlertDialog(
-                    onDismissRequest = { showEditDialog = false },
-                    title = { Text("Editar Usuário") },
-                    text = {
-                        Column {
-                            Text("Implementar formulário de edição para: ${selectedUser?.name}")
-                        }
-                    },
-                    confirmButton = {
-                        Button(onClick = { showEditDialog = false }) {
-                            Text("Salvar")
-                        }
-                    },
-                    dismissButton = {
-                        Button(onClick = { showEditDialog = false }) {
-                            Text("Cancelar")
-                        }
-                    }
-                )
-            }
+        // Diálogo de Ações
+        if (showActionDialog && selectedUser != null) {
+            ActionDialog(
+                user = selectedUser!!,
+                onEdit = {
+                    showEditDialog = true
+                    showActionDialog = false
+                },
+                onRemove = {
+                    showRemoveDialog = true
+                    showActionDialog = false
+                },
+                onDismiss = { showActionDialog = false }
+            )
+        }
 
-            if (showRemoveDialog) {
-                AlertDialog(
-                    onDismissRequest = { showRemoveDialog = false },
-                    title = { Text("Remover Usuário") },
-                    text = { Text("Deseja realmente remover ${selectedUser?.name}?") },
-                    confirmButton = {
-                        Button(onClick = {
-                            scope.launch {
-                                selectedUser?.let { user ->
-                                    removeUser(user.login) {
-                                        usersList = usersList.filter { it.login != user.login }
-                                        showRemoveDialog = false
-                                    }
+        // Diálogo para edição
+        if (showEditDialog && selectedUser != null) {
+            EditUserDialog(
+                user = selectedUser!!,
+                onDismiss = { showEditDialog = false },
+                onSave = { updatedUser ->
+                    scope.launch {
+                        updateUserCompleto(updatedUser) { success ->
+                            if (success) {
+                                println("Usuário atualizado com sucesso")
+                                usersList = usersList.map {
+                                    if (it.login == updatedUser.login) it.copy(name = updatedUser.name) else it
                                 }
+                            } else {
+                                println("Erro ao atualizar usuário")
                             }
-                        }) {
-                            Text("Remover")
-                        }
-                    },
-                    dismissButton = {
-                        Button(onClick = { showRemoveDialog = false }) {
-                            Text("Cancelar")
+                            showEditDialog = false
                         }
                     }
-                )
-            }
+                }
+            )
+        }
+
+        // Diálogo para remoção
+        if (showRemoveDialog && selectedUser != null) {
+            RemoveUserDialog(
+                user = selectedUser!!,
+                onDismiss = { showRemoveDialog = false },
+                onConfirm = {
+                    scope.launch {
+                        removeUser(selectedUser!!.login) {
+                            usersList =
+                                usersList.filter { it.login != selectedUser!!.login }
+                            showRemoveDialog = false
+                        }
+                    }
+                }
+            )
         }
     }
 }

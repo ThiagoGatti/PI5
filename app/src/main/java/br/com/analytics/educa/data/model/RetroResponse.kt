@@ -89,7 +89,7 @@ fun buscarFormsRespondidos(
             onError("Falha ao buscar formulários: $errorMessage")
             onResult(emptySet())
         }
-        }
+    }
     )
 }
 
@@ -115,8 +115,8 @@ fun buscarRespostasPorEscola(
         override fun onFailure(call: Call<List<ResponseBySchool>>, t: Throwable) {
             val errorMessage = t.localizedMessage ?: "Falha na conexão"
             onError("Falha ao buscar respostas: $errorMessage")
-            }
         }
+    }
     )
 }
 
@@ -245,16 +245,16 @@ fun buscarBoletim(
 fun fetchUsersByType(type: String, onResult: (List<User>) -> Unit) {
     val call = apiService.getUsersByType(type = type)
     call.enqueue(object : Callback<List<User>> {
-        override fun onResponse(
-            call: Call<List<User>>,
-            response: Response<List<User>>
-        ) {
+        override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
             if (response.isSuccessful) {
                 onResult(response.body() ?: emptyList())
+            } else {
+                println("Erro ao buscar usuários: ${response.message()}")
             }
         }
 
         override fun onFailure(call: Call<List<User>>, t: Throwable) {
+            println("Falha ao buscar usuários: ${t.message}")
             onResult(emptyList())
         }
     })
@@ -287,23 +287,57 @@ fun fetchTurmas(onResult: (List<String>) -> Unit) {
     })
 }
 
-fun fetchUsersByTurma(
-    turma: String,
-    onResult: (List<User>) -> Unit = {}, // Comportamento padrão para `onResult`
-    onError: (String) -> Unit = {}
-) {
+fun fetchUsersByTurma(turma: String, onResult: (List<User>) -> Unit) {
     val call = apiService.getUsersByTurma(turma = turma)
     call.enqueue(object : Callback<List<User>> {
         override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
             if (response.isSuccessful) {
                 onResult(response.body() ?: emptyList())
             } else {
-                onError("Erro na resposta: ${response.message()}")
+                onResult(emptyList())
+                println("Erro na resposta: ${response.message()}")
             }
         }
 
         override fun onFailure(call: Call<List<User>>, t: Throwable) {
+            onResult(emptyList())
+            println("Falha na conexão: ${t.message}")
+        }
+    })
+}
+
+fun fetchUserCompleto(
+    login: String,
+    onResult: (UserCompleto) -> Unit,
+    onError: (String) -> Unit
+) {
+    apiService.getUserCompleto(login = login).enqueue(object : Callback<UserCompleto> {
+        override fun onResponse(call: Call<UserCompleto>, response: Response<UserCompleto>) {
+            if (response.isSuccessful) {
+                response.body()?.let { onResult(it) }
+            } else {
+                onError("Erro ao buscar usuário: ${response.message()}")
+            }
+        }
+
+        override fun onFailure(call: Call<UserCompleto>, t: Throwable) {
             onError("Falha na conexão: ${t.message}")
+        }
+    })
+}
+
+fun updateUserCompleto(
+    user: UserCompleto,
+    onComplete: (Boolean) -> Unit
+) {
+    apiService.editUserCompleto(user).enqueue(object : Callback<ApiResponse> {
+        override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            onComplete(response.isSuccessful && response.body()?.success == true)
+        }
+
+        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+            onComplete(false)
+            println("Falha na conexão: ${t.message}")
         }
     })
 }

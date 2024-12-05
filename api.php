@@ -38,8 +38,91 @@ if ($method === 'GET' && isset($_GET['action'])) {
 
         echo json_encode($forms);
         exit;
+    } elseif ($action === 'getUserDetails' && isset($_GET['login'])) {
+        $login = $_GET['login'];
+    
+        $stmt = $conn->prepare("
+            SELECT 
+                p.login, p.nome, p.cpf, p.data_nascimento, p.telefone, 
+                p.tipo
+            FROM pessoa p
+            WHERE p.login = ?
+        ");
+        $stmt->bind_param("s", $login);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows === 0) {
+            http_response_code(404);
+            echo json_encode(["success" => false, "message" => "Usuário não encontrado"]);
+            exit;
+        }
+    
+        $user = $result->fetch_assoc();
+        $userCompleto = [
+            "login" => $user['login'],
+            "name" => $user['nome'],
+            "cpf" => $user['cpf'],
+            "birthDate" => $user['data_nascimento'],
+            "phone" => $user['telefone'],
+            "type" => $user['tipo'],
+            "components" => []
+        ];
+    
+        if ($user['tipo'] === 'ALUNO') {
+            $stmt = $conn->prepare("
+                SELECT a.turma
+                FROM aluno a
+                WHERE a.login = ?
+            ");
+            $stmt->bind_param("s", $login);
+            $stmt->execute();
+            $result = $stmt->get_result();
+    
+            if ($result->num_rows > 0) {
+                $aluno = $result->fetch_assoc();
+                $userCompleto['components'] = [
+                    "turma" => $aluno['turma']
+                ];
+            }
+        } elseif ($user['tipo'] === 'PROFESSOR') {
+            $stmt = $conn->prepare("
+                SELECT p.materia, p.turmas
+                FROM professor p
+                WHERE p.login = ?
+            ");
+            $stmt->bind_param("s", $login);
+            $stmt->execute();
+            $result = $stmt->get_result();
+    
+            if ($result->num_rows > 0) {
+                $professor = $result->fetch_assoc();
+                $userCompleto['components'] = [
+                    "materia" => $professor['materia'],
+                    "turmas" => json_decode($professor['turmas'])
+                ];
+            }
+        } elseif ($user['tipo'] === 'FUNCIONARIO') {
+            $stmt = $conn->prepare("
+                SELECT f.funcao
+                FROM funcionario f
+                WHERE f.login = ?
+            ");
+            $stmt->bind_param("s", $login);
+            $stmt->execute();
+            $result = $stmt->get_result();
+    
+            if ($result->num_rows > 0) {
+                $funcionario = $result->fetch_assoc();
+                $userCompleto['components'] = [
+                    "funcao" => $funcionario['funcao']
+                ];
+            }
+        }
+    
+        echo json_encode($userCompleto);
+        exit;
     } elseif ($action === 'getTurmas') {
-        // Endpoint para buscar turmas
         $stmt = $conn->prepare("SELECT sigla FROM turmas");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -52,7 +135,6 @@ if ($method === 'GET' && isset($_GET['action'])) {
         echo json_encode($turmas);
         exit;
     } elseif ($action === 'getUsersByTurma' && isset($_GET['turma'])) {
-        // Endpoint para buscar usuários por turma
         $turma = $_GET['turma'];
 
         $stmt = $conn->prepare("
@@ -267,6 +349,136 @@ if ($method === 'POST') {
         }
 
         $stmt->close();
+    } elseif ($action === 'editUserCompleto') {
+        $login = $input['login'] ?? null;
+        $name = $input['name'] ?? null;
+        $cpf = $input['cpf'] ?? null;
+        $birthDate = $input['birthDate'] ?? null;
+        $phone = $input['phone'] ?? null;
+        $type = $input['type'] ?? null;
+        $password = $input['password'] ?? null;
+        $components = $input['components'] ?? [];
+    
+        if (!$login || !$name || !$cpf || !$birthDate || !$phone || !$type) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "Dados incompletos"]);
+            exit;
+        }
+    
+        // Verifica se o usuário já existe
+        $stmt = $conn->prepare("SELECT login FROM pessoa WHERE login = ?");
+        $stmt->bind_param("s", $login);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows === 0) {
+            // Cria um novo usuário
+            $stmt = $conn->prepare("
+                INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo) 
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("ssssss", $login, $name, $cpf, $birthDate, $phone, $type);
+            if (!$stmt->execute()) {
+                echo json_encode(["success" => false, "message" => "Erro ao criar o usuário"]);
+                exit;
+            }
+    
+            if ($password) {
+                $hashedPassword = hash('sha256', $password);
+                $stmt = $conn->prepare("
+                    INSERT INTO usuario (login, senha) 
+                    VALUES (?, ?)
+                ");
+                $stmt->bind_param("ss", $login, $hashedPassword);
+                if (!$stmt->execute()) {
+                    echo json_encode(["success" => false, "message" => "Erro ao criar credenciais do usuário"]);
+                    exit;
+                }
+            }
+        } else {
+            // Atualiza informações básicas do usuário
+            $stmt = $conn->prepare("
+                UPDATE pessoa 
+                SET nome = ?, cpf = ?, data_nascimento = ?, telefone = ?
+                WHERE login = ?
+            ");
+            $stmt->bind_param("sssss", $name, $cpf, $birthDate, $phone, $login);
+            if (!$stmt->execute()) {
+                echo json_encode(["success" => false, "message" => "Erro ao atualizar informações do usuário"]);
+                exit;
+            }
+    
+            // Atualiza senha se fornecida
+            if ($password) {
+                $hashedPassword = hash('sha256', $password);
+                $stmt = $conn->prepare("
+                    UPDATE usuario 
+                    SET senha = ? 
+                    WHERE login = ?
+                ");
+                $stmt->bind_param("ss", $hashedPassword, $login);
+                if (!$stmt->execute()) {
+                    echo json_encode(["success" => false, "message" => "Erro ao atualizar senha"]);
+                    exit;
+                }
+            }
+        }
+    
+        // Manipula componentes específicos de acordo com o tipo de usuário
+        if ($type === 'ALUNO') {
+            $turma = $components['turma'] ?? null;
+            if ($turma) {
+                $stmt = $conn->prepare("
+                    INSERT INTO turmas (sigla) VALUES (?)
+                    ON DUPLICATE KEY UPDATE sigla = sigla
+                ");
+                $stmt->bind_param("s", $turma);
+                $stmt->execute();
+    
+                $stmt = $conn->prepare("
+                    INSERT INTO aluno (login, turma) 
+                    VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE turma = VALUES(turma)
+                ");
+                $stmt->bind_param("ss", $login, $turma);
+                $stmt->execute();
+            }
+        } elseif ($type === 'PROFESSOR') {
+            $materia = $components['materia'] ?? null;
+            $turmas = $components['turmas'] ?? [];
+            if ($materia && !empty($turmas)) {
+                foreach ($turmas as $turma) {
+                    $stmt = $conn->prepare("
+                        INSERT INTO turmas (sigla) VALUES (?)
+                        ON DUPLICATE KEY UPDATE sigla = sigla
+                    ");
+                    $stmt->bind_param("s", $turma);
+                    $stmt->execute();
+                }
+    
+                $stmt = $conn->prepare("
+                    INSERT INTO professor (login, materia, turmas) 
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE materia = VALUES(materia), turmas = VALUES(turmas)
+                ");
+                $stmt->bind_param("sss", $login, $materia, json_encode($turmas));
+                $stmt->execute();
+            }
+        } elseif ($type === 'FUNCIONARIO') {
+            $funcao = $components['funcao'] ?? null;
+            if ($funcao) {
+                $stmt = $conn->prepare("
+                    INSERT INTO funcionario (login, funcao) 
+                    VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE funcao = VALUES(funcao)
+                ");
+                $stmt->bind_param("ss", $login, $funcao);
+                $stmt->execute();
+            }
+        }
+    
+        echo json_encode(["success" => true, "message" => "Usuário salvo com sucesso"]);
+        exit;
     } elseif ($action === 'editUser') {
         $login = $input['login'] ?? null;
         $name = $input['name'] ?? null;
@@ -300,15 +512,16 @@ if ($method === 'POST') {
             exit;
         }
     
-        $stmt = $conn->prepare("DELETE FROM pessoa WHERE login = ?");
+        $stmt = $conn->prepare("DELETE FROM usuario WHERE login = ?");
         $stmt->bind_param("s", $login);
     
         if ($stmt->execute()) {
-            echo json_encode(["success" => true, "message" => "Usuário removido com sucesso"]);
+            echo json_encode(["success" => true, "message" => "Usuário e dependências removidos com sucesso"]);
         } else {
-            echo json_encode(["success" => false, "message" => "Erro ao remover usuário"]);
+            echo json_encode(["success" => false, "message" => "Erro ao remover o usuário"]);
         }
-        exit;
+    
+        $stmt->close();
     } elseif ($action === 'login') {
         $login = $input['username'] ?? null;
         $senha = $input['password'] ?? null;
