@@ -330,7 +330,7 @@ fun updateUserCompleto(
     user: UserCompleto,
     onComplete: (Boolean) -> Unit
 ) {
-    apiService.upUserCompleto(user).enqueue(object : Callback<ApiResponse> {
+    apiService.editUserCompleto(user).enqueue(object : Callback<ApiResponse> {
         override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
             onComplete(response.isSuccessful && response.body()?.success == true)
         }
@@ -338,28 +338,6 @@ fun updateUserCompleto(
         override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
             onComplete(false)
             println("Falha na conexão: ${t.message}")
-        }
-    })
-}
-
-fun createUserCompleto(
-    user: UserCompleto,
-    onComplete: (Boolean, String?) -> Unit
-) {
-    apiService.upUserCompleto(user).enqueue(object : Callback<ApiResponse> {
-        override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-            if (response.isSuccessful) {
-                val success = response.body()?.success ?: false
-                val message = response.body()?.message ?: "Erro desconhecido"
-                onComplete(success, message)
-            } else {
-                val errorMessage = response.errorBody()?.string() ?: "Erro no servidor"
-                onComplete(false, errorMessage)
-            }
-        }
-
-        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-            onComplete(false, "Falha na conexão: ${t.message}")
         }
     })
 }

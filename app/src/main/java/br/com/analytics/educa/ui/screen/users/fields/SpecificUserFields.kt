@@ -17,24 +17,18 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SpecificUserFields(
-    initialValues: Map<String, Any> = emptyMap(),
     userType: String,
-    turmasList: List<String>,
-    onFieldsUpdated: (Map<String, Any>) -> Unit
+    onFieldsUpdated: (Map<String, Any>) -> Unit // Callback para atualizar os campos
 ) {
     Column {
         when (userType) {
-            "Aluno" -> {
-                var selectedYear by remember { mutableStateOf(initialValues["turma"]?.toString()?.firstOrNull()?.toString() ?: "1") }
-                var selectedClass by remember { mutableStateOf(initialValues["turma"]?.toString()?.lastOrNull()?.toString() ?: "A") }
+            "ALUNO" -> {
+                var selectedYear by remember { mutableStateOf("1") }
+                var selectedClass by remember { mutableStateOf("A") }
+                val combinedValue = selectedYear + selectedClass
 
                 val yearOptions = (1..9).map { it.toString() }
                 val classOptions = listOf("A", "B", "C", "D", "E")
-
-                // Atualiza os componentes sempre que selectedYear ou selectedClass mudam
-                LaunchedEffect(selectedYear, selectedClass) {
-                    onFieldsUpdated(mapOf("turma" to "$selectedYear$selectedClass"))
-                }
 
                 Text("Informações Específicas do Aluno", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -43,7 +37,10 @@ fun SpecificUserFields(
                     label = "Selecione o Ano",
                     options = yearOptions,
                     selectedOption = selectedYear,
-                    onOptionSelected = { selectedYear = it }
+                    onOptionSelected = { year ->
+                        selectedYear = year
+                        onFieldsUpdated(mapOf("Turma" to combinedValue))
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -52,33 +49,25 @@ fun SpecificUserFields(
                     label = "Selecione a Turma",
                     options = classOptions,
                     selectedOption = selectedClass,
-                    onOptionSelected = { selectedClass = it }
+                    onOptionSelected = { classLetter ->
+                        selectedClass = classLetter
+                        onFieldsUpdated(mapOf("Turma" to combinedValue))
+                    }
                 )
             }
 
-            "Professor" -> {
-                var selectedSubject by remember { mutableStateOf(initialValues["materia"]?.toString() ?: "") }
+            "PROFESSOR" -> {
+                var selectedSubject by remember { mutableStateOf("") }
                 val subjectOptions = listOf(
                     "Matemática", "Português", "Ciências", "História", "Geografia",
                     "Educação Física", "Inglês", "Espanhol", "Artes"
                 )
 
-                val availableClasses = turmasList
-
-                val selectedClasses = remember {
-                    mutableStateListOf<String>().apply {
-                        addAll(initialValues["turmas"] as? List<String> ?: emptyList())
-                    }
+                val availableClasses = (1..9).flatMap { year ->
+                    listOf("A", "B", "C", "D", "E").map { section -> "$year$section" }
                 }
 
-                LaunchedEffect(selectedSubject, selectedClasses) {
-                    onFieldsUpdated(
-                        mapOf(
-                            "materia" to selectedSubject,
-                            "turmas" to selectedClasses.toList()
-                        )
-                    )
-                }
+                val selectedClasses = remember { mutableStateListOf<String>() }
 
                 Text("Informações Específicas do Professor", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -87,7 +76,15 @@ fun SpecificUserFields(
                     label = "Selecione a Matéria",
                     options = subjectOptions,
                     selectedOption = selectedSubject,
-                    onOptionSelected = { selectedSubject = it }
+                    onOptionSelected = {
+                        selectedSubject = it
+                        onFieldsUpdated(
+                            mapOf(
+                                "Matéria" to selectedSubject,
+                                "Turmas" to selectedClasses.toList()
+                            )
+                        )
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -99,17 +96,19 @@ fun SpecificUserFields(
                     onSelectionChange = { updatedClasses ->
                         selectedClasses.clear()
                         selectedClasses.addAll(updatedClasses)
+                        onFieldsUpdated(
+                            mapOf(
+                                "Matéria" to selectedSubject,
+                                "Turmas" to selectedClasses.toList()
+                            )
+                        )
                     }
                 )
             }
 
-            "Funcionario" -> {
-                var selectedDepartment by remember { mutableStateOf(initialValues["funcao"]?.toString() ?: "") }
+            "FUNCIONARIO" -> {
+                var selectedDepartment by remember { mutableStateOf("") }
                 val departmentOptions = listOf("Secretaria", "Manutenção", "TI", "Recepção")
-
-                LaunchedEffect(selectedDepartment) {
-                    onFieldsUpdated(mapOf("funcao" to selectedDepartment))
-                }
 
                 Text("Informações Específicas do Funcionário", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -118,11 +117,14 @@ fun SpecificUserFields(
                     label = "Selecione a Função",
                     options = departmentOptions,
                     selectedOption = selectedDepartment,
-                    onOptionSelected = { selectedDepartment = it }
+                    onOptionSelected = {
+                        selectedDepartment = it
+                        onFieldsUpdated(mapOf("Função" to selectedDepartment))
+                    }
                 )
             }
 
-            "Diretor" -> {
+            "DIRETOR" -> {
                 Text(
                     text = "Diretor não possui campos específicos.",
                     style = MaterialTheme.typography.bodyMedium
