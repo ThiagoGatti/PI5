@@ -20,7 +20,7 @@ interface ApiService {
     @POST("api.php")
     fun enviarRespostas(@Body responseRequest: ResponseRequest): Call<ApiResponse>
 
-    @POST("api_extra.php")
+    @POST("api.php")
     fun editUser(@Body user: UserEditRequest): Call<ApiResponse>
 
     @POST("api.php")
@@ -61,10 +61,10 @@ interface ApiService {
         @Query("turma") turma: String
     ): Call<List<User>>
 
-    @POST("api_extra.php")
-    fun upUserCompleto(@Body user: UserCompleto): Call<ApiResponse>
+    @POST("api.php")
+    fun editUserCompleto(@Body user: UserCompleto): Call<ApiResponse>
 
-    @GET("api_extra.php")
+    @GET("api.php")
     fun getUserCompleto(
         @Query("action") action: String = "getUserDetails",
         @Query("login") login: String
@@ -134,7 +134,6 @@ data class UserRemoveRequest(
 )
 
 data class UserCompleto(
-    val action: String = "",
     val login: String,
     val name: String,
     val cpf: String,

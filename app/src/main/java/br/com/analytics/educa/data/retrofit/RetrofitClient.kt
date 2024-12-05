@@ -1,6 +1,5 @@
 package br.com.analytics.educa.data.retrofit
 
-import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,7 +17,7 @@ class RetrofitClient {
                 INSTANCE = Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(httpClient)
-                    .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
+                    .addConverterFactory(GsonConverterFactory.create())
                     .build()
             }
             return INSTANCE

@@ -1,28 +1,26 @@
-package br.com.analytics.educa.ui.component
+package br.com.analytics.educa.ui.screen.users.fields
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import br.com.analytics.educa.data.model.createUserCompleto
+import br.com.analytics.educa.data.model.updateUserCompleto
 import br.com.analytics.educa.data.retrofit.UserCompleto
-import br.com.analytics.educa.ui.screen.users.fields.DropdownField
-import br.com.analytics.educa.ui.screen.users.fields.SpecificUserFields
-import kotlin.String
+import br.com.analytics.educa.ui.component.entradaTextoCPF
+import br.com.analytics.educa.ui.component.formatDateFromDatabase
+import br.com.analytics.educa.ui.component.formatDateToDatabase
+import br.com.analytics.educa.ui.component.formaterCelular
+import br.com.analytics.educa.ui.component.formaterValidarDataCursor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddUserDialog(
-    turmasList : List<String>,
     onDismiss: () -> Unit,
     onUserCreated: (UserCompleto) -> Unit
 ) {
-    val context = LocalContext.current
     var step by remember { mutableStateOf(1) }
     var userType by remember { mutableStateOf<String?>(null) }
     var login by remember { mutableStateOf("") }
@@ -86,7 +84,7 @@ fun AddUserDialog(
                     Spacer(modifier = Modifier.height(8.dp))
                     DropdownField(
                         label = "Tipo de Usuário",
-                        options = listOf("Aluno", "Professor", "Funcionario", "Diretor"),
+                        options = listOf("ALUNO", "PROFESSOR", "FUNCIONARIO", "DIRETOR"),
                         selectedOption = userType.orEmpty(),
                         onOptionSelected = { userType = it }
                     )
@@ -94,7 +92,6 @@ fun AddUserDialog(
                     if (!userType.isNullOrEmpty()) {
                         SpecificUserFields(
                             userType = userType!!,
-                            turmasList = turmasList,
                             onFieldsUpdated = { updatedComponents ->
                                 components = updatedComponents
                             }
@@ -110,13 +107,12 @@ fun AddUserDialog(
                         step = 2
                     } else {
                         val newUser = UserCompleto(
-                            action = "createUserCompleto",
                             login = login,
                             name = name,
                             cpf = cpf,
                             birthDate = formatDateToDatabase(birthDate),
                             phone = phone,
-                            type = userType!!.toUpperCase(),
+                            type = userType!!,
                             password = senha,
                             components = components
                         )
@@ -124,14 +120,17 @@ fun AddUserDialog(
                         println("Usuário a ser criado: $newUser")
 
                         // Enviar usuário ao backend
-                        createUserCompleto(newUser) { success, message ->
-                            if (success) {
-                                Toast.makeText(context, "Usuário $login criado com sucesso!", Toast.LENGTH_SHORT).show()
-                                onDismiss()
-                            } else {
-                                println("Erro ao criar usuário: $message")
+                        updateUserCompleto(
+                            user = newUser,
+                            onComplete = { success ->
+                                if (success) {
+                                    onUserCreated(newUser)
+                                    onDismiss()
+                                } else {
+                                    errorMessage = "Erro ao criar o usuário. Tente novamente."
+                                }
                             }
-                        }
+                        )
                     }
                 }
             ) {
@@ -152,7 +151,6 @@ fun DialogosUsuarios(
     showEditDialog: Boolean,
     showRemoveDialog: Boolean,
     selectedUser: UserCompleto?,
-    turmasList: List<String>,
     onDismissAdd: () -> Unit,
     onDismissEdit: () -> Unit,
     onDismissRemove: () -> Unit,
@@ -160,7 +158,6 @@ fun DialogosUsuarios(
 ) {
     if (showAddDialog) {
         AddUserDialog(
-            turmasList = turmasList,
             onDismiss = onDismissAdd,
             onUserCreated = onUserCreated // Passando o parâmetro ausente
         )
@@ -170,7 +167,6 @@ fun DialogosUsuarios(
         EditUserDialog(
             user = selectedUser,
             onDismiss = onDismissEdit,
-            turmasList = turmasList,
             onSave = { updatedUser ->
                 println("Usuário atualizado: $updatedUser")
             }
@@ -191,7 +187,6 @@ fun DialogosUsuarios(
 @Composable
 fun EditUserDialog(
     user: UserCompleto,
-    turmasList: List<String>,
     onDismiss: () -> Unit,
     onSave: (UserCompleto) -> Unit
 ) {
@@ -203,7 +198,7 @@ fun EditUserDialog(
     }
     var phone by remember { mutableStateOf(user.phone) }
     var password by remember { mutableStateOf("") } // Novo estado para a senha
-    var components by remember { mutableStateOf(mapOf<String, Any>()) }
+    var components by remember { mutableStateOf(user.components.toMutableMap()) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -262,14 +257,62 @@ fun EditUserDialog(
                     visualTransformation = PasswordVisualTransformation()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                SpecificUserFields(
-                    initialValues = user.components,
-                    turmasList = turmasList,
-                    userType = user.type.first().toUpperCase() + user.type.substring(1).toLowerCase(),
-                    onFieldsUpdated = { updatedComponents ->
-                        components = updatedComponents
+
+                // Campos Específicos
+                if (components.isNotEmpty()) {
+                    Text("Componentes Específicos", style = MaterialTheme.typography.bodyMedium)
+                    when (user.type) {
+                        "Aluno" -> {
+                            DropdownField(
+                                label = "Ano",
+                                options = (1..9).map { it.toString() },
+                                selectedOption = components["Ano"]?.toString() ?: "",
+                                onOptionSelected = { components["Ano"] = it }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            DropdownField(
+                                label = "Turma",
+                                options = listOf("A", "B", "C", "D", "E"),
+                                selectedOption = components["Turma"]?.toString() ?: "",
+                                onOptionSelected = { components["Turma"] = it }
+                            )
+                        }
+                        "Professor" -> {
+                            DropdownField(
+                                label = "Matéria",
+                                options = listOf(
+                                    "Matemática", "Português", "Ciências", "História",
+                                    "Geografia", "Educação Física", "Inglês", "Espanhol", "Artes"
+                                ),
+                                selectedOption = components["Matéria"]?.toString() ?: "",
+                                onOptionSelected = { components["Matéria"] = it }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            MultiSelectDropdown(
+                                label = "Turmas",
+                                options = (1..9).flatMap { year ->
+                                    listOf("A", "B", "C", "D", "E").map { "$year$it" }
+                                },
+                                selectedOptions = (components["Turmas"] as? List<String>) ?: emptyList(),
+                                onSelectionChange = { components["Turmas"] = it }
+                            )
+                        }
+                        "Funcionário" -> {
+                            DropdownField(
+                                label = "Função",
+                                options = listOf("Secretaria", "Manutenção", "TI", "Recepção"),
+                                selectedOption = components["Função"]?.toString() ?: "",
+                                onOptionSelected = { components["Função"] = it }
+                            )
+                        }
+                        "Diretor" -> {
+                            Text(
+                                text = "Diretor não possui campos específicos.",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
-                )
+                }
             }
         },
         confirmButton = {
@@ -277,12 +320,11 @@ fun EditUserDialog(
                 onClick = {
                     onSave(
                         user.copy(
-                            action = "updateUserCompleto",
                             name = name,
                             cpf = cpf,
                             birthDate = formatDateToDatabase(birthDate),
                             phone = phone,
-                            password = if (password.isNotEmpty()) password else null,
+                            password = if (password.isNotEmpty()) password else null, // Inclui a senha se fornecida
                             components = components
                         )
                     )
