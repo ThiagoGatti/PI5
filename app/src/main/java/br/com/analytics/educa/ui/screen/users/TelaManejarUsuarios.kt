@@ -52,41 +52,6 @@ fun TelaManejarUsuarios(
         fetchTurmas { turmas -> turmasList = turmas }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))
-                )
-            )
-            .padding(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Gerenciar Usuários",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White
-                )
-                IconButton(onClick = { showAddDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Adicionar usuário",
-                        tint = Color.White
-                    )
-                }
-            }
-        }
-    }
     // Layout principal
     Box(
         modifier = Modifier
@@ -98,6 +63,26 @@ fun TelaManejarUsuarios(
             )
             .padding(16.dp)
     ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                IconButton(
+                    modifier = Modifier.
+                    background(Color(0xFF5D145B)),
+                    onClick = { showAddDialog = true }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Adicionar usuário",
+                        tint = Color.White
+                    )
+                }
+            }
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -309,6 +294,7 @@ fun TelaManejarUsuarios(
 
         if (showAddDialog) {
             AddUserDialog(
+                turmasList = turmasList,
                 onDismiss = { showAddDialog = false },
                 onUserCreated = { newUser ->
                     // Atualize a lista de usuários ou execute qualquer ação necessária
@@ -337,6 +323,7 @@ fun TelaManejarUsuarios(
         if (showEditDialog && selectedUser != null) {
             EditUserDialog(
                 user = selectedUser!!,
+                turmasList = turmasList,
                 onDismiss = { showEditDialog = false },
                 onSave = { updatedUser ->
                     scope.launch {
