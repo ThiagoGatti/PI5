@@ -2,6 +2,8 @@ package br.com.analytics.educa.ui.screen.users
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -155,11 +157,12 @@ fun TelaManejarUsuarios(
                         if (turmasList.isEmpty()) {
                             Text("Nenhuma turma disponível.", color = Color.White)
                         } else {
-                            Column(
+                            LazyColumn(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp) // Espaço para o botão Voltar
                             ) {
-                                turmasList.forEach { turma ->
+                                items(turmasList) { turma ->
                                     Button(
                                         onClick = {
                                             selectedTurma = turma
@@ -199,11 +202,12 @@ fun TelaManejarUsuarios(
                         if (usersList.isEmpty()) {
                             Text("Nenhum usuário encontrado.", color = Color.White)
                         } else {
-                            Column(
+                            LazyColumn(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                                verticalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp) 
                             ) {
-                                usersList.forEach { user ->
+                                items(usersList) { user ->
                                     val isCurrentUser = user.login == currentUserLogin
                                     Button(
                                         onClick = {
@@ -247,6 +251,7 @@ fun TelaManejarUsuarios(
                         }
                     }
                 }
+
 
             Button(
                     onClick = {
