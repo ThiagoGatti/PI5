@@ -178,7 +178,161 @@ fun AddUserDialog(
     )
 }
 
+@Composable
+fun EditUserDialog(
+    user: UserCompleto,
+    turmasList: List<String>,
+    onDismiss: () -> Unit,
+    onSave: (UserCompleto) -> Unit
+) {
+    var name by remember { mutableStateOf(user.name) }
+    var cpfState by remember { mutableStateOf(TextFieldValue(user.cpf)) }
+    var birthDateState by remember {
+        mutableStateOf(
+            TextFieldValue(formatDateFromDatabase(user.birthDate))
+        )
+    }
+    var phone by remember { mutableStateOf(user.phone) }
+    var phoneCursorPosition by remember { mutableStateOf(0) }
+    var password by remember { mutableStateOf("") } // Para a nova senha opcional
+    var components by remember { mutableStateOf(user.components) }
 
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar Usuário") },
+        text = {
+            Column {
+                // Nome
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Nome") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // CPF
+                entradaTextoCPF(
+                    value = cpfState,
+                    onValueChange = { cpfState = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Telefone
+                OutlinedTextField(
+                    value = TextFieldValue(phone, TextRange(phoneCursorPosition)),
+                    onValueChange = { input ->
+                        val (formattedPhone, newCursorPosition) =
+                            phoneNumberFormatter(input.text, input.selection.start)
+                        phone = formattedPhone
+                        phoneCursorPosition = newCursorPosition
+                    },
+                    label = { Text("Telefone (Ex.: (XX) XXXXX-XXXX)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Data de Nascimento
+                OutlinedTextField(
+                    value = birthDateState,
+                    onValueChange = { input ->
+                        val (formattedDate, newCursorPos) = formaterValidarDataCursor(
+                            input.text,
+                            input.selection.start
+                        )
+                        birthDateState = TextFieldValue(
+                            text = formattedDate,
+                            selection = TextRange(newCursorPos)
+                        )
+                    },
+                    label = { Text("Data de Nascimento (DD/MM/YYYY)") },
+                    isError = !validarData(birthDateState.text) && birthDateState.text.isNotEmpty(),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                if (!validarData(birthDateState.text) && birthDateState.text.isNotEmpty()) {
+                    Text(
+                        text = "Data inválida. Verifique o dia, mês ou ano.",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Nova Senha (Opcional)
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Nova Senha (Deixe em branco para manter a atual)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Campos Específicos
+                SpecificUserFields(
+                    initialValues = components,
+                    turmasList = turmasList,
+                    userType = user.type.first().toUpperCase() + user.type.substring(1).toLowerCase(),
+                    onFieldsUpdated = { updatedComponents ->
+                        components = updatedComponents
+                    }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onSave(
+                        user.copy(
+                            action = "updateUserCompleto",
+                            name = name,
+                            cpf = cpfState.text,
+                            birthDate = formatDateToDatabase(birthDateState.text),
+                            phone = phone,
+                            password = if (password.isNotEmpty()) password else null,
+                            components = components
+                        )
+                    )
+                }
+            ) {
+                Text("Salvar")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
+
+
+@Composable
+fun RemoveUserDialog(
+    user: UserCompleto, // Atualizado para UserCompleto
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Remover Usuário") },
+        text = { Text("Tem certeza de que deseja remover o usuário ${user.name}?") },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text("Remover")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
 
 @Composable
 fun DialogosUsuarios(
@@ -220,140 +374,6 @@ fun DialogosUsuarios(
             }
         )
     }
-}
-
-@Composable
-fun EditUserDialog(
-    user: UserCompleto,
-    turmasList: List<String>,
-    onDismiss: () -> Unit,
-    onSave: (UserCompleto) -> Unit
-) {
-    // Estados para os campos básicos
-    var name by remember { mutableStateOf(user.name) }
-    var cpf by remember { mutableStateOf(user.cpf) }
-    var birthDate by remember {
-        mutableStateOf(formatDateFromDatabase(user.birthDate))
-    }
-    var phone by remember { mutableStateOf(user.phone) }
-    var password by remember { mutableStateOf("") } // Novo estado para a senha
-    var components by remember { mutableStateOf(mapOf<String, Any>()) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Editar Usuário") },
-        text = {
-            Column {
-                // Nome
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nome") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // CPF
-                entradaTextoCPF(
-                    value = TextFieldValue(cpf),
-                    onValueChange = { cpf = it.text },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Telefone
-                OutlinedTextField(
-                    value = TextFieldValue(phone),
-                    onValueChange = { input ->
-                        val (formatted, cursor) = phoneNumberFormatter(input.text, input.selection.start)
-                        phone = formatted
-                    },
-                    label = { Text("Telefone (Ex.: (XX) XXXXX-XXXX)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Data de Nascimento
-                OutlinedTextField(
-                    value = TextFieldValue(birthDate),
-                    onValueChange = { input ->
-                        val result = formaterValidarDataCursor(input.text, input.selection.start)
-                        if (result != null) {
-                            birthDate = result.first
-                        }
-                    },
-                    label = { Text("Data de Nascimento (DD/MM/YYYY)") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Senha (Opcional)
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Nova Senha (Deixe em branco para manter a atual)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    visualTransformation = PasswordVisualTransformation()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                SpecificUserFields(
-                    initialValues = user.components,
-                    turmasList = turmasList,
-                    userType = user.type.first().toUpperCase() + user.type.substring(1).toLowerCase(),
-                    onFieldsUpdated = { updatedComponents ->
-                        components = updatedComponents
-                    }
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onSave(
-                        user.copy(
-                            action = "updateUserCompleto",
-                            name = name,
-                            cpf = cpf,
-                            birthDate = formatDateToDatabase(birthDate),
-                            phone = phone,
-                            password = if (password.isNotEmpty()) password else null,
-                            components = components
-                        )
-                    )
-                }
-            ) {
-                Text("Salvar")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
-    )
-}
-
-@Composable
-fun RemoveUserDialog(
-    user: UserCompleto, // Atualizado para UserCompleto
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Remover Usuário") },
-        text = { Text("Tem certeza de que deseja remover o usuário ${user.name}?") },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text("Remover")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
-    )
 }
 
 // Diálogo de Ações
