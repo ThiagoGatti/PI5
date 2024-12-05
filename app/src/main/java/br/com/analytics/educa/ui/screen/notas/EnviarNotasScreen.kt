@@ -13,6 +13,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
+import br.com.analytics.educa.data.model.fetchUserCompleto
+import br.com.analytics.educa.data.model.fetchUsersByTurma
+import br.com.analytics.educa.data.model.mostrarTurma
+import br.com.analytics.educa.data.retrofit.User
 import br.com.analytics.educa.ui.component.usecase.EnviarNotaUseCase
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,15 +25,32 @@ fun EnviarNotasScreen(
     login: String,
     navigateBack: () -> Unit,
 ) {
-    val turmas = listOf("Turma 1", "Turma 2", "Turma 3")
+    var turmas by remember { mutableStateOf<List<String>>(emptyList()) }
+    var alunos by remember { mutableStateOf<List<User>>(emptyList()) }
+    var turmaSelecionada by remember { mutableStateOf<String?>(null) }
+    var alunoSelecionado by remember { mutableStateOf<String?>(null) }
+    var nota by remember { mutableStateOf("") }
+    var faltas by remember { mutableStateOf("") }
+    var showSuccessMessage by remember { mutableStateOf(false) }
+    var showErrorMessage by remember { mutableStateOf(false) }
 
-    // Função fictícia para buscar os alunos por turma
+    // Função para buscar as turmas do professor e os alunos por turma
+    LaunchedEffect(key1 = login) {
+        fetchUserCompleto(login, onResult = { userCompleto ->
+            if (userCompleto.type == "PROFESSOR" && userCompleto.components["turmas"] != null) {
+                // O professor leciona em várias turmas
+                val turmasList = userCompleto.components["turmas"] as List<String>
+                turmas = turmasList
+            }
+        }, onError = { error ->
+            showErrorMessage = true
+        })
+    }
+
+    // Função para buscar os alunos de uma turma específica
     val getAlunosByTurma = { turma: String ->
-        when (turma) {
-            "Turma 1" -> listOf("Aluno 1", "Aluno 2", "Aluno 3")
-            "Turma 2" -> listOf("Aluno 4", "Aluno 5", "Aluno 6")
-            "Turma 3" -> listOf("Aluno 7", "Aluno 8", "Aluno 9")
-            else -> emptyList()
+        fetchUsersByTurma(turma) { listaAlunos ->
+            alunos = listaAlunos
         }
     }
 
@@ -37,16 +58,6 @@ fun EnviarNotasScreen(
     val enviarNotaEFrequencia = { turma: String, aluno: String, nota: String, frequencia: String ->
         println("Enviando para $aluno da $turma: Nota = $nota, Frequência = $frequencia")
     }
-
-    val enviarNotaUseCase = EnviarNotaUseCase()
-
-    var turmaSelecionada by remember { mutableStateOf<String?>(null) }
-    var alunoSelecionado by remember { mutableStateOf<String?>(null) }
-    var nota by remember { mutableStateOf("") }
-    var faltas by remember { mutableStateOf("") }
-    var showSuccessMessage by remember { mutableStateOf(false) }
-    var showErrorMessage by remember { mutableStateOf(false) }
-    val alunos = turmaSelecionada?.let { getAlunosByTurma(it) } ?: emptyList()
 
     Box(
         modifier = Modifier
@@ -99,7 +110,7 @@ fun EnviarNotasScreen(
             if (turmaSelecionada == null) {
                 TurmasListNotas(
                     turmas = turmas,
-                    onTurmaSelected = { turmaSelecionada = it },
+                    onTurmaSelected = { turmaSelecionada = it; getAlunosByTurma(it) },
                 )
             } else if (alunoSelecionado == null) {
                 AlunosList(
@@ -130,55 +141,29 @@ fun EnviarNotasScreen(
                                 nota = it
                             }
                         },
-                        label = { Text("Nota (0.0 a 10.0)", color = Color.White) },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.White,
-                            unfocusedBorderColor = Color.White,
-                            cursorColor = Color.White,
-                            focusedTextColor = Color.White
-                        ),
+                        label = { Text("Nota") },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     OutlinedTextField(
                         value = faltas,
-                        onValueChange = {
-                            if (it.toIntOrNull() != null) {
-                                faltas = it
-                            }
-                        },
-                        label = { Text("Número de Faltas", color = Color.White) },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.White,
-                            unfocusedBorderColor = Color.White,
-                            cursorColor = Color.White,
-                            focusedTextColor = Color.White
-                        ),
+                        onValueChange = { faltas = it },
+                        label = { Text("Frequência") },
                         modifier = Modifier.fillMaxWidth()
                     )
 
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     Button(
                         onClick = {
-                            // Verifica se a nota e as faltas são válidas
-                            if (nota.toDoubleOrNull() != null && faltas.toIntOrNull() != null) {
-                                enviarNotaEFrequencia(
-                                    turmaSelecionada!!,
-                                    alunoSelecionado!!,
-                                    nota,
-                                    faltas
-                                )
-                                showSuccessMessage = true
-                                showErrorMessage = false
-                            } else {
-                                showSuccessMessage = false
-                                showErrorMessage = true
-                            }
+                            // Enviar os dados
+                            enviarNotaEFrequencia(turmaSelecionada!!, alunoSelecionado!!, nota, faltas)
+                            showSuccessMessage = true
+                            showErrorMessage = false
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = "Enviar Nota e Frequência")
+                        Text("Enviar")
                     }
                 }
             }
@@ -186,49 +171,43 @@ fun EnviarNotasScreen(
     }
 }
 
-// Funções auxiliares para listagem de turmas e alunos
 @Composable
-fun TurmasListNotas(turmas: List<String>, onTurmaSelected: (String) -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun TurmasListNotas(
+    turmas: List<String>,
+    onTurmaSelected: (String) -> Unit
+) {
+    Column {
         turmas.forEach { turma ->
             Button(
                 onClick = { onTurmaSelected(turma) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
             ) {
-                Text(text = turma)
+                Text(text = mostrarTurma(turma))
             }
         }
     }
 }
 
 @Composable
-fun AlunosList(alunos: List<String>, onAlunoSelected: (String) -> Unit, onBackToTurmas: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun AlunosList(
+    alunos: List<User>,
+    onAlunoSelected: (String) -> Unit,
+    onBackToTurmas: () -> Unit
+) {
+    Column {
         Button(
-            onClick = { onBackToTurmas() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+            onClick = onBackToTurmas,
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
         ) {
-            Text(text = "Voltar para as Turmas")
+            Text(text = "Voltar às Turmas")
         }
 
         alunos.forEach { aluno ->
             Button(
-                onClick = { onAlunoSelected(aluno) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                onClick = { onAlunoSelected(aluno.name) },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
             ) {
-                Text(text = aluno)
+                Text(text = aluno.name)
             }
         }
     }
