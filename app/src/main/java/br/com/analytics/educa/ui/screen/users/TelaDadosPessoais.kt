@@ -112,7 +112,6 @@ fun TelaDadosPessoais(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botão de Voltar
             Button(
                 onClick = navigateBack,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
