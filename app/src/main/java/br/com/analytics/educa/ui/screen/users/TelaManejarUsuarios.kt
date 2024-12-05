@@ -25,10 +25,10 @@ import br.com.analytics.educa.data.model.removeUser
 import br.com.analytics.educa.data.model.updateUserCompleto
 import br.com.analytics.educa.data.retrofit.User
 import br.com.analytics.educa.data.retrofit.UserCompleto
-import br.com.analytics.educa.ui.component.ActionDialog
-import br.com.analytics.educa.ui.component.AddUserDialog
-import br.com.analytics.educa.ui.component.EditUserDialog
-import br.com.analytics.educa.ui.component.RemoveUserDialog
+import br.com.analytics.educa.ui.component.dialogs.ActionDialog
+import br.com.analytics.educa.ui.component.dialogs.AddUserDialog
+import br.com.analytics.educa.ui.component.dialogs.EditUserDialog
+import br.com.analytics.educa.ui.component.dialogs.RemoveUserDialog
 import kotlinx.coroutines.launch
 
 
@@ -84,7 +84,6 @@ fun TelaManejarUsuarios(
             }
         }
 
-// Texto "Selecione o Tipo de Usuário"
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -205,7 +204,7 @@ fun TelaManejarUsuarios(
                             LazyColumn(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp) 
+                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp)
                             ) {
                                 items(usersList) { user ->
                                     val isCurrentUser = user.login == currentUserLogin
