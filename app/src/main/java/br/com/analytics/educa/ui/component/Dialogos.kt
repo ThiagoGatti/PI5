@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -15,10 +16,11 @@ import br.com.analytics.educa.ui.screen.users.fields.DropdownField
 import br.com.analytics.educa.ui.screen.users.fields.SpecificUserFields
 import kotlin.String
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddUserDialog(
-    turmasList : List<String>,
+    turmasList: List<String>,
     onDismiss: () -> Unit,
     onUserCreated: (UserCompleto) -> Unit
 ) {
@@ -28,9 +30,10 @@ fun AddUserDialog(
     var login by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    var cpf by remember { mutableStateOf("") }
-    var birthDate by remember { mutableStateOf("") }
+    var cpfState by remember { mutableStateOf(TextFieldValue("")) } // Usando TextFieldValue para CPF
+    var birthDateState by remember { mutableStateOf(TextFieldValue("")) } // Usando TextFieldValue para data
     var phone by remember { mutableStateOf("") }
+    var phoneCursorPosition by remember { mutableStateOf(0) }
     var components by remember { mutableStateOf(mapOf<String, Any>()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -65,23 +68,55 @@ fun AddUserDialog(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     entradaTextoCPF(
-                        value = TextFieldValue(cpf),
-                        onValueChange = { cpf = it.text },
+                        value = cpfState,
+                        onValueChange = { cpfState = it }, // Atualiza o estado do CPF
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = birthDate,
-                        onValueChange = { birthDate = it },
-                        label = { Text("Data de Nascimento") },
-                        modifier = Modifier.fillMaxWidth()
+                        value = birthDateState,
+                        onValueChange = { input ->
+                            val (formattedDate, newCursorPos) = formaterValidarDataCursor(
+                                input.text,
+                                input.selection.start
+                            )
+                            birthDateState = TextFieldValue(
+                                text = formattedDate,
+                                selection = TextRange(newCursorPos)
+                            )
+                        },
+                        label = { Text("Data de Nascimento (DD/MM/YYYY)") },
+                        isError = !validarData(birthDateState.text) && birthDateState.text.isNotEmpty(),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        )
                     )
+                    if (!validarData(birthDateState.text) && birthDateState.text.isNotEmpty()) {
+                        Text(
+                            text = "Data inválida. Verifique o dia, mês ou ano.",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = phone,
-                        onValueChange = { phone = it },
-                        label = { Text("Telefone") },
-                        modifier = Modifier.fillMaxWidth()
+                        value = TextFieldValue(phone, TextRange(phoneCursorPosition)),
+                        onValueChange = { input ->
+                            val (formattedPhone, newCursorPosition) =
+                                phoneNumberFormatter(input.text, input.selection.start)
+                            phone = formattedPhone
+                            phoneCursorPosition = newCursorPosition
+                        },
+                        label = { Text("Telefone (Ex.: (XX) XXXXX-XXXX)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     DropdownField(
@@ -113,17 +148,14 @@ fun AddUserDialog(
                             action = "createUserCompleto",
                             login = login,
                             name = name,
-                            cpf = cpf,
-                            birthDate = formatDateToDatabase(birthDate),
+                            cpf = cpfState.text,
+                            birthDate = formatDateToDatabase(birthDateState.text),
                             phone = phone,
                             type = userType!!.toUpperCase(),
                             password = senha,
                             components = components
                         )
 
-                        println("Usuário a ser criado: $newUser")
-
-                        // Enviar usuário ao backend
                         createUserCompleto(newUser) { success, message ->
                             if (success) {
                                 Toast.makeText(context, "Usuário $login criado com sucesso!", Toast.LENGTH_SHORT).show()
@@ -145,6 +177,8 @@ fun AddUserDialog(
         }
     )
 }
+
+
 
 @Composable
 fun DialogosUsuarios(
@@ -231,7 +265,7 @@ fun EditUserDialog(
                 OutlinedTextField(
                     value = TextFieldValue(phone),
                     onValueChange = { input ->
-                        val (formatted, cursor) = formaterCelular(input.text, input.selection.start)
+                        val (formatted, cursor) = phoneNumberFormatter(input.text, input.selection.start)
                         phone = formatted
                     },
                     label = { Text("Telefone (Ex.: (XX) XXXXX-XXXX)") },
