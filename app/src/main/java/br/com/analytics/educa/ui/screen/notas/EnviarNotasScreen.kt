@@ -13,6 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.ui.text.font.FontWeight
 import br.com.analytics.educa.data.model.enviarNotaPresenca
 import br.com.analytics.educa.data.model.fetchUserCompleto
 import br.com.analytics.educa.data.model.fetchUsersByTurma
@@ -36,35 +42,29 @@ fun EnviarNotasScreen(
     var showErrorMessage by remember { mutableStateOf(false) }
     var materia by remember { mutableStateOf("") }
 
-    // Função para buscar as turmas do professor
+    // Busca inicial de turmas e matéria do professor
     LaunchedEffect(key1 = login) {
         fetchUserCompleto(login, onResult = { userCompleto ->
             if (userCompleto.type == "PROFESSOR" && userCompleto.components["turmas"] != null) {
-                // O professor leciona em várias turmas
                 val turmasList = userCompleto.components["turmas"] as List<String>
                 turmas = turmasList
             }
             materia = userCompleto.components["materia"] as String
-        }, onError = { error ->
-            showErrorMessage = true
-        })
+        }, onError = { error -> showErrorMessage = true })
     }
 
-    // Função para buscar os alunos de uma turma
+    // Busca alunos por turma
     val getAlunosByTurma = { turma: String ->
-        fetchUsersByTurma(turma) { listaAlunos ->
-            alunos = listaAlunos
-        }
+        fetchUsersByTurma(turma) { listaAlunos -> alunos = listaAlunos }
     }
 
-    // Função para enviar nota e frequência
+    // Envio de notas e frequência
     val enviarNota = {
         if (nota.isNotBlank() && faltas.isNotBlank() && materia.isNotBlank() && alunoSelecionado != null) {
             val frequencia = faltas.toIntOrNull() ?: 0
             val notaDouble = nota.toDoubleOrNull() ?: 0.0
-            println("Boletim a ser enviado: {${alunoSelecionado!!.login}, $materia, $notaDouble, $frequencia}")
             enviarNotaPresenca(
-                login = alunoSelecionado!!.login, // Login do aluno selecionado
+                login = alunoSelecionado!!.login,
                 materia = materia,
                 nota = notaDouble,
                 frequencia = validarFaltas(frequencia.toString())?.toInt() ?: 0,
@@ -72,10 +72,7 @@ fun EnviarNotasScreen(
                     showSuccessMessage = true
                     showErrorMessage = false
                 },
-                onError = { error ->
-                    showErrorMessage = true
-                    showSuccessMessage = false
-                }
+                onError = { error -> showErrorMessage = true; showSuccessMessage = false }
             )
         }
     }
@@ -91,105 +88,183 @@ fun EnviarNotasScreen(
             .padding(16.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(20.dp))
+
             // Título
             Text(
                 text = "Enviar Notas e Frequência",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Mensagem de sucesso ou erro
+            // Mensagens de feedback
             if (showSuccessMessage) {
                 Text(
                     text = "Dados enviados com sucesso!",
                     color = Color.Green,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth()
+                    modifier = Modifier.padding(8.dp)
                 )
             } else if (showErrorMessage) {
                 Text(
                     text = "Erro ao enviar os dados. Verifique as informações.",
                     color = Color.Red,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth()
+                    modifier = Modifier.padding(8.dp)
                 )
             }
 
-            // Listar Turmas
-            if (turmaSelecionada == null) {
-                TurmasListNotas(
-                    turmas = turmas,
-                    onTurmaSelected = { turmaSelecionada = it; getAlunosByTurma(it) },
-                )
-            } else if (alunoSelecionado == null) {
-                AlunosList(
-                    alunos = alunos,
-                    onAlunoSelected = { alunoSelecionado = it },
-                    onBackToTurmas = { turmaSelecionada = null }
-                )
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "Aluno: ${alunoSelecionado!!.name}",
-                        color = Color.White,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = nota,
-                        onValueChange = {
-                            if (it.toDoubleOrNull() != null && it.count { c -> c == '.' } <= 1) {
-                                nota = it
-                            }
-                        },
-                        label = { Text("Nota") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = faltas,
-                        onValueChange = {
-                            if (it.toIntOrNull() != null) {
-                                faltas = it
-                            }
-                        },
-                        label = { Text("Frequência (faltas)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        onClick = { enviarNota() },
-                        modifier = Modifier.fillMaxWidth()
+            // Conteúdo dinâmico
+            when {
+                turmaSelecionada == null -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Text("Enviar Nota e Frequência")
+                        items(turmas) { turma ->
+                            Button(
+                                onClick = { turmaSelecionada = turma; getAlunosByTurma(turma) },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(16.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                                    .height(70.dp),
+                                contentPadding = PaddingValues()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            color = Color(0xFF5D145B),
+                                            shape = RoundedCornerShape(16.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = mostrarTurma(turma),
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                alunoSelecionado == null -> {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        items(alunos) { aluno ->
+                            Button(
+                                onClick = { alunoSelecionado = aluno },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                shape = RoundedCornerShape(16.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth(0.9f)
+                                    .height(70.dp),
+                                contentPadding = PaddingValues()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            color = Color(0xFF5D145B),
+                                            shape = RoundedCornerShape(16.dp)
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = aluno.name,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Botão "Voltar às Turmas"
+                    Button(
+                        onClick = { turmaSelecionada = null },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    ) {
+                        Text(text = "Voltar às Turmas", color = Color.White)
+                    }
+                }
+                else -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Aluno: ${alunoSelecionado!!.name}",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        OutlinedTextField(
+                            value = nota,
+                            onValueChange = { if (it.toDoubleOrNull() != null) nota = it },
+                            label = { Text("Nota", color = Color.White) },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                cursorColor = Color.White,
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White
+                            ),
+                            textStyle = LocalTextStyle.current.copy(color = Color.White),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        OutlinedTextField(
+                            value = faltas,
+                            onValueChange = { if (it.toIntOrNull() != null) faltas = it },
+                            label = { Text("Frequência (faltas)", color = Color.White) },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                cursorColor = Color.White,
+                                focusedBorderColor = Color.White,
+                                unfocusedBorderColor = Color.White
+                            ),
+                            textStyle = LocalTextStyle.current.copy(color = Color.White),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        // Botão "Enviar"
+                        Button(
+                            onClick = enviarNota,
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = "Enviar", color = Color.White)
+                        }
                     }
                 }
             }
         }
+
+        // Botão "Voltar" fixo na parte inferior
+        Button(
+            onClick = navigateBack,
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+        ) {
+            Text(text = "Voltar", color = Color.White)
+        }
     }
 }
+
+
+
+
 
 @Composable
 fun AlunosList(
