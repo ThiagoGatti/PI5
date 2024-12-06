@@ -173,7 +173,7 @@ fun TelaDadosEscola(
                 ) {
                     Button(
                         onClick = navigateToTelaGraficoBarra,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)), // Use a cor sólida diretamente
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
                             .weight(1f)
@@ -202,7 +202,7 @@ fun TelaDadosEscola(
 
                     Button(
                         onClick = navigateToTelaGraficoPizza,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)), // Use a cor sólida diretamente
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
                             .weight(1f)

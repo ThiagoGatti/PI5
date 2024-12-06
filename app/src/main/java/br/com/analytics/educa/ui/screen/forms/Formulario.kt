@@ -78,13 +78,12 @@ fun Formulario(
                         text = "Formulário - $formName",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.White,
-                        modifier = Modifier.align(Alignment.Center), // Centraliza o título
+                        modifier = Modifier.align(Alignment.Center),
                         textAlign = TextAlign.Center
                     )
                 }
             }
 
-            // Exibir perguntas com as estrelinhas
             itemsIndexed(questions) { index, question ->
                 Column(
                     modifier = Modifier

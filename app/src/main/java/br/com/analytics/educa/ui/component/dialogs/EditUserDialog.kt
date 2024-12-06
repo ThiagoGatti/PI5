@@ -52,7 +52,6 @@ fun EditUserDialog(
         title = { Text("Editar Usuário") },
         text = {
             Column {
-                // Nome
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -61,7 +60,6 @@ fun EditUserDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // CPF
                 entradaTextoCPF(
                     value = cpfState,
                     onValueChange = { cpfState = it },
@@ -69,7 +67,6 @@ fun EditUserDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Telefone
                 OutlinedTextField(
                     value = TextFieldValue(phone, TextRange(phoneCursorPosition)),
                     onValueChange = { input ->
@@ -84,7 +81,6 @@ fun EditUserDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Data de Nascimento
                 OutlinedTextField(
                     value = birthDateState,
                     onValueChange = { input ->
@@ -112,7 +108,6 @@ fun EditUserDialog(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Nova Senha (Opcional)
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },

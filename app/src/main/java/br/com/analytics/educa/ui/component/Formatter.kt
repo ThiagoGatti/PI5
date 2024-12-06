@@ -19,8 +19,8 @@ fun entradaTextoCPF(
     OutlinedTextField(
         value = value,
         onValueChange = { input ->
-            val digitsOnly = input.text.filter { it.isDigit() } // Remove caracteres não numéricos
-            if (digitsOnly.length <= 11) { // Limita a entrada a 11 dígitos
+            val digitsOnly = input.text.filter { it.isDigit() }
+            if (digitsOnly.length <= 11) {
                 val (formattedText, newCursorPosition) = formaterCPF(digitsOnly, input.selection.start)
                 val newTextFieldValue = TextFieldValue(
                     text = formattedText,
@@ -56,8 +56,8 @@ fun formaterCPF(cpf: String, cursorPos: Int): Pair<String, Int> {
 
 
 fun formaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, Int> {
-    val digitsOnly = input.filter { it.isDigit() } // Remove caracteres não numéricos
-        .take(8) // Limita os números a no máximo 8 dígitos (DDMMYYYY sem barras)
+    val digitsOnly = input.filter { it.isDigit() }
+        .take(8)
 
     val formatted = StringBuilder()
     var adjustedCursor = cursorPosition
@@ -71,7 +71,7 @@ fun formaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, 
     }
 
     val result = formatted.toString()
-    return result.take(10) to adjustedCursor.coerceAtMost(result.length) // Limita a 10 caracteres
+    return result.take(10) to adjustedCursor.coerceAtMost(result.length)
 }
 
 
@@ -112,7 +112,7 @@ fun isValidDateInput(input: String): Boolean {
 }
 
 fun phoneNumberFormatter(input: String, cursorPosition: Int): Pair<String, Int> {
-    val digitsOnly = input.filter { it.isDigit() }.take(11) // Limita a 11 dígitos
+    val digitsOnly = input.filter { it.isDigit() }.take(11)
     val formatted = StringBuilder()
     var adjustedCursor = cursorPosition
 

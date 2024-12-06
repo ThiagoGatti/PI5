@@ -61,7 +61,6 @@ fun InitialScreen(
                 contentScale = ContentScale.Fit
             )
 
-            // Título
             Text(
                 text = "Bem-vindo",
                 style = MaterialTheme.typography.headlineMedium,
@@ -71,7 +70,6 @@ fun InitialScreen(
                 fontSize = 30.sp
             )
 
-            // Texto
             Text(
                 text = "Sua jornada de aprendizado começa aqui.",
                 style = MaterialTheme.typography.bodyMedium,
@@ -80,7 +78,6 @@ fun InitialScreen(
                 fontSize = 18.sp
             )
 
-            // Botao de Login
             Button(
                 onClick = navigateToLogin,
                 modifier = Modifier
@@ -101,12 +98,10 @@ fun InitialScreen(
                 modifier = Modifier.size(20.dp)
             )
                 Text(
-
                     text = "Logar",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-
             }
         }
     }

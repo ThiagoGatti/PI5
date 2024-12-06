@@ -31,7 +31,6 @@ fun LoginScreen(
     var saveLogin by remember { mutableStateOf(false) }
     var autoLoginAttempted by remember { mutableStateOf(false) }
 
-    // Tentativa de login automático
     LaunchedEffect(Unit) {
         if (!autoLoginAttempted) {
             val isSaveEnabled = sharedPreferences.getBoolean("save_login", false)
@@ -74,7 +73,6 @@ fun LoginScreen(
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
-                // Campo de Usuário
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },

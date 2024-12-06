@@ -48,7 +48,7 @@ fun GraficoBarraMediaFormularios(
                         valueTextSize = 12f
                         valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
                             override fun getFormattedValue(value: Float): String {
-                                return String.format("%.1f", value) // Formata os valores exibidos
+                                return String.format("%.1f", value)
                             }
                         }
                     }

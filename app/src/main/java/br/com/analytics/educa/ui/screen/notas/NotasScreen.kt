@@ -30,7 +30,6 @@ fun NotasScreen(
     var boletim by remember { mutableStateOf<List<Boletim>>(emptyList()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // Busca os dados ao carregar a tela
     LaunchedEffect(Unit) {
         buscarBoletim(
             login = login,

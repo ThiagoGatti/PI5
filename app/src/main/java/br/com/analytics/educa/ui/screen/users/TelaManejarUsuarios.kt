@@ -267,7 +267,7 @@ fun TelaManejarUsuarios(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(0.6f)
                         .height(75.dp)
-                        .padding(bottom = 16.dp) // Espaço inferior
+                        .padding(bottom = 16.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
