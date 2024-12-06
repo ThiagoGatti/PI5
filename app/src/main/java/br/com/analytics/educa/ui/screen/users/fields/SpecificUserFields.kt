@@ -31,7 +31,7 @@ fun SpecificUserFields(
                 val yearOptions = (1..9).map { it.toString() }
                 val classOptions = listOf("A", "B", "C", "D", "E")
 
-                // Atualiza os componentes sempre que selectedYear ou selectedClass mudam
+
                 LaunchedEffect(selectedYear, selectedClass) {
                     onFieldsUpdated(mapOf("turma" to "$selectedYear$selectedClass"))
                 }
@@ -200,7 +200,7 @@ fun MultiSelectDropdown(
                 .fillMaxWidth()
                 .clickable { expanded = !expanded },
             trailingIcon = {
-                IconButton(onClick = { expanded = !expanded }) { // Certifica que o clique alterna o estado
+                IconButton(onClick = { expanded = !expanded }) {
                     Icon(
                         imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
                         contentDescription = null
@@ -214,7 +214,7 @@ fun MultiSelectDropdown(
             onDismissRequest = { expanded = false },
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(max = 300.dp) // Define altura máxima
+                .heightIn(max = 300.dp)
         ) {
             options.forEach { option ->
                 Row(

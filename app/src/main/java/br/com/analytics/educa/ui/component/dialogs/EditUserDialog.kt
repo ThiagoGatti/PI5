@@ -44,7 +44,7 @@ fun EditUserDialog(
     }
     var phone by remember { mutableStateOf(user.phone) }
     var phoneCursorPosition by remember { mutableStateOf(0) }
-    var password by remember { mutableStateOf("") } // Para a nova senha opcional
+    var password by remember { mutableStateOf("") }
     var components by remember { mutableStateOf(user.components) }
 
     AlertDialog(

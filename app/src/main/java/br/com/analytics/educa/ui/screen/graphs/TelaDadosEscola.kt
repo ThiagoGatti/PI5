@@ -49,7 +49,7 @@ fun TelaDadosEscola(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center, // Centraliza o conteúdo na tela
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxSize()
         ) {
             if (errorMessage != null) {
@@ -88,8 +88,7 @@ fun TelaDadosEscola(
                         fontWeight = FontWeight.Bold
                     )
 
-                    Spacer(modifier = Modifier.height(15.dp)) // Aumente ou diminua o valor conforme necessário
-
+                    Spacer(modifier = Modifier.height(15.dp))
 
                     Column(
                         horizontalAlignment = Alignment.Start,
@@ -161,7 +160,7 @@ fun TelaDadosEscola(
                         }
 
 
-                        Spacer(modifier = Modifier.height(50.dp)) // Aumente ou diminua o valor conforme necessário
+                        Spacer(modifier = Modifier.height(50.dp))
 
 
                     }

@@ -25,7 +25,6 @@ import br.com.analytics.educa.R
 fun InitialScreen(
     navigateToLogin: () -> Unit
 ) {
-    // Animação da logo
     val infiniteTransition = rememberInfiniteTransition()
     val offsetY by infiniteTransition.animateFloat(
         initialValue = -20f,
@@ -41,7 +40,7 @@ fun InitialScreen(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7)) //degrade roxo de fundo
+                    colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))
                 )
             )
             .padding(16.dp),
@@ -90,8 +89,8 @@ fun InitialScreen(
 
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF5D145B), // Cor de Fundo
-                    contentColor = Color.White // Cor do Texto
+                    containerColor = Color(0xFF5D145B),
+                    contentColor = Color.White
                 )
 
             ) {

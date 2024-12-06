@@ -93,7 +93,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campo de Senha
+
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
@@ -113,7 +113,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Switch para salvar login ao lado do texto
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -126,7 +126,7 @@ fun LoginScreen(
                                 .putBoolean("save_login", it)
                                 .apply()
                         },
-                        modifier = Modifier.padding(end = 8.dp) // Espaçamento entre Switch e texto
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                     Text(
                         text = "Salvar login",
@@ -138,7 +138,7 @@ fun LoginScreen(
 
                 Button(
                     onClick = {
-                        // Salvar login e senha para futuras tentativas automáticas (se habilitado)
+
                         if (saveLogin) {
                             sharedPreferences.edit().apply {
                                 putString("username", username)
@@ -149,7 +149,7 @@ fun LoginScreen(
                                 apply()
                             }
                         } else {
-                            // Limpar dados de login se a opção estiver desativada
+
                             sharedPreferences.edit().remove("username").remove("password").apply()
                         }
                         onLoginSubmit(username, password)

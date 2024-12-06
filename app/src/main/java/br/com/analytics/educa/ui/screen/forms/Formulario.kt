@@ -30,13 +30,12 @@ fun Formulario(
 ) {
     val context = LocalContext.current
 
-    // Lista de perguntas
+
     val questions = retorna_perguntas(userType, formName)
 
-    // Lembrar Respostas
     val answers = remember { mutableStateListOf(*Array(questions.size) { 0 }) }
 
-    // Estado para controlar mensagem de erro
+
     var showError by remember { mutableStateOf(false) }
 
     Box(
@@ -54,7 +53,7 @@ fun Formulario(
                 .padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Adicionando a seta de voltar e ajustando o alinhamento
+
             item {
                 Box(
                     modifier = Modifier
@@ -62,10 +61,10 @@ fun Formulario(
                         .statusBarsPadding()
                         .padding(horizontal = 8.dp)
                 ) {
-                    // Seta de voltar posicionada à esquerda
+
                     IconButton(
                         onClick = navigateBack,
-                        modifier = Modifier.align(Alignment.CenterStart) // Alinha à esquerda, no centro vertical
+                        modifier = Modifier.align(Alignment.CenterStart)
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -74,7 +73,7 @@ fun Formulario(
                         )
                     }
 
-                    // Título centralizado
+
                     Text(
                         text = "Formulário - $formName",
                         style = MaterialTheme.typography.headlineMedium,
@@ -129,13 +128,13 @@ fun Formulario(
                 }
             }
 
-            // Botão para enviar respostas
+
             item {
-                Spacer(modifier = Modifier.height(16.dp)) // Espaçamento antes do botão
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
                         if (answers.contains(0)) {
-                            showError = true // Exibe mensagem de erro
+                            showError = true
                         } else {
                             val responseData = mutableMapOf<String, Int>()
                             answers.forEachIndexed { index, answer ->

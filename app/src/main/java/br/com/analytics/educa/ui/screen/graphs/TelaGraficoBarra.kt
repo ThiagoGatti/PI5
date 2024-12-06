@@ -12,9 +12,7 @@ import androidx.compose.ui.unit.dp
 import br.com.analytics.educa.data.model.buscarRespostasPorEscola
 import br.com.analytics.educa.data.retrofit.ResponseBySchool
 import br.com.analytics.educa.ui.component.design.GraficoBarraMediaFormularios
-import android.content.res.Configuration
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun TelaGraficoBarra(

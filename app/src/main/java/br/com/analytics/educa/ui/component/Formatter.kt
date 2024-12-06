@@ -35,13 +35,6 @@ fun entradaTextoCPF(
     )
 }
 
-/**
- * Formata o CPF enquanto preserva a posição do cursor.
- *
- * @param cpf Apenas os dígitos do CPF.
- * @param cursorPos A posição atual do cursor antes da formatação.
- * @return Pair contendo o texto formatado e a nova posição do cursor.
- */
 fun formaterCPF(cpf: String, cursorPos: Int): Pair<String, Int> {
     val builder = StringBuilder()
     var newCursorPos = cursorPos
@@ -62,13 +55,6 @@ fun formaterCPF(cpf: String, cursorPos: Int): Pair<String, Int> {
 }
 
 
-/**
- * Formata e valida uma data no formato DD/MM/YYYY.
- *
- * @param input A string de entrada que representa a data.
- * @param cursorPosition A posição atual do cursor.
- * @return Um par com a string formatada e a nova posição do cursor, ou null se a data for inválida.
- */
 fun formaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, Int> {
     val digitsOnly = input.filter { it.isDigit() } // Remove caracteres não numéricos
         .take(8) // Limita os números a no máximo 8 dígitos (DDMMYYYY sem barras)
@@ -90,23 +76,11 @@ fun formaterValidarDataCursor(input: String, cursorPosition: Int): Pair<String, 
 
 
 
-/**
- * Verifica se uma data no formato DD/MM/YYYY é válida.
- *
- * @param date A string da data no formato DD/MM/YYYY.
- * @return True se a data for válida, False caso contrário.
- */
-/**
- * Verifica se uma data no formato DD/MM/YYYY é válida.
- *
- * @param date A string da data no formato DD/MM/YYYY.
- * @return True se a data for válida, False caso contrário.
- */
 fun validarData(date: String): Boolean {
-    if (date.length != 10) return false // Garantir que o comprimento seja DD/MM/YYYY
+    if (date.length != 10) return false
 
     val parts = date.split("/")
-    if (parts.size != 3) return false // Garantir que a data tenha dia, mês e ano
+    if (parts.size != 3) return false
 
     val day = parts[0].toIntOrNull() ?: return false
     val month = parts[1].toIntOrNull() ?: return false
@@ -116,7 +90,7 @@ fun validarData(date: String): Boolean {
     if (month !in 1..12) return false
     if (year !in 1900..Calendar.getInstance().get(Calendar.YEAR)) return false
 
-    // Verificar limites de dia baseado no mês e ano
+
     val daysInMonth = when (month) {
         1, 3, 5, 7, 8, 10, 12 -> 31
         4, 6, 9, 11 -> 30
@@ -127,23 +101,11 @@ fun validarData(date: String): Boolean {
     return day in 1..daysInMonth
 }
 
-/**
- * Verifica se um ano é bissexto.
- *
- * @param year O ano a ser verificado.
- * @return True se o ano for bissexto, False caso contrário.
- */
+
 fun isLeapYear(year: Int): Boolean {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 }
 
-
-/**
- * Permite entrada gradual de data no formato DD/MM/YYYY.
- *
- * @param input A string de entrada.
- * @return True se a entrada for válida até o momento, False caso contrário.
- */
 fun isValidDateInput(input: String): Boolean {
     val regex = Regex("^\\d{0,2}/?\\d{0,2}/?\\d{0,4}\$")
     return regex.matches(input)

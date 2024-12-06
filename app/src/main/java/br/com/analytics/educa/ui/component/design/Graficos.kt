@@ -96,7 +96,7 @@ fun GraficoPizza(
             text = titulo,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = White, // Texto em branco para contraste
+            color = White,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -112,23 +112,23 @@ fun GraficoPizza(
                             android.graphics.Color.parseColor("#FF03DAC5"),
                             android.graphics.Color.parseColor("#FF6200EE"),
                             android.graphics.Color.parseColor("#FF3700B3")
-                        ) // Cores personalizadas que combinam com o tema
-                        valueTextColor = Color.WHITE // Valores em branco
+                        )
+                        valueTextColor = Color.WHITE
                         valueTextSize = 12f
                     }
                     this.data = PieData(dataSet).apply {
-                        setValueTextColor(android.graphics.Color.WHITE) // Texto em branco
+                        setValueTextColor(android.graphics.Color.WHITE)
                         setValueTextSize(14f)
                     }
-                    this.setEntryLabelColor(android.graphics.Color.WHITE) // Rótulos em branco
+                    this.setEntryLabelColor(android.graphics.Color.WHITE)
                     this.setEntryLabelTextSize(12f)
-                    this.description.isEnabled = false // Remove descrição padrão
+                    this.description.isEnabled = false
                     this.legend.apply {
-                        textColor = android.graphics.Color.WHITE // Legenda em branco
+                        textColor = android.graphics.Color.WHITE
                         textSize = 12f
-                        isEnabled = true // Habilita legenda
+                        isEnabled = true
                     }
-                    this.setUsePercentValues(true) // Exibe valores como porcentagem
+                    this.setUsePercentValues(true)
                     this.invalidate()
                 }
             },

@@ -62,12 +62,12 @@ fun Footer(
     navigateBack: () -> Unit,
     onBackToTurmas: () -> Unit,
     onResetUserType: () -> Unit,
-    modifier: Modifier = Modifier // Novo parâmetro para personalização do layout
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp), // Adiciona espaçamento inferior
+            .padding(bottom = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Button(

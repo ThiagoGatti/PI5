@@ -2,13 +2,10 @@ package br.com.analytics.educa.ui.screen.notas
 
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.*
@@ -16,8 +13,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.ui.text.font.FontWeight
 import br.com.analytics.educa.data.model.enviarNotaPresenca
 import br.com.analytics.educa.data.model.fetchUserCompleto
@@ -42,7 +37,7 @@ fun EnviarNotasScreen(
     var showErrorMessage by remember { mutableStateOf(false) }
     var materia by remember { mutableStateOf("") }
 
-    // Fetch turmas and associated data
+
     LaunchedEffect(key1 = login) {
         fetchUserCompleto(login, onResult = { userCompleto ->
             if (userCompleto.type == "PROFESSOR" && userCompleto.components["turmas"] != null) {
@@ -53,7 +48,7 @@ fun EnviarNotasScreen(
         }, onError = { error -> showErrorMessage = true })
     }
 
-    // Fetch students when a turma is selected
+
     LaunchedEffect(key1 = turmaSelecionada) {
         turmaSelecionada?.let { turma ->
             fetchUsersByTurma(turma) { listaAlunos ->

@@ -29,7 +29,6 @@ fun MenuForm(
     val context = LocalContext.current
     var answeredForms by remember { mutableStateOf(setOf<String>()) }
 
-    // Busca os formulários já respondidos
     LaunchedEffect(userType, username) {
         buscarFormsRespondidos(
             userType = userType,
@@ -43,7 +42,6 @@ fun MenuForm(
         )
     }
 
-    // Gradiente de fundo e layout
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +59,7 @@ fun MenuForm(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título
+
             Text(
                 text = "Formulários Disponíveis",
                 style = MaterialTheme.typography.headlineMedium,
@@ -73,7 +71,6 @@ fun MenuForm(
                     .fillMaxWidth()
             )
 
-            // Botões de formulários
             forms(userType).forEach { formName ->
                 val isAnswered = answeredForms.contains(formName)
                 Button(
@@ -105,20 +102,20 @@ fun MenuForm(
             }
         }
 
-        // Botão "Voltar" ajustado para o rodapé
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter) // Alinha ao rodapé
-                .padding(bottom = 32.dp), // Ajusta a posição para mais perto do rodapé
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 32.dp),
             contentAlignment = Alignment.Center
         ) {
             Button(
                 onClick = navigateBack,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                 modifier = Modifier
-                    .width(150.dp) // Largura do botão
-                    .height(50.dp) // Altura do botão
+                    .width(150.dp)
+                    .height(50.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -143,7 +140,7 @@ fun MenuForm(
     }
 }
 
-// Função para retornar os formulários com base no tipo de usuário
+
 fun forms(userType: String): List<String> {
     return when (userType) {
         "ALUNO" -> listOf(

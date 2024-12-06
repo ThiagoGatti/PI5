@@ -47,8 +47,8 @@ fun AddUserDialog(
     var login by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    var cpfState by remember { mutableStateOf(TextFieldValue("")) } // Usando TextFieldValue para CPF
-    var birthDateState by remember { mutableStateOf(TextFieldValue("")) } // Usando TextFieldValue para data
+    var cpfState by remember { mutableStateOf(TextFieldValue("")) }
+    var birthDateState by remember { mutableStateOf(TextFieldValue("")) }
     var phone by remember { mutableStateOf("") }
     var phoneCursorPosition by remember { mutableStateOf(0) }
     var components by remember { mutableStateOf(mapOf<String, Any>()) }
@@ -86,7 +86,7 @@ fun AddUserDialog(
                     Spacer(modifier = Modifier.height(8.dp))
                     entradaTextoCPF(
                         value = cpfState,
-                        onValueChange = { cpfState = it }, // Atualiza o estado do CPF
+                        onValueChange = { cpfState = it },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
