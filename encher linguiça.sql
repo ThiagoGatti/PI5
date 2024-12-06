@@ -94,3 +94,19 @@ INSERT INTO respostas (login_usuario, tipo_usuario, nome_formulario, q1, q2, q3,
 INSERT INTO respostas (login_usuario, tipo_usuario, nome_formulario, q1, q2, q3, q4) VALUES
 ('func123', 'FUNCIONARIO', 'Eficiência da Gestão', 8, 9, 7, 8),
 ('func124', 'FUNCIONARIO', 'Eficiência da Gestão', 9, 8, 8, 9);
+
+-- Inserir os alunos no sistema
+INSERT INTO usuario (login, senha) VALUES
+('aluno1A1', SHA2('123', 256)),
+('aluno1A2', SHA2('123', 256)),
+('aluno1A3', SHA2('123', 256));
+
+INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo, id_escola) VALUES
+('aluno1A1', 'Pedro Oliveira', '111.222.333-44', '2007-02-15', '(11) 91234-5670', 'ALUNO', 1),
+('aluno1A2', 'Ana Costa', '222.333.444-55', '2007-05-10', '(11) 91234-5671', 'ALUNO', 1),
+('aluno1A3', 'Marcos Souza', '333.444.555-66', '2007-09-20', '(11) 91234-5672', 'ALUNO', 1);
+
+INSERT INTO aluno (login, turma) VALUES
+('aluno1A1', '1A'),
+('aluno1A2', '1A'),
+('aluno1A3', '1A');
