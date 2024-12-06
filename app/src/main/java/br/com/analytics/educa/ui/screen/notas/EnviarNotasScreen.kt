@@ -42,7 +42,7 @@ fun EnviarNotasScreen(
     var showErrorMessage by remember { mutableStateOf(false) }
     var materia by remember { mutableStateOf("") }
 
-    // Busca inicial de turmas e matéria do professor
+    // Fetch turmas and associated data
     LaunchedEffect(key1 = login) {
         fetchUserCompleto(login, onResult = { userCompleto ->
             if (userCompleto.type == "PROFESSOR" && userCompleto.components["turmas"] != null) {
@@ -53,12 +53,15 @@ fun EnviarNotasScreen(
         }, onError = { error -> showErrorMessage = true })
     }
 
-    // Busca alunos por turma
-    val getAlunosByTurma = { turma: String ->
-        fetchUsersByTurma(turma) { listaAlunos -> alunos = listaAlunos }
+    // Fetch students when a turma is selected
+    LaunchedEffect(key1 = turmaSelecionada) {
+        turmaSelecionada?.let { turma ->
+            fetchUsersByTurma(turma) { listaAlunos ->
+                alunos = listaAlunos
+            }
+        }
     }
 
-    // Envio de notas e frequência
     val enviarNota = {
         if (nota.isNotBlank() && faltas.isNotBlank() && materia.isNotBlank() && alunoSelecionado != null) {
             val frequencia = faltas.toIntOrNull() ?: 0
@@ -93,7 +96,6 @@ fun EnviarNotasScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Título
             Text(
                 text = "Enviar Notas e Frequência",
                 style = MaterialTheme.typography.headlineMedium,
@@ -101,7 +103,6 @@ fun EnviarNotasScreen(
                 modifier = Modifier.padding(vertical = 16.dp)
             )
 
-            // Mensagens de feedback
             if (showSuccessMessage) {
                 Text(
                     text = "Dados enviados com sucesso!",
@@ -116,7 +117,6 @@ fun EnviarNotasScreen(
                 )
             }
 
-            // Conteúdo dinâmico
             when {
                 turmaSelecionada == null -> {
                     LazyColumn(
@@ -126,7 +126,7 @@ fun EnviarNotasScreen(
                     ) {
                         items(turmas) { turma ->
                             Button(
-                                onClick = { turmaSelecionada = turma; getAlunosByTurma(turma) },
+                                onClick = { turmaSelecionada = turma },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                                 shape = RoundedCornerShape(16.dp),
                                 modifier = Modifier
@@ -152,6 +152,24 @@ fun EnviarNotasScreen(
                                 }
                             }
                         }
+                    }
+
+                    Button(
+                        onClick = navigateBack,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                        shape = MaterialTheme.shapes.large,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 16.dp)
+                            .width(200.dp)
+                            .height(50.dp)
+                    ) {
+                        Text(
+                            text = "Voltar",
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
                 alunoSelecionado == null -> {
@@ -190,13 +208,16 @@ fun EnviarNotasScreen(
                         }
                     }
 
-                    // Botão "Voltar às Turmas"
                     Button(
                         onClick = { turmaSelecionada = null },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 16.dp)
+                            .width(200.dp)
+                            .height(50.dp)
                     ) {
-                        Text(text = "Voltar às Turmas", color = Color.White)
+                        Text(text = "Voltar às Turmas", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 }
                 else -> {
@@ -211,9 +232,14 @@ fun EnviarNotasScreen(
                             fontSize = 18.sp,
                             modifier = Modifier.padding(8.dp)
                         )
+
                         OutlinedTextField(
                             value = nota,
-                            onValueChange = { if (it.toDoubleOrNull() != null) nota = it },
+                            onValueChange = {
+                                if (it.isEmpty() || it.toDoubleOrNull() == null || it.toDoubleOrNull()!! <= 10.0) {
+                                    nota = it
+                                }
+                            },
                             label = { Text("Nota", color = Color.White) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 cursorColor = Color.White,
@@ -223,10 +249,15 @@ fun EnviarNotasScreen(
                             textStyle = LocalTextStyle.current.copy(color = Color.White),
                             modifier = Modifier.fillMaxWidth()
                         )
+
                         OutlinedTextField(
                             value = faltas,
-                            onValueChange = { if (it.toIntOrNull() != null) faltas = it },
-                            label = { Text("Frequência (faltas)", color = Color.White) },
+                            onValueChange = {
+                                if (it.isEmpty() || it.toIntOrNull() != null && it.toIntOrNull()!! <= 20) {
+                                    faltas = it
+                                }
+                            },
+                            label = { Text("Frequência (insira a quantidade de faltas - total de aulas = 20)", color = Color.White) },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 cursorColor = Color.White,
                                 focusedBorderColor = Color.White,
@@ -236,31 +267,44 @@ fun EnviarNotasScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        // Botão "Enviar"
                         Button(
                             onClick = enviarNota,
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .padding(vertical = 16.dp)
                         ) {
-                            Text(text = "Enviar", color = Color.White)
+                            Text(
+                                text = "Enviar",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Button(
+                            onClick = { alunoSelecionado = null },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .padding(vertical = 16.dp)
+                        ) {
+                            Text(
+                                text = "Voltar aos Alunos",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
             }
         }
-
-        // Botão "Voltar" fixo na parte inferior
-        Button(
-            onClick = navigateBack,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(16.dp)
-        ) {
-            Text(text = "Voltar", color = Color.White)
-        }
     }
 }
+
 
 
 
