@@ -363,3 +363,7 @@ fun createUserCompleto(
         }
     })
 }
+
+fun mostrarTurma(turma: String): String{
+    return "${turma.first()}°Ano ${turma.last()}"
+}

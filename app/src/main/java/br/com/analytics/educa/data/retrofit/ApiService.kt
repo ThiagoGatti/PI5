@@ -20,9 +20,6 @@ interface ApiService {
     @POST("api.php")
     fun enviarRespostas(@Body responseRequest: ResponseRequest): Call<ApiResponse>
 
-    @POST("api_extra.php")
-    fun editUser(@Body user: UserEditRequest): Call<ApiResponse>
-
     @POST("api.php")
     fun removeUser(@Body user: UserRemoveRequest): Call<ApiResponse>
 
@@ -121,13 +118,6 @@ data class User(
     val type: String
 )
 
-data class UserEditRequest(
-    val action: String = "editUser",
-    val login: String,
-    val name: String,
-    val phone: String
-)
-
 data class UserRemoveRequest(
     val action: String = "removeUser",
     val login: String
@@ -143,4 +133,11 @@ data class UserCompleto(
     val type: String,
     val password: String?,
     val components: Map<String, Any> = emptyMap()
+)
+
+data class EnvioNotaRequest(
+    val login: String,
+    val materia: String,
+    val nota: Double,
+    val frequencia: Int
 )

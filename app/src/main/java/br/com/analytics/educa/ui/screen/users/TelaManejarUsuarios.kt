@@ -21,6 +21,7 @@ import br.com.analytics.educa.data.model.fetchTurmas
 import br.com.analytics.educa.data.model.fetchUserCompleto
 import br.com.analytics.educa.data.model.fetchUsersByTurma
 import br.com.analytics.educa.data.model.fetchUsersByType
+import br.com.analytics.educa.data.model.mostrarTurma
 import br.com.analytics.educa.data.model.removeUser
 import br.com.analytics.educa.data.model.updateUserCompleto
 import br.com.analytics.educa.data.retrofit.User
@@ -185,7 +186,7 @@ fun TelaManejarUsuarios(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(
-                                                text = turma,
+                                                text = mostrarTurma(turma),
                                                 color = Color.White,
                                                 fontSize = 18.sp,
                                                 fontWeight = FontWeight.Bold

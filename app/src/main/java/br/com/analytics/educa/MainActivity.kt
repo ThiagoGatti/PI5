@@ -103,21 +103,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(route = "${Route.telaEnviarNotas}/{username}") { backStackEntry ->
-                    val username = backStackEntry.arguments?.getString("username") ?: "Desconhecido"
                     EnviarNotasScreen(
+                        backStackEntry.arguments?.getString("username").toString(),
                         navigateBack = { navController.popBackStack() },
-                        turmas = listOf("Turma 1", "Turma 2", "Turma 3"),
-                        getAlunosByTurma = { turma ->
-                            when (turma) {
-                                "Turma 1" -> listOf("Aluno 1", "Aluno 2", "Aluno 3")
-                                "Turma 2" -> listOf("Aluno 4", "Aluno 5", "Aluno 6")
-                                "Turma 3" -> listOf("Aluno 7", "Aluno 8", "Aluno 9")
-                                else -> emptyList()
-                            }
-                        },
-                        enviarNotaEFrequencia = { turma, aluno, nota, frequencia ->
-                            println("Enviando para $aluno da $turma: Nota = $nota, Frequência = $frequencia")
-                        }
                     )
                 }
 
