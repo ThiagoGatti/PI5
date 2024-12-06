@@ -1,5 +1,6 @@
 package br.com.analytics.educa.ui.screen.users
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +52,7 @@ fun TelaManejarUsuarios(
     var turmasList by remember { mutableStateOf<List<String>>(emptyList()) }
 
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         fetchTurmas { turmas -> turmasList = turmas }
@@ -160,7 +163,9 @@ fun TelaManejarUsuarios(
                             LazyColumn(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp)
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = 80.dp)
                             ) {
                                 items(turmasList) { turma ->
                                     Button(
@@ -205,7 +210,9 @@ fun TelaManejarUsuarios(
                             LazyColumn(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp)
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = 80.dp)
                             ) {
                                 items(usersList) { user ->
                                     val isCurrentUser = user.login == currentUserLogin
@@ -233,7 +240,9 @@ fun TelaManejarUsuarios(
                                             modifier = Modifier
                                                 .fillMaxSize()
                                                 .background(
-                                                    color = if (isCurrentUser) Color.Gray else Color(0xFF5D145B),
+                                                    color = if (isCurrentUser) Color.Gray else Color(
+                                                        0xFF5D145B
+                                                    ),
                                                     shape = RoundedCornerShape(16.dp)
                                                 ),
                                             contentAlignment = Alignment.Center
@@ -253,7 +262,7 @@ fun TelaManejarUsuarios(
                 }
 
 
-            Button(
+                Button(
                     onClick = {
                         when (contentState) {
                             "Tipo" -> navigateBack()
@@ -292,63 +301,72 @@ fun TelaManejarUsuarios(
 
 
 
-        if (showAddDialog) {
-            AddUserDialog(
-                turmasList = turmasList,
-                onDismiss = { showAddDialog = false },
-                onUserCreated = { newUser ->
-                    println("Novo usuário criado: $newUser")
-                }
-            )
-        }
+            if (showAddDialog) {
+                AddUserDialog(
+                    turmasList = turmasList,
+                    onDismiss = { showAddDialog = false },
+                    onUserCreated = { newUser ->
+                        println("Novo usuário criado: $newUser")
+                    }
+                )
+            }
 
-        if (showActionDialog && selectedUser != null) {
-            ActionDialog(
-                user = selectedUser!!,
-                onEdit = {
-                    showEditDialog = true
-                    showActionDialog = false
-                },
-                onRemove = {
-                    showRemoveDialog = true
-                    showActionDialog = false
-                },
-                onDismiss = { showActionDialog = false }
-            )
-        }
+            if (showActionDialog && selectedUser != null) {
+                ActionDialog(
+                    user = selectedUser!!,
+                    onEdit = {
+                        showEditDialog = true
+                        showActionDialog = false
+                    },
+                    onRemove = {
+                        showRemoveDialog = true
+                        showActionDialog = false
+                    },
+                    onDismiss = { showActionDialog = false }
+                )
+            }
 
-        if (showEditDialog && selectedUser != null) {
-            EditUserDialog(
-                user = selectedUser!!,
-                turmasList = turmasList,
-                onDismiss = { showEditDialog = false },
-                onSave = { updatedUser ->
-                    scope.launch {
-                        updateUserCompleto(updatedUser) { success ->
-                            if (success) {
-                                println("Usuário atualizado com sucesso")
-                                usersList = usersList.map {
-                                    if (it.login == updatedUser.login) it.copy(name = updatedUser.name) else it
+            if (showEditDialog && selectedUser != null) {
+                EditUserDialog(
+                    user = selectedUser!!,
+                    turmasList = turmasList,
+                    onDismiss = { showEditDialog = false },
+                    onSave = { updatedUser ->
+                        scope.launch {
+                            updateUserCompleto(updatedUser) { success ->
+                                if (success) {
+                                    Toast.makeText(
+                                        context,
+                                        "Usuário ${updatedUser.login} atualizado com sucesso",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    usersList = usersList.map {
+                                        if (it.login == updatedUser.login) it.copy(name = updatedUser.name) else it
+                                    }
+                                } else {
+                                    println("Erro ao atualizar usuário")
                                 }
-                            } else {
-                                println("Erro ao atualizar usuário")
+                                showEditDialog = false
                             }
-                            showEditDialog = false
                         }
                     }
-                }
-            )
-        }
+                )
+            }
 
-        if (showRemoveDialog && selectedUser != null) {
-            RemoveUserDialog(
-                user = selectedUser!!,
-                onDismiss = { showRemoveDialog = false },
-                onConfirm = {
-                    scope.launch {
-                        removeUser(selectedUser!!.login) {
-                            usersList = usersList.filter { it.login != selectedUser!!.login }
-                            showRemoveDialog = false
+            if (showRemoveDialog && selectedUser != null) {
+                RemoveUserDialog(
+                    user = selectedUser!!,
+                    onDismiss = { showRemoveDialog = false },
+                    onConfirm = {
+                        scope.launch {
+                            removeUser(selectedUser!!.login) {
+                                usersList = usersList.filter { it.login != selectedUser!!.login }
+                                showRemoveDialog = false
+                                Toast.makeText(
+                                    context,
+                                    "Usuário ${selectedUser!!.login} removido com sucesso",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -357,5 +375,3 @@ fun TelaManejarUsuarios(
         }
     }
 }
-
-
