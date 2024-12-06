@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -14,6 +13,7 @@ import br.com.analytics.educa.data.model.buscarRespostasPorEscola
 import br.com.analytics.educa.data.retrofit.ResponseBySchool
 import br.com.analytics.educa.ui.component.design.GraficoBarraMediaFormularios
 import android.content.res.Configuration
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
@@ -22,21 +22,17 @@ fun TelaGraficoBarra(
     userType: String,
     navigateBack: () -> Unit
 ) {
-    // Estado principal para reloading da tela
     var filtroTipoUsuario by remember { mutableStateOf(userType) }
-    var reloadKey by remember { mutableStateOf(0) } // Chave para forçar recomposição
+    var reloadKey by remember { mutableStateOf(0) }
 
-    // Recarrega a tela quando `reloadKey` muda
-    LaunchedEffect(reloadKey) {
-        // Não faz nada diretamente, só força a recomposição da tela
-    }
+    LaunchedEffect(reloadKey) {}
 
     TelaGraficosInterna(
         username = username,
         tipoSelecionado = filtroTipoUsuario,
         onTipoUsuarioChange = { novoTipo ->
             filtroTipoUsuario = novoTipo
-            reloadKey++ // Força a recomposição
+            reloadKey++
         },
         navigateBack = navigateBack
     )
@@ -56,7 +52,6 @@ private fun TelaGraficosInterna(
     var isLoading by remember { mutableStateOf(true) }
     var dropdownExpanded by remember { mutableStateOf(false) }
 
-    // Busca dados ao iniciar
     LaunchedEffect(tipoSelecionado) {
         isLoading = true
         buscarRespostasPorEscola(
@@ -76,23 +71,6 @@ private fun TelaGraficosInterna(
         )
     }
 
-    // Detecta a orientação da tela
-    val configuration = LocalConfiguration.current
-    val alignment = remember(configuration.orientation) {
-        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Alignment.TopEnd
-        } else {
-            Alignment.BottomCenter
-        }
-    }
-    val paddingValues = remember(configuration.orientation) {
-        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Modifier.padding(16.dp)
-        } else {
-            Modifier.padding(16.dp, 0.dp, 16.dp, 200.dp)
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -105,39 +83,44 @@ private fun TelaGraficosInterna(
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "Gráficos de Respostas",
                 color = Color.White,
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
             if (errorMessage != null) {
                 Text(
                     text = "Erro: $errorMessage",
                     color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
             } else if (isLoading) {
                 Text(
                     text = "Carregando dados...",
                     color = Color.White,
-                    modifier = Modifier.padding(16.dp)
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
             } else if (respostasPorEscola.isNotEmpty()) {
-                // Lista suspensa para selecionar o tipo de usuário
-                Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                ) {
                     OutlinedButton(
                         onClick = { dropdownExpanded = !dropdownExpanded },
-                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color(0xFF9752E7))
+                        colors = ButtonDefaults.outlinedButtonColors(containerColor = Color(0xFF9752E7)),
+                        modifier = Modifier.align(Alignment.Center)
                     ) {
                         Text(
                             text = tipoSelecionado.ifEmpty { "Selecione um tipo de usuário" },
-                            color = Color.White
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 
@@ -149,7 +132,7 @@ private fun TelaGraficosInterna(
                             DropdownMenuItem(
                                 text = { Text(tipo, color = Color.Black) },
                                 onClick = {
-                                    onTipoUsuarioChange(tipo) // Notifica o novo tipo
+                                    onTipoUsuarioChange(tipo)
                                     dropdownExpanded = false
                                 }
                             )
@@ -158,14 +141,13 @@ private fun TelaGraficosInterna(
                 }
 
                 if (agrupamentoMedias.isNotEmpty()) {
-                    GraficoBarraMediaFormularios(
-                        medias = agrupamentoMedias
-                    )
+                    GraficoBarraMediaFormularios(medias = agrupamentoMedias)
                 } else {
                     Text(
                         text = "Nenhum dado disponível para este tipo de usuário.",
                         color = Color.White,
-                        modifier = Modifier.padding(16.dp)
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
             }
@@ -173,10 +155,19 @@ private fun TelaGraficosInterna(
 
         Button(
             onClick = navigateBack,
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
-            modifier = paddingValues.align(alignment)
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .fillMaxWidth(0.5f)
+                .height(50.dp)
         ) {
-            Text("Voltar", color = Color.White)
+            Text(
+                text = "Voltar",
+                color = Color.White,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }

@@ -2,17 +2,9 @@ package br.com.analytics.educa.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.InsertChart
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PieChart
-import androidx.compose.material.icons.filled.Work
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -53,14 +45,12 @@ fun TelaDadosEscola(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(colors = listOf(Color(0xFF551BA8), Color(0xFF9752E7))))
-            .padding(16.dp)
+            .padding(20.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
+            verticalArrangement = Arrangement.Center, // Centraliza o conteúdo na tela
+            modifier = Modifier.fillMaxSize()
         ) {
             if (errorMessage != null) {
                 Text(
@@ -70,14 +60,11 @@ fun TelaDadosEscola(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             } else {
-                Spacer(modifier = Modifier.weight(0.5f)) // Espaço acima para empurrar as informações para baixo
-
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Ícone de Livro
                     Icon(
                         imageVector = Icons.Default.Book,
                         contentDescription = "Ícone de Livro",
@@ -87,28 +74,44 @@ fun TelaDadosEscola(
                             .padding(bottom = 16.dp)
                     )
 
-                    // Nome da Escola
                     Text(
-                        text = "$nomeEscola",
+                        text = nomeEscola,
                         color = Color.White,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold
                     )
 
-                    // Média Geral
                     Text(
-                        text = "Média Geral: ${"%.1f".format(mediaNotas)}",
+                        text = "Média Geral: ${"%.1f".format(mediaEscola(mediasPorTipo, mediaNotas))}",
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
 
-                    // Médias Individuais com Ícones
+                    Spacer(modifier = Modifier.height(15.dp)) // Aumente ou diminua o valor conforme necessário
+
+
                     Column(
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.MenuBook,
+                                contentDescription = "Ícone Notas",
+                                tint = Color.White,
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Média Notas: ${"%.1f".format(mediaNotas)}",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Default.School,
@@ -156,76 +159,112 @@ fun TelaDadosEscola(
                                 fontWeight = FontWeight.Bold
                             )
                         }
+
+
+                        Spacer(modifier = Modifier.height(50.dp)) // Aumente ou diminua o valor conforme necessário
+
+
                     }
                 }
 
-                Icon(
-                    imageVector = Icons.Default.BarChart,
-                    contentDescription = "Ícone de Gráfico",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(230.dp)
-                        .padding(vertical = 3.dp)
-                )
 
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Botões de gráficos
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxWidth()
+                    Button(
+                        onClick = navigateToTelaGraficoBarra,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(70.dp),
+                        contentPadding = PaddingValues()
                     ) {
-                        Button(
-                            onClick = navigateToTelaGraficoBarra,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D3DC8)),
-                            modifier = Modifier.weight(1f).height(50.dp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(Color(0xFF5D145B), Color(0xFF0D1B44))
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text("Gráficos", color = Color.White)
-                        }
-
-                        Button(
-                            onClick = navigateToTelaGraficoPizza,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D3DC8)),
-                            modifier = Modifier.weight(1f).height(50.dp)
-                        ) {
-                            Text("Comparação", color = Color.White)
+                            Text(
+                                text = "Gráficos",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
 
-                    // Botão de Voltar
+
                     Button(
-                        onClick = navigateBack,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                        onClick = navigateToTelaGraficoPizza,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
-                            .width(160.dp)
-                            .height(60.dp)
+                            .weight(1f)
+                            .height(70.dp),
+                        contentPadding = PaddingValues()
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(Color(0xFF5D145B), Color(0xFF0D1B44))
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Ícone de voltar",
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Voltar",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.White
+                                text = "Comparação",
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
                             )
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(150.dp))
+
+        }
+
+
+
+        Button(
+            onClick = navigateBack,
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
+                .width(160.dp)
+                .height(60.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBackIosNew,
+                    contentDescription = "Ícone de voltar",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Voltar",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White
+                )
             }
         }
     }

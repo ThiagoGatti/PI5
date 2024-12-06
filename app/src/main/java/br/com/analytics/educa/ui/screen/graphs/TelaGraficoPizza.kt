@@ -52,8 +52,11 @@ fun TelaGraficoPizza(
             )
         } else {
             Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Comparação de Usuários",
@@ -74,14 +77,21 @@ fun TelaGraficoPizza(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(32.dp))
+
                 Button(
                     onClick = navigateBack,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9752E7)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
+                    shape = MaterialTheme.shapes.medium,
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 16.dp)
+                        .fillMaxWidth(0.5f)
+                        .height(50.dp)
                 ) {
-                    Text("Voltar", color = Color.White)
+                    Text(
+                        text = "Voltar",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
         }
