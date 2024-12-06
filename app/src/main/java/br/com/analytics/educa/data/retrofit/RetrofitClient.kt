@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitClient {
     companion object {
         private lateinit var INSTANCE: Retrofit
-        private const val BASE_URL = "http://10.0.2.2/"
+        private const val BASE_URL = "http://educaserver.ddns.net/"
         private fun getRetrofitInstance(): Retrofit {
             val httpClient = OkHttpClient.Builder()
                 .retryOnConnectionFailure(true)
