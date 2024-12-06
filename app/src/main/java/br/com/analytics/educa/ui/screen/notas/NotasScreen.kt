@@ -31,7 +31,7 @@ fun NotasScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     // Busca os dados ao carregar a tela
-    LaunchedEffect (Unit) {
+    LaunchedEffect(Unit) {
         buscarBoletim(
             login = login,
             onResult = { dados ->
@@ -57,13 +57,15 @@ fun NotasScreen(
             Text(
                 text = "Erro: $errorMessage",
                 color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Notas e Frequência",
@@ -87,68 +89,70 @@ fun NotasScreen(
                             .fillMaxWidth()
                     )
                 } else {
-                    boletim.forEach { item ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                        ) {
-                            Row(
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        boletim.forEach { item ->
+                            Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(vertical = 8.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White)
                             ) {
-                                Column(modifier = Modifier.weight(2f)) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(modifier = Modifier.weight(2f)) {
+                                        Text(
+                                            text = item.materia,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp,
+                                            color = Color.Black
+                                        )
+                                        Text(
+                                            text = "Nota: ${item.nota}",
+                                            fontSize = 14.sp,
+                                            color = Color.Black
+                                        )
+                                    }
                                     Text(
-                                        text = item.materia,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp,
-                                        color = Color.Black
-                                    )
-                                    Text(
-                                        text = "Nota: ${item.nota}",
+                                        text = "Freq: ${item.presenca}%",
+                                        fontWeight = FontWeight.Medium,
                                         fontSize = 14.sp,
-                                        color = Color.Black
+                                        color = Color.Gray,
+                                        textAlign = TextAlign.End,
+                                        modifier = Modifier.weight(1f)
                                     )
                                 }
-                                Text(
-                                    text = "Freq: ${item.presenca}%",
-                                    fontWeight = FontWeight.Medium,
-                                    fontSize = 14.sp,
-                                    color = Color.Gray,
-                                    textAlign = TextAlign.End,
-                                    modifier = Modifier.weight(1f)
-                                )
                             }
                         }
                     }
                 }
             }
 
-            Box(
+            Button(
+                onClick = navigateBack,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
                 modifier = Modifier
-                    .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp),
-                contentAlignment = Alignment.Center
+                    .padding(bottom = 16.dp)
+                    .width(150.dp)
+                    .height(50.dp)
             ) {
-                Button(
-                    onClick = navigateBack,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)),
-                    modifier = Modifier
-                        .width(150.dp)
-                        .height(50.dp)
-                ) {
-                    Text(
-                        text = "Voltar",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White
-                    )
-                }
+                Text(
+                    text = "Voltar",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White
+                )
             }
         }
     }
 }
+
