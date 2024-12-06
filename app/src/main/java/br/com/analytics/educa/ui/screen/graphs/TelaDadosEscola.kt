@@ -174,7 +174,7 @@ fun TelaDadosEscola(
                 ) {
                     Button(
                         onClick = navigateToTelaGraficoBarra,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)), // Use a cor sólida diretamente
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
                             .weight(1f)
@@ -185,9 +185,8 @@ fun TelaDadosEscola(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(Color(0xFF5D145B), Color(0xFF0D1B44))
-                                    ),
+
+                                    color = Color(0xFF5D145B),
                                     shape = RoundedCornerShape(16.dp)
                                 ),
                             contentAlignment = Alignment.Center
@@ -204,7 +203,7 @@ fun TelaDadosEscola(
 
                     Button(
                         onClick = navigateToTelaGraficoPizza,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5D145B)), // Use a cor sólida diretamente
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier
                             .weight(1f)
@@ -215,9 +214,7 @@ fun TelaDadosEscola(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(Color(0xFF5D145B), Color(0xFF0D1B44))
-                                    ),
+                                    color = Color(0xFF5D145B),
                                     shape = RoundedCornerShape(16.dp)
                                 ),
                             contentAlignment = Alignment.Center
