@@ -64,11 +64,11 @@ fun TelaManejarUsuarios(
                 )
             )
     ) {
-        // Botão "+"
+        // Botão +
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 15.dp, vertical = 60.dp), // Ajuste de padding vertical para descer
+                .padding(horizontal = 15.dp, vertical = 60.dp),
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(
@@ -88,7 +88,7 @@ fun TelaManejarUsuarios(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 150.dp), // Maior espaçamento para evitar sobreposição
+                .padding(horizontal = 12.dp, vertical = 150.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (contentState == "Tipo") {
@@ -97,7 +97,7 @@ fun TelaManejarUsuarios(
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
-                    modifier = Modifier.padding(bottom = 1.dp) // Espaçamento adicional
+                    modifier = Modifier.padding(bottom = 1.dp)
                 )
             }
 
@@ -160,7 +160,7 @@ fun TelaManejarUsuarios(
                             LazyColumn(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp) // Espaço para o botão Voltar
+                                modifier = Modifier.fillMaxSize().padding(bottom = 80.dp)
                             ) {
                                 items(turmasList) { turma ->
                                     Button(
