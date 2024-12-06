@@ -22,7 +22,7 @@ fun TelaGraficoBarra(
     userType: String,
     navigateBack: () -> Unit
 ) {
-    var filtroTipoUsuario by remember { mutableStateOf(userType) }
+    var filtroTipoUsuario by remember { mutableStateOf(if (userType == "DIRETOR") "ALUNO" else userType) }
     var reloadKey by remember { mutableStateOf(0) }
 
     LaunchedEffect(reloadKey) {}
