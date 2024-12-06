@@ -7,15 +7,11 @@ object Route {
 
     const val menu = "menu"
     const val menuForm = "menuForm"
-
     const val formulario = "formulario"
-
-
 
     const val telaDadosPessoais = "telaDadosPessoais"
 
     const val telaNotas = "telaNotas"
-
     const val telaEnviarNotas = "telaEnviarNotas"
 
     const val telaManejarUsuarios = "telaManejarUsuarios"
