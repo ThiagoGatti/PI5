@@ -86,7 +86,7 @@ CREATE TABLE respostas (
 );
 
 INSERT INTO escola (nome, endereco) 
-VALUES ('Escola Estadual Modelo', 'Rua Principal, 123, Cidade Exemplo');
+VALUES ('Senac - Santo Amaro', 'Rua Principal, 123, Cidade Exemplo');
 
 INSERT INTO turmas (sigla, materias) VALUES
 ('3B', '["Matemática", "Português", "História", "Ciências"]'),
