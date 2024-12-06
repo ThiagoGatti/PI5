@@ -132,7 +132,6 @@ if ($method === 'POST') {
             exit;
         }
     
-        // Inserir primeiro na tabela `usuario`
         $hashedPassword = hash('sha256', $password);
         $stmt = $conn->prepare("INSERT INTO usuario (login, senha) VALUES (?, ?)");
         $stmt->bind_param("ss", $login, $hashedPassword);
@@ -141,7 +140,6 @@ if ($method === 'POST') {
             exit;
         }
     
-        // Inserir na tabela `pessoa`
         $stmt = $conn->prepare("INSERT INTO pessoa (login, nome, cpf, data_nascimento, telefone, tipo) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("ssssss", $login, $name, $cpf, $birthDate, $phone, $type);
         if (!$stmt->execute()) {
@@ -149,19 +147,16 @@ if ($method === 'POST') {
             exit;
         }
     
-        // Manipular componentes específicos de acordo com o tipo de usuário
         if ($type === 'ALUNO') {
             $turma = $components['turma'] ?? null;
             if ($turma) {
-                // Verificar se a turma já existe
                 $stmt = $conn->prepare("SELECT sigla FROM turmas WHERE sigla = ?");
                 $stmt->bind_param("s", $turma);
                 $stmt->execute();
                 $result = $stmt->get_result();
         
                 if ($result->num_rows === 0) {
-                    // Criar a turma se não existir
-                    $materias = json_encode([]); // Ajuste para definir matérias padrão se necessário
+                    $materias = json_encode([]);
                     $stmt = $conn->prepare("INSERT INTO turmas (sigla, materias) VALUES (?, ?)");
                     $stmt->bind_param("ss", $turma, $materias);
         
@@ -171,7 +166,6 @@ if ($method === 'POST') {
                     }
                 }
         
-                // Adicionar o aluno à turma
                 $stmt = $conn->prepare("INSERT INTO aluno (login, turma) VALUES (?, ?) ON DUPLICATE KEY UPDATE turma = VALUES(turma)");
                 $stmt->bind_param("ss", $login, $turma);
         
@@ -215,7 +209,6 @@ if ($method === 'POST') {
             exit;
         }
     
-        // Atualizar informações gerais do usuário na tabela `pessoa`
         $stmt = $conn->prepare("
             UPDATE pessoa 
             SET nome = ?, cpf = ?, data_nascimento = ?, telefone = ?, tipo = ?
@@ -227,7 +220,6 @@ if ($method === 'POST') {
             exit;
         }
     
-        // Atualizar senha, se fornecida
         if ($password) {
             $hashedPassword = hash('sha256', $password);
             $stmt = $conn->prepare("UPDATE usuario SET senha = ? WHERE login = ?");
@@ -238,7 +230,6 @@ if ($method === 'POST') {
             }
         }
     
-        // Atualizar informações específicas do tipo de usuário
         if ($type === 'ALUNO') {
             $turma = $components['turma'] ?? null;
             if ($turma) {
