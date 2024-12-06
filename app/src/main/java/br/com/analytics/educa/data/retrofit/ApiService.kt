@@ -66,6 +66,9 @@ interface ApiService {
         @Query("action") action: String = "getUserDetails",
         @Query("login") login: String
     ): Call<UserCompleto>
+
+    @POST("api_extra.php")
+    fun enviarNotaPresenca(@Body request: EnvioNotaRequest): Call<ApiResponse>
 }
 
 data class LoginRequest(
@@ -136,6 +139,7 @@ data class UserCompleto(
 )
 
 data class EnvioNotaRequest(
+    val action: String = "enviarNotaPresenca",
     val login: String,
     val materia: String,
     val nota: Double,

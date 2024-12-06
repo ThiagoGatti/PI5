@@ -58,6 +58,7 @@ CREATE TABLE boletim (
     materia VARCHAR(100) NOT NULL,
     nota DECIMAL(5, 2) NOT NULL,
     presenca TINYINT NOT NULL,
+    UNIQUE KEY (login_aluno, materia),
     FOREIGN KEY (login_aluno) REFERENCES aluno(login) ON DELETE CASCADE
 );
 

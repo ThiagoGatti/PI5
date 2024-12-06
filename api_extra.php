@@ -284,6 +284,36 @@ if ($method === 'POST') {
     
         echo json_encode(["success" => true, "message" => "Usuário atualizado com sucesso"]);
         exit;
+    } elseif ($action === 'enviarNotaPresenca') {
+        $loginAluno = $input['login'] ?? null;
+        $materia = $input['materia'] ?? null;
+        $nota = $input['nota'] ?? null;
+        $frequencia = $input['frequencia'] ?? null;
+
+        if (!$loginAluno || !$materia || $nota === null || $frequencia === null) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "Dados incompletos"]);
+            exit;
+        }
+
+        $stmt = $conn->prepare("
+            INSERT INTO boletim (login_aluno, materia, nota, presenca)
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE 
+                nota = VALUES(nota), 
+                presenca = VALUES(presenca)
+        ");
+        $stmt->bind_param("ssdi", $loginAluno, $materia, $nota, $frequencia);
+
+        if ($stmt->execute()) {
+            http_response_code(200);
+            echo json_encode(["success" => true, "message" => "Nota e frequência enviadas com sucesso."]);
+        } else {
+            http_response_code(500);
+            echo json_encode(["success" => false, "message" => "Erro ao salvar nota e frequência: " . $stmt->error]);
+        }
+
+        $stmt->close();
     } else {
         http_response_code(400);
         echo json_encode(["success" => false, "message" => "Ação não especificada ou inválida"]);

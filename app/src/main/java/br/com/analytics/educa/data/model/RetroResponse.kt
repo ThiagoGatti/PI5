@@ -367,3 +367,33 @@ fun createUserCompleto(
 fun mostrarTurma(turma: String): String{
     return "${turma.first()}°Ano ${turma.last()}"
 }
+
+fun enviarNotaPresenca(
+    login: String,
+    materia: String,
+    nota: Double,
+    frequencia: Int,
+    onResult: (ApiResponse) -> Unit,
+    onError: (String) -> Unit
+) {
+    val request = EnvioNotaRequest(
+        login = login,
+        materia = materia,
+        nota = nota,
+        frequencia = frequencia
+    )
+
+    apiService.enviarNotaPresenca(request).enqueue(object : Callback<ApiResponse> {
+        override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+            if (response.isSuccessful) {
+                onResult(response.body() ?: ApiResponse(false, "Sucesso"))
+            } else {
+                println("Erro ao enviar nota e frequência: ${response.message()}")
+            }
+        }
+
+        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+            println("Falha na conexão: ${t.message}")
+        }
+    })
+}
